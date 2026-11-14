@@ -30,15 +30,14 @@ const config: Config = {
         xl:   '32px',
         full: '9999px',
       },
-    },
-    // safe area insets for notched phones
-    padding: {
-      'safe':       'env(safe-area-inset-bottom, 0px)',
-      'safe-or-4':  'max(env(safe-area-inset-bottom, 0px), 1rem)',
-      'safe-or-12': 'max(env(safe-area-inset-top, 0px), 3rem)',
-    },
-    inset: {
-      'safe-or-12': 'max(env(safe-area-inset-top, 0px), 3rem)',
+      padding: {
+        'safe':       'env(safe-area-inset-bottom, 0px)',
+        'safe-or-4':  'max(env(safe-area-inset-bottom, 0px), 1rem)',
+        'safe-or-12': 'max(env(safe-area-inset-top, 0px), 3rem)',
+      },
+      inset: {
+        'safe-or-12': 'max(env(safe-area-inset-top, 0px), 3rem)',
+      },
     },
   },
   plugins: [],
