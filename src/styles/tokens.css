@@ -1,0 +1,32 @@
+/* Murales PDC — Design Tokens */
+:root {
+  --bg:          #F3F1EC;
+  --surface:     #FFFFFF;
+  --groove:      #E5E2DA;
+  --ink:         #18171A;
+  --ink-2:       #68636A;
+  --ink-3:       #A09CA4;
+  --sea:         #326A82;
+  --sea-tint:    #E8F2F6;
+  --sea-dark:    #245970;
+
+  --certain:     #0A7560;
+  --certain-bg:  #E4F3EF;
+  --likely:      #A86C10;
+  --likely-bg:   #FBF0DC;
+  --guessing:    #9E2222;
+  --guessing-bg: #F9E5E5;
+  --removed:     #6038A0;
+  --removed-bg:  #EEE6F7;
+
+  --r-sm:   8px;
+  --r-md:   16px;
+  --r-lg:   24px;
+  --r-xl:   32px;
+  --r-full: 9999px;
+
+  --fd: 'Syne', system-ui, sans-serif;
+  --fb: 'DM Sans', system-ui, sans-serif;
+
+  color-scheme: light;
+}

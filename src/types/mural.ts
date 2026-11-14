@@ -1,0 +1,55 @@
+export type ConfidenceLevel = 'verified' | 'likely' | 'unverified' | 'removed'
+export type PrecisionLabel = 'intersection' | 'landmark' | 'block' | 'area' | 'lead'
+export type StatusVote = 'still_here' | 'removed' | 'unsure'
+
+export interface Coordinates {
+  lat: number
+  lng: number
+}
+
+export interface Mural {
+  id: string
+  slug: string
+  title: string
+  artist: string | null
+  artist_verified: boolean
+  location_description: string
+  coordinates: Coordinates | null
+  confidence: ConfidenceLevel
+  precision: PrecisionLabel | null
+  year: number | null
+  medium: string | null
+  notes: string | null
+  photos: string[]          // Supabase storage URLs
+  cover_photo: string | null
+  still_here_count: number
+  removed_count: number
+  unsure_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Comment {
+  id: string
+  mural_id: string
+  author_name: string | null
+  body: string
+  status_vote: StatusVote | null
+  created_at: string
+}
+
+export interface Submission {
+  id: string
+  title: string | null
+  artist: string | null
+  location_description: string
+  notes: string | null
+  photo_paths: string[]
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+}
+
+export interface TourStop {
+  mural: Mural
+  order: number
+}
