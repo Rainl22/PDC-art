@@ -6,10 +6,12 @@ export const revalidate = 60
 
 export default async function GalleryPage() {
   const supabase = createClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('murals')
     .select('*')
     .order('title')
+
+  console.log('[gallery] murals:', data?.length ?? 0, 'error:', error)
 
   return <GalleryClient murals={(data ?? []) as Mural[]} />
 }
