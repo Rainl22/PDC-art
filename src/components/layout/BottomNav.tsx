@@ -1,13 +1,13 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Map, Route, Heart } from 'lucide-react'
+import { LayoutGrid, Map, Route, PlusCircle } from 'lucide-react'
 
 const NAV = [
   { href: '/gallery', label: 'Gallery', Icon: LayoutGrid },
   { href: '/map',     label: 'Map',     Icon: Map },
   { href: '/tour',    label: 'Tour',    Icon: Route },
-  { href: '/saved',   label: 'Saved',   Icon: Heart },
+  { href: '/submit',  label: 'Submit',  Icon: PlusCircle },
 ]
 
 export function BottomNav() {
