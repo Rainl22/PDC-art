@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { ImagePlus, X, CheckCircle2, ChevronLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ImagePlus, X, CheckCircle2, ChevronLeft, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { submitMural, spamCode } from '@/lib/murals'
 import { prepareImage } from '@/lib/image'
@@ -16,6 +17,7 @@ const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none
 
 export function SubmitForm({ existing, photosMode = false }: { existing?: { slug: string; title: string } | null; photosMode?: boolean }) {
   const { t } = useT()
+  const router = useRouter()
   const [title, setTitle] = useState(existing?.title ?? '')
   const [artist, setArtist] = useState('')
   const [location, setLocation] = useState('')
@@ -51,6 +53,18 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
         }
       } catch { /* no metadata — fine */ }
     }
+  }
+
+  /** Back to wherever the person came from; falls back to the gallery (or the mural) if the page was opened directly. */
+  function goBack() {
+    if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+    else router.push(existing ? `/gallery/${existing.slug}` : '/gallery')
+  }
+
+  function another() {
+    setTitle(existing?.title ?? ''); setArtist(''); setLocation(''); setNotes(''); setFiles([])
+    setCoords(null); setSource(null); setError(null); setPhotoKind('photos_same'); setDone(false)
+    window.scrollTo({ top: 0 })
   }
 
   async function submit(e: React.FormEvent) {
@@ -96,11 +110,18 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
         <CheckCircle2 className="mx-auto text-certain" size={36} />
         <p className="font-display font-semibold mt-3">{t('submit.thanks')}</p>
         <p className="text-[13px] text-ink-2 mt-1">{t('submit.pending')}</p>
-        <Link href={existing ? `/gallery/${existing.slug}` : '/gallery'}
-          className="inline-flex items-center gap-1 mt-5 rounded-full border border-sea text-sea px-4 py-2 text-[13px] font-display font-semibold">
-          <ChevronLeft size={15} />
-          {existing ? t('submit.backTo', { title: existing.title }) : t('submit.backGallery')}
-        </Link>
+        <div className="mt-5 flex flex-col items-center gap-2">
+          <button type="button" onClick={goBack}
+            className="inline-flex items-center gap-1 rounded-full bg-sea text-white px-5 py-2.5 text-[13px] font-display font-semibold">
+            <ChevronLeft size={15} />
+            {existing ? t('submit.backTo', { title: existing.title }) : t('submit.goBack')}
+          </button>
+          <button type="button" onClick={another}
+            className="inline-flex items-center gap-1 rounded-full border border-groove text-ink-2 px-4 py-2 text-[12px] font-display font-semibold">
+            <Plus size={13} />
+            {t('submit.another')}
+          </button>
+        </div>
       </div>
     )
   }
