@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/slug'
 import { metresBetween } from '@/lib/geo'
 import { useKnownArtists } from '@/lib/useKnownArtists'
+import { enrichAndSaveArtists, parseArtistLine, useArtistDirectory } from '@/lib/artistDirectory'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
 import type { Submission, ConfidenceLevel, PrecisionLabel } from '@/types/mural'
 
@@ -19,6 +20,8 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const existingSlug = s.notes?.match(EXISTING)?.[1] ?? null
   const verifySlug = s.notes?.match(VERIFY)?.[1] ?? null
   const knownArtists = useKnownArtists()
+  const directory = useArtistDirectory()
+  const targetSlug = verifySlug ?? existingSlug ?? s.mural_slug ?? null
   const photos = (s.photo_paths ?? []).map(p => sb.storage.from('submissions').getPublicUrl(p).data.publicUrl)
   const pending = s.status === 'pending'
   const photoUpdate = s.kind === 'photos_same' || s.kind === 'photos_repainted'
@@ -31,13 +34,36 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const [artist, setArtist] = useState(s.artist ?? '')
   const [location, setLocation] = useState(s.location_description)
   const [confidence, setConfidence] = useState<ConfidenceLevel>('unverified')
-  const [muralCoords, setMuralCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [handle, setHandle] = useState('')
+  const [mural, setMural] = useState<{ id: string; artist: string | null; coordinates: { lat: number; lng: number } | null } | null>(null)
+  const [qArtist, setQArtist] = useState('')
+  const [qHandle, setQHandle] = useState('')
+  const muralCoords = mural?.coordinates ?? null
   const [precision, setPrecision] = useState<PrecisionLabel | ''>(s.coordinates ? 'landmark' : '')
 
   useEffect(() => {
-    if (!verifySlug) return
-    sb.from('murals').select('coordinates').eq('slug', verifySlug).maybeSingle().then(({ data }) => setMuralCoords(data?.coordinates ?? null))
-  }, [verifySlug]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (!targetSlug) return
+    sb.from('murals').select('id,artist,coordinates').eq('slug', targetSlug).maybeSingle().then(({ data }) => setMural(data ?? null))
+  }, [targetSlug]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** "Name1, Name2" + a handle/link for the first name → Artist[] (known artists get their saved link). */
+  const buildArtists = async (names: string, firstHandle: string) => {
+    const list = names.split(',').map(n => n.trim()).filter(Boolean).map((n, i) => parseArtistLine(i === 0 && firstHandle.trim() ? `${n} | ${firstHandle.trim()}` : n)!)
+    return enrichAndSaveArtists(list)
+  }
+  const pickArtist = (v: string) => {
+    setArtist(v)
+    const k = directory.find(v)
+    if (k && !handle) setHandle(k.instagram ?? k.url ?? '')
+  }
+  const saveMuralArtist = () => run(async () => {
+    if (!mural || !qArtist.trim()) throw new Error('Enter the artist name')
+    const list = await buildArtists(qArtist, qHandle)
+    const { error: e } = await sb.from('murals').update({ artist: list.map(a => a.name).join(', '), artists: list, artist_verified: true }).eq('id', mural.id)
+    if (e) throw e
+    setMural({ ...mural, artist: list.map(a => a.name).join(', ') }); setQArtist(''); setQHandle('')
+    router.refresh()
+  })
   const verifyDistance = s.coordinates && muralCoords ? metresBetween(s.coordinates, muralCoords) : null
 
   async function finish(status: 'approved' | 'rejected') {
@@ -58,7 +84,10 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
     const patch: Record<string, unknown> = repainted
       ? { photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
           artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
-      : { photos: [...(m.photos ?? []), ...photos], cover_photo: m.cover_photo ?? photos[0] ?? null }
+      : (m.photos ?? []).every((u: string) => u.startsWith('/murals/'))
+        // the bundled placeholder photos get replaced by the first real ones
+        ? { photos, cover_photo: photos[0] ?? null }
+        : { photos: [...(m.photos ?? []), ...photos], cover_photo: m.cover_photo ?? photos[0] ?? null }
     const { error: e2 } = await sb.from('murals').update(patch).eq('id', m.id)
     if (e2) throw e2
     await finish('approved')
@@ -85,8 +114,11 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
       if (!data) break
       slug = `${base}-${i}`
     }
+    const artists = artist.trim() ? await buildArtists(artist, handle) : []
     const { error: e } = await sb.from('murals').insert({
-      slug, title: title.trim() || 'Untitled', artist: artist.trim() || null,
+      slug, title: title.trim() || 'Untitled',
+      artist: artists.length ? artists.map(a => a.name).join(', ') : null,
+      artists: artists.length ? artists : null, artist_verified: artists.length > 0,
       location_description: location.trim(), coordinates: s.coordinates ?? null,
       confidence, precision: precision || null, photos: photos, cover_photo: photos[0] ?? null,
       notes: s.notes ?? null,
@@ -109,6 +141,12 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         <div className="min-w-0">
           <p className="font-display font-semibold text-[14px] truncate">{s.title || 'Untitled'}</p>
           <p className="text-[11px] text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
+          <div className="flex flex-wrap gap-1 mt-1">
+            {s.auto_verified && <span className="text-[10px] font-display font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
+            {!s.auto_verified && s.coordinates && (s.photo_paths?.length ?? 0) > 0 && (s.location_source === 'device' || s.location_source === 'photo') && (
+              <span className="text-[10px] font-display font-semibold px-2 py-0.5 rounded-full bg-sea-tint text-sea">GPS + photo ({s.location_source})</span>
+            )}
+          </div>
         </div>
         {verifySlug && (
           <Link href={`/gallery/${verifySlug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">Verify location: {verifySlug}</Link>
@@ -144,6 +182,25 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         )}
         {s.notes && <p className="whitespace-pre-line"><span className="text-ink-3">Notes:</span> {s.notes}</p>}
       </div>
+
+      {targetSlug && mural && (
+        <div className="rounded-lg bg-bg p-3 space-y-2">
+          <p className="text-[12px] text-ink-2">
+            <span className="text-ink-3">Mural’s artist:</span> {mural.artist || <span className="text-guessing">missing</span>}
+            {' · '}<Link href={`/admin/murals/${mural.id}`} className="text-sea underline underline-offset-2">Edit mural</Link>
+          </p>
+          {!mural.artist && pending && (
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="flex-1 min-w-[8rem]"><label className={adminLabel}>Artist name</label>
+                <input className={adminField} list="known-artists-q" value={qArtist} onChange={e => { setQArtist(e.target.value); const k = directory.find(e.target.value); if (k && !qHandle) setQHandle(k.instagram ?? k.url ?? '') }} />
+                <datalist id="known-artists-q">{knownArtists.map(n => <option key={n} value={n} />)}</datalist></div>
+              <div className="flex-1 min-w-[8rem]"><label className={adminLabel}>Instagram / link</label>
+                <input className={adminField} value={qHandle} onChange={e => setQHandle(e.target.value)} placeholder="senkoeone" /></div>
+              <button className={primaryBtn} disabled={busy || !qArtist.trim()} onClick={saveMuralArtist}>Save artist</button>
+            </div>
+          )}
+        </div>
+      )}
 
       {verifySlug && s.coordinates && verifyDistance !== null && (
         <p className={`text-[12px] font-display font-semibold ${verifyDistance <= 50 ? 'text-certain' : 'text-guessing'}`}>
@@ -183,8 +240,10 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
           {!existingSlug && (
             <>
               <div><label className={adminLabel}>Title</label><input className={adminField} value={title} onChange={e => setTitle(e.target.value)} /></div>
-              <div><label className={adminLabel}>Artist</label><input className={adminField} list="known-artists" value={artist} onChange={e => setArtist(e.target.value)} />
+              <div><label className={adminLabel}>Artist(s) — comma separated</label><input className={adminField} list="known-artists" value={artist} onChange={e => pickArtist(e.target.value)} />
                 <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist></div>
+              <div><label className={adminLabel}>Instagram handle or link (first artist) — filled in for known artists</label>
+                <input className={adminField} value={handle} onChange={e => setHandle(e.target.value)} placeholder="senkoeone" /></div>
             </>
           )}
           <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>

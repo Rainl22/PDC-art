@@ -12,6 +12,7 @@ export interface Coordinates {
 export interface Artist {
   name: string
   instagram?: string | null   // handle without @
+  url?: string | null         // any other profile / website
 }
 
 export interface Mural {
@@ -62,6 +63,8 @@ export interface Submission {
   location_source?: 'link' | 'device' | 'photo' | 'manual' | null
   kind?: SubmissionKind
   mural_slug?: string | null
+  auto_verified?: boolean
+  auto_note?: string | null
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
 }
