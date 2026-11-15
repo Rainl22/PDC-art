@@ -55,6 +55,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if ((!location.trim() && !coords) || loading) return
+    if (!existing && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
     if (trap) { setDone(true); return } // bot: pretend it worked
     setLoading(true)
     setError(null)
@@ -127,11 +128,11 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
             <label className="aspect-square rounded-sm border border-dashed border-ink-3 flex items-center justify-center text-ink-3 cursor-pointer">
               <ImagePlus size={20} />
               <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
-                onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+                onChange={e => { setError(null); addFiles(e.target.files); e.target.value = '' }} />
             </label>
           )}
         </div>
-        <p className="text-[11px] text-ink-3 mt-1.5">{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
+        <p className="text-[11px] text-ink-3 mt-1.5">{existing ? '' : '* '}{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
       </div>
 
       <p className="text-[11px] text-ink-3 leading-snug">
