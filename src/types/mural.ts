@@ -7,12 +7,20 @@ export interface Coordinates {
   lng: number
 }
 
+export interface Artist {
+  name: string
+  instagram?: string | null   // handle without @
+}
+
 export interface Mural {
   id: string
   slug: string
   title: string
   artist: string | null
   artist_verified: boolean
+  artists?: Artist[] | null
+  photo_credit?: string | null
+  photo_credit_url?: string | null
   location_description: string
   coordinates: Coordinates | null
   confidence: ConfidenceLevel

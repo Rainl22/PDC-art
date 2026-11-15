@@ -4,11 +4,15 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createClient } from '@/lib/supabase/client'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { ArtistLinks } from '@/components/mural/ArtistLinks'
 import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
 import { Search, Navigation, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
 import type { Mural } from '@/types/mural'
+
+// The bundled MapLibre worker can't resolve its own URL under Next.js — serve it from /public.
+maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
 
 // confidence → pin colour
 const PIN_COLOR: Record<string, string> = {
@@ -97,7 +101,7 @@ export default function MapPage() {
   return (
     <div className="relative h-dvh bg-bg overflow-hidden">
       {/* map */}
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
       {/* search bar */}
       <div className="absolute top-safe-or-12 left-3 right-3 z-10 flex gap-2">
@@ -148,7 +152,7 @@ export default function MapPage() {
             {/* info */}
             <div className="px-4 py-4">
               <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
-              {active.artist && <p className="text-sea text-[12px] font-medium mb-1">{active.artist}</p>}
+              {(active.artist || active.artists?.length) && <p className="text-sea text-[12px] font-medium mb-1"><ArtistLinks mural={active} /></p>}
               <p className="text-ink-3 text-[11px] mb-2">{active.location_description}</p>
               {active.precision === 'lead' && <div className="mb-3"><LocationPill mural={active} sm /></div>}
               <div className="flex gap-3">

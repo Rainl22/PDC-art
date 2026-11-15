@@ -5,6 +5,9 @@ import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
 import { LocationPill, isLocationUnknown } from '@/components/ui/LocationPill'
+import { ArtistLinks } from '@/components/mural/ArtistLinks'
+import { PhotoCredit } from '@/components/mural/PhotoCredit'
+import { MuralPager, type PagerMural } from '@/components/mural/MuralPager'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart, Plus } from 'lucide-react'
@@ -42,6 +45,12 @@ export default async function MuralDetailPage({ params }: Props) {
     .from('comments').select('*').eq('mural_id', mural.id)
     .order('created_at', { ascending: false }).limit(50)
 
+  const { data: all } = await supabase.from('murals').select('slug,title,cover_photo').order('title')
+  const list = (all ?? []) as PagerMural[]
+  const at = list.findIndex(x => x.slug === params.slug)
+  const prev = list.length > 1 && at >= 0 ? list[(at - 1 + list.length) % list.length] : null
+  const next = list.length > 1 && at >= 0 ? list[(at + 1) % list.length] : null
+
   const m = mural as Mural
   const c = (comments ?? []) as Comment[]
   const gradient = getMuralGradient(m.slug)
@@ -69,6 +78,8 @@ export default async function MuralDetailPage({ params }: Props) {
         </>}
       />
 
+      <PhotoCredit mural={m} />
+
       {/* content */}
       <div className="px-5 py-5 space-y-5">
 
@@ -78,7 +89,7 @@ export default async function MuralDetailPage({ params }: Props) {
             <h1 className="font-display font-bold text-[22px] leading-tight tracking-tight flex-1">{m.title?.trim() || 'Untitled'}</h1>
             <button className="text-ink-3 hover:text-sea mt-1 shrink-0"><Heart size={20} /></button>
           </div>
-          <p className={`text-[13px] font-medium mt-1 ${m.artist ? 'text-sea' : 'text-ink-3'}`}>{m.artist || 'Artist unknown'}</p>
+          <p className="text-sea text-[13px] font-medium mt-1"><ArtistLinks mural={m} /></p>
         </div>
 
         {/* meta card */}
@@ -188,6 +199,8 @@ export default async function MuralDetailPage({ params }: Props) {
           <CommentForm muralId={m.id} />
         </div>
 
+
+        <MuralPager prev={prev} next={next} />
       </div>
     </div>
   )
