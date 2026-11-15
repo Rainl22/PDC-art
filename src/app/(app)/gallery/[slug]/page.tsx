@@ -11,6 +11,7 @@ import { ArtistLinks } from '@/components/mural/ArtistLinks'
 import { PhotoCredit } from '@/components/mural/PhotoCredit'
 import { MuralPager, type PagerMural } from '@/components/mural/MuralPager'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
+import { VerifyMenu } from '@/components/mural/VerifyMenu'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
 import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Plus, Camera } from 'lucide-react'
@@ -97,6 +98,9 @@ export default async function MuralDetailPage({ params }: Props) {
               <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.location')}</p>
               <p className="text-[12px] text-ink-2 leading-relaxed">{m.location_description}</p>
               {(isLocationUnknown(m) || m.precision === 'lead') && <div className="mt-1.5"><LocationPill mural={m} /></div>}
+              {!isLocationUnknown(m) && (m.confidence === 'unverified' || m.confidence === 'likely') && (
+                <div className="mt-2"><VerifyMenu slug={m.slug} title={m.title} /></div>
+              )}
             </div>
           </div>
           {m.precision && (

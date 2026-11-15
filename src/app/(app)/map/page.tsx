@@ -12,6 +12,7 @@ import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
 import { Search, Navigation, ChevronRight, X, LocateFixed, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { metresBetween, formatDistance } from '@/lib/geo'
 import type { Mural } from '@/types/mural'
 
 // The bundled MapLibre worker can't resolve its own URL under Next.js — serve it from /public.
@@ -24,15 +25,6 @@ const PIN_COLOR: Record<string, string> = {
   unverified: '#9E2222',
   removed:    '#6038A0',
 }
-
-/** Straight-line distance in metres between two points. */
-function metresBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
-  const R = 6371000, rad = (d: number) => d * Math.PI / 180
-  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng)
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2
-  return 2 * R * Math.asin(Math.sqrt(h))
-}
-const formatDistance = (m: number) => (m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`)
 
 // Playa del Carmen centre
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]

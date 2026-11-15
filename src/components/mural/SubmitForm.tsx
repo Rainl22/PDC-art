@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { submitMural, spamCode } from '@/lib/murals'
 import { prepareImage } from '@/lib/image'
 import { useT } from '@/lib/i18n/client'
+import { useKnownArtists } from '@/lib/useKnownArtists'
 import { LocationPicker, type LocationSource } from './LocationPicker'
 import type { Coordinates } from '@/types/mural'
 
@@ -15,7 +16,10 @@ const MAX_BYTES = 25 * 1024 * 1024 // originals are resized before upload
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
-export function SubmitForm({ existing, photosMode = false }: { existing?: { slug: string; title: string } | null; photosMode?: boolean }) {
+export function SubmitForm({ existing, mode }: { existing?: { slug: string; title: string } | null; mode?: 'photos' | 'verify' }) {
+  const photosMode = mode === 'photos'
+  const verifyMode = mode === 'verify'
+  const knownArtists = useKnownArtists()
   const { t } = useT()
   const router = useRouter()
   const [title, setTitle] = useState(existing?.title ?? '')
@@ -69,8 +73,9 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if ((!photosMode && !location.trim() && !coords) || loading) return
-    if ((!existing || photosMode) && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
+    if ((!photosMode && !verifyMode && !location.trim() && !coords) || loading) return
+    if ((!existing || photosMode || verifyMode) && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
+    if (verifyMode && !coords) { setError(t('submit.errVerifyCoords')); return }
     if (trap) { setDone(true); return } // bot: pretend it worked
     setLoading(true)
     setError(null)
@@ -87,12 +92,12 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
       await submitMural({
         kind: photosMode ? photoKind : existing ? 'location' : 'new',
         mural_slug: existing?.slug ?? null,
-        title: photosMode ? existing!.title : title.trim() || null,
-        artist: photosMode ? null : artist.trim() || null,
-        location_description: photosMode ? `Photo update for existing mural: ${existing!.slug}` : location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
-        coordinates: photosMode ? null : coords,
-        location_source: photosMode ? null : coords ? source : location.trim() ? 'manual' : null,
-        notes: [existing && !photosMode ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
+        title: photosMode || verifyMode ? existing!.title : title.trim() || null,
+        artist: photosMode || verifyMode ? null : artist.trim() || null,
+        location_description: photosMode ? `Photo update for existing mural: ${existing!.slug}` : verifyMode ? `Location verification for existing mural: ${existing!.slug}` : location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
+        coordinates: coords,
+        location_source: coords ? source : !photosMode && !verifyMode && location.trim() ? 'manual' : null,
+        notes: [verifyMode ? `Location verification for existing mural: ${existing!.slug}` : existing && !photosMode ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
         photo_paths: paths,
       })
       setDone(true)
@@ -139,11 +144,15 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
               {k === 'photos_same' ? t('submit.photoSame') : t('submit.photoRepainted')}
             </label>
           ))}
+          <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
         </fieldset>
+      ) : verifyMode ? (
+        <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
       ) : (
         <>
           <input className={field} placeholder={t('submit.titlePh')} value={title} onChange={e => setTitle(e.target.value)} />
-          <input className={field} placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
+          <input className={field} list="known-artists" autoComplete="off" placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
+          <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist>
           <input className={field} required={!coords} placeholder={`${t('submit.wherePh')}${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
           <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
         </>
@@ -179,7 +188,7 @@ export function SubmitForm({ existing, photosMode = false }: { existing?: { slug
       </p>
 
       {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
-      <button type="submit" disabled={(!photosMode && !location.trim() && !coords) || loading}
+      <button type="submit" disabled={(!photosMode && !verifyMode && !location.trim() && !coords) || loading}
         className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
         {loading ? t('submit.submitting') : t('submit.submit')}
       </button>
