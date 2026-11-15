@@ -1,19 +1,24 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ExternalLink, Check, X, Plus, MapPin } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/slug'
+import { metresBetween } from '@/lib/geo'
+import { useKnownArtists } from '@/lib/useKnownArtists'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
 import type { Submission, ConfidenceLevel, PrecisionLabel } from '@/types/mural'
 
 const EXISTING = /Location suggestion for existing mural:\s*([a-z0-9-]+)/i
+const VERIFY = /Location verification for existing mural:\s*([a-z0-9-]+)/i
 
 export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const router = useRouter()
   const sb = createClient()
   const existingSlug = s.notes?.match(EXISTING)?.[1] ?? null
+  const verifySlug = s.notes?.match(VERIFY)?.[1] ?? null
+  const knownArtists = useKnownArtists()
   const photos = (s.photo_paths ?? []).map(p => sb.storage.from('submissions').getPublicUrl(p).data.publicUrl)
   const pending = s.status === 'pending'
   const photoUpdate = s.kind === 'photos_same' || s.kind === 'photos_repainted'
@@ -26,7 +31,14 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const [artist, setArtist] = useState(s.artist ?? '')
   const [location, setLocation] = useState(s.location_description)
   const [confidence, setConfidence] = useState<ConfidenceLevel>('unverified')
+  const [muralCoords, setMuralCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [precision, setPrecision] = useState<PrecisionLabel | ''>(s.coordinates ? 'landmark' : '')
+
+  useEffect(() => {
+    if (!verifySlug) return
+    sb.from('murals').select('coordinates').eq('slug', verifySlug).maybeSingle().then(({ data }) => setMuralCoords(data?.coordinates ?? null))
+  }, [verifySlug]) // eslint-disable-line react-hooks/exhaustive-deps
+  const verifyDistance = s.coordinates && muralCoords ? metresBetween(s.coordinates, muralCoords) : null
 
   async function finish(status: 'approved' | 'rejected') {
     const { error: e } = await sb.from('submissions').update({ status }).eq('id', s.id)
@@ -47,6 +59,19 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
       ? { photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
           artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
       : { photos: [...(m.photos ?? []), ...photos], cover_photo: m.cover_photo ?? photos[0] ?? null }
+    const { error: e2 } = await sb.from('murals').update(patch).eq('id', m.id)
+    if (e2) throw e2
+    await finish('approved')
+  })
+
+  /** Someone stood at the mural and confirmed it: mark the location verified. */
+  const confirmLocation = () => run(async () => {
+    const { data: m, error: e1 } = await sb.from('murals').select('id,precision,confidence,coordinates').eq('slug', verifySlug!).maybeSingle()
+    if (e1) throw e1
+    if (!m) throw new Error(`Mural "${verifySlug}" not found`)
+    const patch: Record<string, unknown> = { confidence: m.confidence === 'removed' ? 'removed' : 'verified' }
+    if (!m.precision || m.precision === 'lead') patch.precision = 'landmark'
+    if (!m.coordinates && s.coordinates) patch.coordinates = s.coordinates
     const { error: e2 } = await sb.from('murals').update(patch).eq('id', m.id)
     if (e2) throw e2
     await finish('approved')
@@ -85,6 +110,9 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
           <p className="font-display font-semibold text-[14px] truncate">{s.title || 'Untitled'}</p>
           <p className="text-[11px] text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
         </div>
+        {verifySlug && (
+          <Link href={`/gallery/${verifySlug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">Verify location: {verifySlug}</Link>
+        )}
         {photoUpdate && s.mural_slug && (
           <Link href={`/gallery/${s.mural_slug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">
             {repainted ? 'Repainted: ' : 'Photos for '}{s.mural_slug}
@@ -117,6 +145,21 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         {s.notes && <p className="whitespace-pre-line"><span className="text-ink-3">Notes:</span> {s.notes}</p>}
       </div>
 
+      {verifySlug && s.coordinates && verifyDistance !== null && (
+        <p className={`text-[12px] font-display font-semibold ${verifyDistance <= 50 ? 'text-certain' : 'text-guessing'}`}>
+          {Math.round(verifyDistance)} m from the mural’s pin{verifyDistance <= 50 ? ' · close enough' : ' · far — check the photo'}
+        </p>
+      )}
+
+      {pending && verifySlug && (
+        <div className="flex flex-wrap gap-2">
+          <button className={primaryBtn} disabled={busy} onClick={confirmLocation}>
+            <Check size={12} className="inline -mt-0.5" /> Confirm location (mark verified)
+          </button>
+          <button className={ghostBtn} disabled={busy} onClick={() => run(() => finish('rejected'))}><X size={12} className="inline -mt-0.5" /> Reject</button>
+        </div>
+      )}
+
       {pending && photoUpdate && (
         <div className="flex flex-wrap gap-2">
           <button className={primaryBtn} disabled={busy || photos.length === 0} onClick={addPhotos}>
@@ -126,7 +169,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         </div>
       )}
 
-      {pending && !photoUpdate && !open && (
+      {pending && !photoUpdate && !verifySlug && !open && (
         <div className="flex flex-wrap gap-2">
           <button className={primaryBtn} onClick={() => setOpen(true)}>
             {existingSlug ? <><Check size={12} className="inline -mt-0.5" /> Apply location…</> : <><Plus size={12} className="inline -mt-0.5" /> Create mural…</>}
@@ -135,12 +178,13 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         </div>
       )}
 
-      {pending && !photoUpdate && open && (
+      {pending && !photoUpdate && !verifySlug && open && (
         <div className="space-y-2 border-t border-groove pt-3">
           {!existingSlug && (
             <>
               <div><label className={adminLabel}>Title</label><input className={adminField} value={title} onChange={e => setTitle(e.target.value)} /></div>
-              <div><label className={adminLabel}>Artist</label><input className={adminField} value={artist} onChange={e => setArtist(e.target.value)} /></div>
+              <div><label className={adminLabel}>Artist</label><input className={adminField} list="known-artists" value={artist} onChange={e => setArtist(e.target.value)} />
+                <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist></div>
             </>
           )}
           <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>
