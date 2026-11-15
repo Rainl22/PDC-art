@@ -2,7 +2,7 @@
    - Pages: network first (always fresh); if offline, fall back to a cached copy or /offline.html
    - Built JS/CSS (hashed) and mural photos: cached for speed + offline viewing
    - Everything else (Supabase API, map tiles, auth) is left alone. */
-const VERSION = 'v1'
+const VERSION = 'v2'
 const SHELL = `shell-${VERSION}`
 const ASSETS = `assets-${VERSION}`
 const PAGES = `pages-${VERSION}`
@@ -60,4 +60,25 @@ self.addEventListener('fetch', event => {
       }),
     )
   }
+})
+
+// --- Admin push notifications (new submissions) ---
+self.addEventListener('push', event => {
+  let d = {}
+  try { d = event.data ? event.data.json() : {} } catch { /* plain text push */ }
+  event.waitUntil(self.registration.showNotification(d.title || 'Murales PDC', {
+    body: d.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    data: { url: d.url || '/admin/submissions' },
+  }))
+})
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close()
+  const url = (event.notification.data && event.notification.data.url) || '/admin/submissions'
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ('focus' in c) { c.navigate(url).catch(() => {}); return c.focus() } }
+    return self.clients.openWindow(url)
+  }))
 })
