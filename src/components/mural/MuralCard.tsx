@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
-import { isLocationUnconfirmed } from '@/components/ui/LocationPill'
+import { isLocationUnknown } from '@/components/ui/LocationPill'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
@@ -23,10 +23,10 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
       onClick={selectable ? () => onSelect?.(mural.id) : undefined}
     >
       {/* cover */}
-      <div className="aspect-[4/3] relative">
+      <div className="aspect-[4/3] relative overflow-hidden shrink-0">
         {cover
-          ? <img src={cover} alt={mural.title} className="w-full h-full object-cover" />
-          : <div className="w-full h-full" style={{ background: gradient }} />
+          ? <img src={cover} alt={mural.title} className="absolute inset-0 w-full h-full object-cover" />
+          : <div className="absolute inset-0" style={{ background: gradient }} />
         }
         {mural.photos?.length > 1 && (
           <span className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-display font-semibold text-white bg-black/50 rounded-full px-1.5 py-0.5">
@@ -54,7 +54,7 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
           {mural.artist || 'Artist unknown'}
         </p>
         <p className="text-[10px] text-ink-3 mt-0.5 truncate">
-          {isLocationUnconfirmed(mural) || !mural.location_description?.trim()
+          {isLocationUnknown(mural) || !mural.location_description?.trim()
             ? 'Location unknown'
             : mural.location_description}
         </p>

@@ -4,6 +4,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createClient } from '@/lib/supabase/client'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
 import { Search, Navigation, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
@@ -74,10 +75,12 @@ export default function MapPage() {
       .filter(m => m.coordinates)
       .forEach(mural => {
         const el = document.createElement('div')
+        const lead = mural.precision === 'lead'
+        const color = PIN_COLOR[mural.confidence] ?? '#326A82'
         el.style.cssText = `
           width:20px;height:20px;border-radius:50%;
-          background:${PIN_COLOR[mural.confidence] ?? '#326A82'};
-          border:3px solid white;
+          background:${lead ? 'white' : color};
+          border:3px ${lead ? `dashed ${color}` : 'solid white'};
           box-shadow:0 2px 8px rgba(0,0,0,.28);
           cursor:pointer;
         `
@@ -146,7 +149,8 @@ export default function MapPage() {
             <div className="px-4 py-4">
               <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
               {active.artist && <p className="text-sea text-[12px] font-medium mb-1">{active.artist}</p>}
-              <p className="text-ink-3 text-[11px] mb-4">{active.location_description}</p>
+              <p className="text-ink-3 text-[11px] mb-2">{active.location_description}</p>
+              {active.precision === 'lead' && <div className="mb-3"><LocationPill mural={active} sm /></div>}
               <div className="flex gap-3">
                 {active.coordinates && (
                   <a

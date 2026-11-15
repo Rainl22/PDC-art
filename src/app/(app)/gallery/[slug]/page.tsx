@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
-import { LocationPill, isLocationUnconfirmed } from '@/components/ui/LocationPill'
+import { LocationPill, isLocationUnknown } from '@/components/ui/LocationPill'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart, Plus } from 'lucide-react'
@@ -88,7 +88,7 @@ export default async function MuralDetailPage({ params }: Props) {
             <div>
               <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">Location</p>
               <p className="text-[12px] text-ink-2 leading-relaxed">{m.location_description}</p>
-              {isLocationUnconfirmed(m) && <div className="mt-1.5"><LocationPill /></div>}
+              {(isLocationUnknown(m) || m.precision === 'lead') && <div className="mt-1.5"><LocationPill mural={m} /></div>}
             </div>
           </div>
           {m.precision && (
@@ -114,7 +114,7 @@ export default async function MuralDetailPage({ params }: Props) {
         </div>
 
         {/* google maps link — disabled until a location is known */}
-        {isLocationUnconfirmed(m) ? (
+        {isLocationUnknown(m) ? (
           <div className="space-y-2">
             <div aria-disabled="true" className="flex items-center justify-between bg-groove text-ink-3 rounded-xl px-4 py-3 cursor-not-allowed">
               <div className="flex items-center gap-2 text-[13px] font-medium">
@@ -138,6 +138,13 @@ export default async function MuralDetailPage({ params }: Props) {
             </div>
             <ExternalLink size={14} />
           </a>
+        )}
+
+        {m.notes && (
+          <div>
+            <p className="text-[10px] font-display font-bold uppercase tracking-wider text-ink-3 mb-2">Notes</p>
+            <p className="text-[12px] text-ink-2 leading-relaxed whitespace-pre-line">{m.notes}</p>
+          </div>
         )}
 
         {/* status voting */}
