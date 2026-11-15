@@ -1,0 +1,159 @@
+export const LOCALES = ['en', 'es'] as const
+export type Locale = (typeof LOCALES)[number]
+export const DEFAULT_LOCALE: Locale = 'en'
+export const LOCALE_COOKIE = 'locale'
+
+const en = {
+  // navigation + menu
+  'nav.gallery': 'Gallery', 'nav.map': 'Map', 'nav.tour': 'Tour', 'nav.submit': 'Submit',
+  'menu.open': 'Open menu', 'menu.close': 'Close menu', 'menu.tagline': 'Street art of Playa del Carmen',
+  'menu.language': 'Language', 'menu.account': 'Account', 'menu.signedInAs': 'Signed in as',
+  'menu.signin': 'Sign in (optional)', 'menu.signout': 'Sign out', 'menu.profile': 'My profile',
+  'menu.admin': 'Admin', 'menu.about': 'About', 'menu.privacy': 'Privacy', 'menu.terms': 'Terms & Conditions',
+  'menu.signinHint': 'You don’t need an account to browse or submit murals.',
+  // gallery
+  'gallery.title': 'Murales PDC', 'gallery.select': 'Select', 'gallery.cancel': 'Cancel', 'gallery.selectMurals': 'Select murals',
+  'filter.all': 'All', 'filter.verified': '● Verified', 'filter.likely': '◉ Likely', 'filter.unverified': '? Unverified',
+  'select.tap': 'Tap murals to select', 'select.one': '{n} mural selected', 'select.many': '{n} murals selected',
+  'select.min': 'Select at least 2 to build a tour', 'select.build': 'Build Tour →',
+  // status / location labels
+  'conf.verified': 'Verified', 'conf.likely': 'Likely', 'conf.unverified': 'Unverified', 'conf.removed': 'Removed',
+  'loc.unknown': 'Location unknown', 'loc.unconfirmed': 'Location unconfirmed',
+  'prec.intersection': 'Intersection documented', 'prec.landmark': 'Landmark — precise location',
+  'prec.block': 'Block-level accuracy', 'prec.area': 'Area — approximate', 'prec.lead': 'Lead only — unconfirmed',
+  // card + detail
+  'card.untitled': 'Untitled', 'card.artistUnknown': 'Artist unknown',
+  'detail.location': 'Location', 'detail.precision': 'Precision', 'detail.communityStatus': 'Community status',
+  'detail.noReports': 'No reports yet — be the first',
+  'detail.statusSummary': '{a} still here · {b} removed · {c} unsure',
+  'detail.openMaps': 'Open in Google Maps', 'detail.noLocationYet': 'No location yet', 'detail.addLocation': 'Add location',
+  'detail.notes': 'Notes', 'detail.stillThere': 'Is it still there?',
+  'detail.communityCount.one': 'Community · {n} report', 'detail.communityCount.many': 'Community · {n} reports',
+  'detail.noComments': 'No comments yet.', 'detail.anonymous': 'Anonymous', 'detail.back': 'Back to gallery',
+  'vote.stillHere': '✓ Still here', 'vote.removed': '✕ Removed', 'vote.unsure': '? Unsure', 'vote.thanks': '✓ Thanks for the update!',
+  'vote.stillHereShort': 'Still here', 'vote.removedShort': 'Removed', 'vote.unsureShort': 'Unsure',
+  'comment.name': 'Your name (optional)', 'comment.add': 'Add a comment…',
+  'pager.previous': 'Previous', 'pager.next': 'Next', 'pager.more': 'More murals',
+  'photo.credit': 'Photo:', 'photo.viewFull': 'View photo {i} of {n} full screen', 'photo.prev': 'Previous photo', 'photo.next': 'Next photo', 'photo.close': 'Close',
+  // map
+  'map.search': 'Playa del Carmen', 'map.missing.one': '{n} mural not on the map yet · location needed',
+  'map.missing.many': '{n} murals not on the map yet · location needed',
+  'map.soon': 'Map coming soon', 'map.soonBody': 'Pins will appear here once locations are added.',
+  'map.takeMe': 'Take me there', 'map.details': 'View details', 'map.close': 'Close',
+  // tour
+  'tour.title': 'My Tour', 'tour.clear': 'Clear', 'tour.stops.one': '{n} stop', 'tour.stops.many': '{n} stops',
+  'tour.walkMin': '~{n} min walk', 'tour.add': 'Add another mural', 'tour.murals': 'murals', 'tour.walkTime': 'walk time', 'tour.distance': 'distance',
+  'tour.start': 'Start Tour in Google Maps', 'tour.pending': 'Coordinates pending verification',
+  'tour.emptyTitle': 'No tour yet',
+  'tour.emptyBody': 'Go to the gallery, tap Select, choose your murals, then hit Build Tour.',
+  'tour.browse': 'Browse Gallery',
+  // submit
+  'submit.title': 'Submit a mural', 'submit.addLocationTitle': 'Add a location',
+  'submit.intro': 'Spotted street art in Playa del Carmen? Tell us where. We review every submission before it appears.',
+  'submit.introLocation': 'Know where "{title}" is? Tell us the street, cross street or landmark. We review every suggestion before it goes live.',
+  'submit.titlePh': 'Title (if you know it)', 'submit.artistPh': 'Artist (if you know it)',
+  'submit.wherePh': 'Where is it? Street, cross street, landmark', 'submit.notesPh': 'Notes',
+  'submit.photoHint': 'Up to {n} photos. If a photo has location data, we’ll use it for the pin.',
+  'submit.submit': 'Submit mural', 'submit.submitting': 'Submitting…',
+  'submit.thanks': 'Thank you!', 'submit.pending': 'Your submission is pending review.',
+  'submit.backGallery': 'Back to gallery', 'submit.backTo': 'Back to {title}',
+  'submit.errPhotoType': 'Photos must be JPEG, PNG or WebP.', 'submit.errPhotoSize': 'Each photo must be under 25 MB.',
+  'submit.errGeneric': 'Something went wrong. Please try again.', 'submit.removePhoto': 'Remove photo',
+  'submit.rights': 'By submitting you confirm you took the photos or have permission to share them, and you accept our',
+  'submit.rightsLink': 'Terms',
+  'locpick.useMine': 'Use my location', 'locpick.pasteLink': 'Paste map link', 'locpick.getPin': 'Get pin',
+  'locpick.linkPh': 'Google Maps or Apple Maps share link', 'locpick.linkHint': 'Long-press the mural in Maps, tap Share, and paste it here.',
+  'locpick.pinSet': 'Pin set', 'locpick.fromLink': 'from map link', 'locpick.fromDevice': 'from your location', 'locpick.fromPhoto': 'from photo',
+  'locpick.far': 'That’s far from Playa del Carmen. Double-check it.', 'locpick.checkMaps': 'Check in Google Maps', 'locpick.removePin': 'Remove pin',
+  'locpick.errNoGeo': 'This browser can’t share your location.',
+  'locpick.errDenied': 'Location permission is off. Allow it in your browser settings, or paste a map link instead.',
+  'locpick.errFail': 'Couldn’t get your location. Try again outside, or paste a map link.',
+  // auth + profile
+  'auth.title': 'Sign in', 'auth.intro': 'Signing in is optional. It’s only needed for the admin area.',
+  'auth.email': 'Email address', 'auth.send': 'Send me a sign-in link', 'auth.sending': 'Sending…',
+  'auth.checkTitle': 'Check your email', 'auth.checkBody': 'We sent a sign-in link to {email}. Open it on this device.',
+  'auth.error': 'Couldn’t send the link. Check the address and try again.', 'auth.callbackError': 'That sign-in link didn’t work or has expired. Please request a new one.',
+  'profile.title': 'My profile', 'profile.email': 'Email', 'profile.role': 'Role', 'profile.roleAdmin': 'Administrator', 'profile.roleUser': 'Member',
+  'profile.adminArea': 'Admin area', 'profile.adminBody': 'Review submissions, edit murals and moderate comments.', 'profile.openAdmin': 'Open admin',
+  // legal
+  'legal.updated': 'Last updated', 'legal.back': 'Back',
+} as const
+
+export type Key = keyof typeof en
+
+const es: Record<Key, string> = {
+  'nav.gallery': 'Galería', 'nav.map': 'Mapa', 'nav.tour': 'Recorrido', 'nav.submit': 'Enviar',
+  'menu.open': 'Abrir menú', 'menu.close': 'Cerrar menú', 'menu.tagline': 'Arte urbano de Playa del Carmen',
+  'menu.language': 'Idioma', 'menu.account': 'Cuenta', 'menu.signedInAs': 'Sesión iniciada como',
+  'menu.signin': 'Iniciar sesión (opcional)', 'menu.signout': 'Cerrar sesión', 'menu.profile': 'Mi perfil',
+  'menu.admin': 'Administración', 'menu.about': 'Acerca de', 'menu.privacy': 'Privacidad', 'menu.terms': 'Términos y condiciones',
+  'menu.signinHint': 'No necesitas una cuenta para explorar ni enviar murales.',
+  'gallery.title': 'Murales PDC', 'gallery.select': 'Seleccionar', 'gallery.cancel': 'Cancelar', 'gallery.selectMurals': 'Selecciona murales',
+  'filter.all': 'Todos', 'filter.verified': '● Verificados', 'filter.likely': '◉ Probables', 'filter.unverified': '? Sin verificar',
+  'select.tap': 'Toca los murales para seleccionar', 'select.one': '{n} mural seleccionado', 'select.many': '{n} murales seleccionados',
+  'select.min': 'Selecciona al menos 2 para crear un recorrido', 'select.build': 'Crear recorrido →',
+  'conf.verified': 'Verificado', 'conf.likely': 'Probable', 'conf.unverified': 'Sin verificar', 'conf.removed': 'Eliminado',
+  'loc.unknown': 'Ubicación desconocida', 'loc.unconfirmed': 'Ubicación sin confirmar',
+  'prec.intersection': 'Cruce de calles documentado', 'prec.landmark': 'Punto de referencia — ubicación precisa',
+  'prec.block': 'Precisión a nivel de cuadra', 'prec.area': 'Zona — aproximada', 'prec.lead': 'Solo una pista — sin confirmar',
+  'card.untitled': 'Sin título', 'card.artistUnknown': 'Artista desconocido',
+  'detail.location': 'Ubicación', 'detail.precision': 'Precisión', 'detail.communityStatus': 'Estado según la comunidad',
+  'detail.noReports': 'Aún no hay reportes — sé el primero',
+  'detail.statusSummary': '{a} sigue aquí · {b} eliminado · {c} no está seguro',
+  'detail.openMaps': 'Abrir en Google Maps', 'detail.noLocationYet': 'Aún sin ubicación', 'detail.addLocation': 'Agregar ubicación',
+  'detail.notes': 'Notas', 'detail.stillThere': '¿Sigue ahí?',
+  'detail.communityCount.one': 'Comunidad · {n} reporte', 'detail.communityCount.many': 'Comunidad · {n} reportes',
+  'detail.noComments': 'Aún no hay comentarios.', 'detail.anonymous': 'Anónimo', 'detail.back': 'Volver a la galería',
+  'vote.stillHere': '✓ Sigue aquí', 'vote.removed': '✕ Eliminado', 'vote.unsure': '? No estoy seguro', 'vote.thanks': '✓ ¡Gracias por la actualización!',
+  'vote.stillHereShort': 'Sigue aquí', 'vote.removedShort': 'Eliminado', 'vote.unsureShort': 'No está seguro',
+  'comment.name': 'Tu nombre (opcional)', 'comment.add': 'Agrega un comentario…',
+  'pager.previous': 'Anterior', 'pager.next': 'Siguiente', 'pager.more': 'Más murales',
+  'photo.credit': 'Foto:', 'photo.viewFull': 'Ver foto {i} de {n} en pantalla completa', 'photo.prev': 'Foto anterior', 'photo.next': 'Foto siguiente', 'photo.close': 'Cerrar',
+  'map.search': 'Playa del Carmen', 'map.missing.one': '{n} mural aún no está en el mapa · falta ubicación',
+  'map.missing.many': '{n} murales aún no están en el mapa · falta ubicación',
+  'map.soon': 'El mapa llegará pronto', 'map.soonBody': 'Los puntos aparecerán aquí cuando se agreguen las ubicaciones.',
+  'map.takeMe': 'Llévame', 'map.details': 'Ver detalles', 'map.close': 'Cerrar',
+  'tour.title': 'Mi recorrido', 'tour.clear': 'Borrar', 'tour.stops.one': '{n} parada', 'tour.stops.many': '{n} paradas',
+  'tour.walkMin': '~{n} min caminando', 'tour.add': 'Agregar otro mural', 'tour.murals': 'murales', 'tour.walkTime': 'a pie', 'tour.distance': 'distancia',
+  'tour.start': 'Iniciar recorrido en Google Maps', 'tour.pending': 'Coordenadas pendientes de verificación',
+  'tour.emptyTitle': 'Aún no hay recorrido',
+  'tour.emptyBody': 'Ve a la galería, toca Seleccionar, elige tus murales y luego toca Crear recorrido.',
+  'tour.browse': 'Ver galería',
+  'submit.title': 'Enviar un mural', 'submit.addLocationTitle': 'Agregar una ubicación',
+  'submit.intro': '¿Viste arte urbano en Playa del Carmen? Cuéntanos dónde. Revisamos cada envío antes de publicarlo.',
+  'submit.introLocation': '¿Sabes dónde está "{title}"? Dinos la calle, el cruce o un punto de referencia. Revisamos cada sugerencia antes de publicarla.',
+  'submit.titlePh': 'Título (si lo sabes)', 'submit.artistPh': 'Artista (si lo sabes)',
+  'submit.wherePh': '¿Dónde está? Calle, cruce, punto de referencia', 'submit.notesPh': 'Notas',
+  'submit.photoHint': 'Hasta {n} fotos. Si una foto tiene datos de ubicación, los usaremos para el punto en el mapa.',
+  'submit.submit': 'Enviar mural', 'submit.submitting': 'Enviando…',
+  'submit.thanks': '¡Gracias!', 'submit.pending': 'Tu envío está pendiente de revisión.',
+  'submit.backGallery': 'Volver a la galería', 'submit.backTo': 'Volver a {title}',
+  'submit.errPhotoType': 'Las fotos deben ser JPEG, PNG o WebP.', 'submit.errPhotoSize': 'Cada foto debe pesar menos de 25 MB.',
+  'submit.errGeneric': 'Algo salió mal. Inténtalo de nuevo.', 'submit.removePhoto': 'Quitar foto',
+  'submit.rights': 'Al enviar confirmas que tomaste las fotos o tienes permiso para compartirlas, y aceptas nuestros',
+  'submit.rightsLink': 'Términos',
+  'locpick.useMine': 'Usar mi ubicación', 'locpick.pasteLink': 'Pegar enlace de mapa', 'locpick.getPin': 'Obtener punto',
+  'locpick.linkPh': 'Enlace compartido de Google Maps o Apple Maps', 'locpick.linkHint': 'Mantén presionado el mural en Mapas, toca Compartir y pégalo aquí.',
+  'locpick.pinSet': 'Punto fijado', 'locpick.fromLink': 'desde el enlace', 'locpick.fromDevice': 'desde tu ubicación', 'locpick.fromPhoto': 'desde la foto',
+  'locpick.far': 'Está lejos de Playa del Carmen. Revísalo bien.', 'locpick.checkMaps': 'Verificar en Google Maps', 'locpick.removePin': 'Quitar punto',
+  'locpick.errNoGeo': 'Este navegador no puede compartir tu ubicación.',
+  'locpick.errDenied': 'El permiso de ubicación está desactivado. Actívalo en los ajustes del navegador o pega un enlace de mapa.',
+  'locpick.errFail': 'No pudimos obtener tu ubicación. Inténtalo al aire libre o pega un enlace de mapa.',
+  'auth.title': 'Iniciar sesión', 'auth.intro': 'Iniciar sesión es opcional. Solo se necesita para el área de administración.',
+  'auth.email': 'Correo electrónico', 'auth.send': 'Enviarme un enlace de acceso', 'auth.sending': 'Enviando…',
+  'auth.checkTitle': 'Revisa tu correo', 'auth.checkBody': 'Enviamos un enlace de acceso a {email}. Ábrelo en este dispositivo.',
+  'auth.error': 'No se pudo enviar el enlace. Revisa el correo e inténtalo de nuevo.', 'auth.callbackError': 'Ese enlace no funcionó o ya venció. Solicita uno nuevo.',
+  'profile.title': 'Mi perfil', 'profile.email': 'Correo', 'profile.role': 'Rol', 'profile.roleAdmin': 'Administrador', 'profile.roleUser': 'Miembro',
+  'profile.adminArea': 'Área de administración', 'profile.adminBody': 'Revisa envíos, edita murales y modera comentarios.', 'profile.openAdmin': 'Abrir administración',
+  'legal.updated': 'Última actualización', 'legal.back': 'Volver',
+}
+
+export const dict: Record<Locale, Record<Key, string>> = { en, es }
+
+export const isLocale = (v: unknown): v is Locale => v === 'en' || v === 'es'
+
+export function translate(locale: Locale, key: Key, vars?: Record<string, string | number>): string {
+  let s = dict[locale][key] ?? dict.en[key] ?? key
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v))
+  return s
+}

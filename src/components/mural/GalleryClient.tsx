@@ -3,17 +3,21 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MuralCard } from './MuralCard'
 import { saveTourIds } from '@/lib/tour'
+import { MenuButton } from '@/components/layout/SideMenu'
+import { useT } from '@/lib/i18n/client'
+import type { Key } from '@/lib/i18n/dict'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
-const FILTERS: { label: string; value: ConfidenceLevel | 'all' }[] = [
-  { label: 'All',        value: 'all'        },
-  { label: '● Verified', value: 'verified'   },
-  { label: '◉ Likely',   value: 'likely'     },
-  { label: '? Unverified', value: 'unverified'},
+const FILTERS: { label: Key; value: ConfidenceLevel | 'all' }[] = [
+  { label: 'filter.all',        value: 'all'        },
+  { label: 'filter.verified',   value: 'verified'   },
+  { label: 'filter.likely',     value: 'likely'     },
+  { label: 'filter.unverified', value: 'unverified' },
 ]
 
 export function GalleryClient({ murals }: { murals: Mural[] }) {
   const router = useRouter()
+  const { t } = useT()
   const [filter, setFilter]       = useState<ConfidenceLevel | 'all'>('all')
   const [selecting, setSelecting] = useState(false)
   const [selected, setSelected]   = useState<Set<string>>(new Set())
@@ -37,15 +41,16 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
     <div className="flex flex-col min-h-dvh bg-bg">
       {/* header */}
       <header className="bg-surface border-b border-groove sticky top-0 z-10 pt-safe">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="font-display font-bold text-[17px] tracking-tight">
-            {selecting ? 'Select murals' : 'Murales PDC'}
+        <div className="px-4 py-3 flex items-center gap-3">
+          <MenuButton />
+          <h1 className="flex-1 font-display font-bold text-[17px] tracking-tight">
+            {selecting ? t('gallery.selectMurals') : t('gallery.title')}
           </h1>
           <button
             onClick={() => { setSelecting(s => !s); setSelected(new Set()) }}
             className="text-sea text-[13px] font-display font-semibold border border-sea rounded-full px-3 py-1"
           >
-            {selecting ? 'Cancel' : 'Select'}
+            {selecting ? t('gallery.cancel') : t('gallery.select')}
           </button>
         </div>
         {/* filter chips */}
@@ -59,7 +64,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
                   ? 'bg-ink text-surface'
                   : 'bg-groove text-ink-2 hover:bg-groove/80'}`}
             >
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
         </div>
@@ -80,19 +85,19 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
 
       {/* tour selection bar */}
       {selecting && (
-        <div className="fixed bottom-16 left-0 right-0 z-40 bg-surface border-t-2 border-sea-tint px-4 py-3 flex items-center justify-between shadow-lg">
+        <div className="fixed bottom-[var(--nav-h)] left-0 right-0 z-40 bg-surface border-t-2 border-sea-tint px-4 py-3 flex items-center justify-between shadow-lg">
           <div>
             <p className="font-display font-bold text-[13px] text-ink">
-              {selected.size === 0 ? 'Tap murals to select' : `${selected.size} mural${selected.size > 1 ? 's' : ''} selected`}
+              {selected.size === 0 ? t('select.tap') : t(selected.size === 1 ? 'select.one' : 'select.many', { n: selected.size })}
             </p>
-            <p className="text-[10px] text-ink-3 mt-0.5">Select at least 2 to build a tour</p>
+            <p className="text-[10px] text-ink-3 mt-0.5">{t('select.min')}</p>
           </div>
           <button
             onClick={buildTour}
             disabled={selected.size < 2}
             className="bg-sea text-white rounded-full px-4 py-2 text-[12px] font-display font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Build Tour →
+            {t('select.build')}
           </button>
         </div>
       )}

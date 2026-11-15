@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { useT } from '@/lib/i18n/client'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { isLocationUnknown } from '@/components/ui/LocationPill'
@@ -13,6 +15,7 @@ interface Props {
 }
 
 export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
+  const { t } = useT()
   const gradient = getMuralGradient(mural.slug)
   const cover    = mural.cover_photo ?? null
 
@@ -48,14 +51,14 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
       {/* info — fixed rows so every card is the same height */}
       <div className="p-2.5 flex-1">
         <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2 min-h-[36px]">
-          {mural.title?.trim() || 'Untitled'}
+          {mural.title?.trim() || t('card.untitled')}
         </p>
         <p className={`text-[11px] mt-0.5 truncate ${mural.artist ? 'text-sea' : 'text-ink-3'}`}>
-          {mural.artist || 'Artist unknown'}
+          {mural.artist || t('card.artistUnknown')}
         </p>
         <p className="text-[10px] text-ink-3 mt-0.5 truncate">
           {isLocationUnknown(mural) || !mural.location_description?.trim()
-            ? 'Location unknown'
+            ? t('loc.unknown')
             : mural.location_description}
         </p>
       </div>

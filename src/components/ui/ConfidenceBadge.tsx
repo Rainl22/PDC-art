@@ -1,4 +1,6 @@
+'use client'
 import type { ConfidenceLevel } from '@/types/mural'
+import { useT } from '@/lib/i18n/client'
 
 const CFG: Record<ConfidenceLevel, { label: string; cls: string; dot: 'filled' | 'ring' | 'dashed' | 'x' }> = {
   verified:   { label: 'Verified',   cls: 'bg-certain-bg text-certain',   dot: 'filled'  },
@@ -8,7 +10,9 @@ const CFG: Record<ConfidenceLevel, { label: string; cls: string; dot: 'filled' |
 }
 
 export function ConfidenceBadge({ level, sm }: { level: ConfidenceLevel; sm?: boolean }) {
-  const { label, cls, dot } = CFG[level]
+  const { cls, dot } = CFG[level]
+  const { t } = useT()
+  const label = t(`conf.${level}`)
   const size = sm ? 'text-[9px] px-1.5 py-0.5' : 'text-[10px] px-2 py-0.5'
   return (
     <span className={`inline-flex items-center gap-1 rounded-full font-display font-semibold tracking-wide uppercase ${cls} ${size}`}>

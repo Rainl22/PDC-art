@@ -4,6 +4,8 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createClient } from '@/lib/supabase/client'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { MenuButton } from '@/components/layout/SideMenu'
+import { useT } from '@/lib/i18n/client'
 import { ArtistLinks } from '@/components/mural/ArtistLinks'
 import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
@@ -26,6 +28,7 @@ const PIN_COLOR: Record<string, string> = {
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]
 
 export default function MapPage() {
+  const { t } = useT()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef       = useRef<maplibregl.Map | null>(null)
   const markersRef   = useRef<maplibregl.Marker[]>([])
@@ -104,13 +107,14 @@ export default function MapPage() {
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
       {/* search bar */}
-      <div className="absolute top-safe-or-12 left-3 right-3 z-10 flex gap-2">
+      <div className="absolute top-safe-or-12 left-3 right-3 z-10 flex items-center gap-2">
+        <MenuButton className="shadow-md" />
         <div className="flex-1 bg-white rounded-full shadow-md px-4 py-2.5 flex items-center gap-2">
           <Search size={14} className="text-ink-3 shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Playa del Carmen"
+            placeholder={t('map.search')}
             className="flex-1 text-[13px] outline-none placeholder:text-ink-3"
           />
         </div>
@@ -121,16 +125,16 @@ export default function MapPage() {
         <Link href="/gallery"
           className="absolute top-[4.75rem] left-3 z-10 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md px-3 py-1.5 text-[11px] font-display font-semibold text-ink-2">
           <span className="w-1.5 h-1.5 rounded-full bg-guessing" />
-          {missing} mural{missing === 1 ? '' : 's'} not on the map yet · location needed
+          {t(missing === 1 ? 'map.missing.one' : 'map.missing.many', { n: missing })}
         </Link>
       )}
 
       {/* no-coords notice */}
       {withCoords === 0 && (
         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-xl px-5 py-3 shadow-md text-center w-72">
-          <p className="text-[13px] font-display font-semibold text-ink mb-1">Map coming soon</p>
+          <p className="text-[13px] font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
           <p className="text-[11px] text-ink-2 leading-relaxed">
-            Coordinates are being verified for all 17 murals. Pins will appear here once confirmed.
+            {t('map.soonBody')}
           </p>
         </div>
       )}
@@ -154,7 +158,7 @@ export default function MapPage() {
               </div>
               {/* close */}
               <button onClick={() => setActive(null)}
-                aria-label="Close"
+                aria-label={t('map.close')}
                 className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-black/40 flex items-center justify-center text-white">
                 <X size={16} />
               </button>
@@ -172,12 +176,12 @@ export default function MapPage() {
                     target="_blank" rel="noopener noreferrer"
                     className="flex-1 bg-sea text-white rounded-full py-2.5 flex items-center justify-center gap-2 text-[12px] font-display font-semibold"
                   >
-                    <Navigation size={13} /> Take me there
+                    <Navigation size={13} /> {t('map.takeMe')}
                   </a>
                 )}
                 <Link href={`/gallery/${active.slug}`}
                   className="flex-1 bg-bg text-ink rounded-full py-2.5 flex items-center justify-center gap-1 text-[12px] font-display font-semibold">
-                  View details <ChevronRight size={13} />
+                  {t('map.details')} <ChevronRight size={13} />
                 </Link>
               </div>
             </div>

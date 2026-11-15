@@ -2,10 +2,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { addComment } from '@/lib/murals'
+import { useT } from '@/lib/i18n/client'
 import { Send } from 'lucide-react'
 
 export function CommentForm({ muralId }: { muralId: string }) {
   const router = useRouter()
+  const { t } = useT()
   const [text, setText]     = useState('')
   const [name, setName]     = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,7 +28,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
     <div className="space-y-2">
       <input
         type="text"
-        placeholder="Your name (optional)"
+        placeholder={t('comment.name')}
         value={name}
         onChange={e => setName(e.target.value)}
         className="w-full text-[13px] bg-bg rounded-md px-3 py-2 outline-none border border-transparent focus:border-sea placeholder:text-ink-3"
@@ -34,7 +36,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
       <div className="flex items-center gap-2 bg-bg rounded-full pl-4 pr-1.5 py-1.5">
         <input
           type="text"
-          placeholder="Add a comment…"
+          placeholder={t('comment.add')}
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && submit()}

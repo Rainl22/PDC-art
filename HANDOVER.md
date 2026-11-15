@@ -87,3 +87,13 @@ src/
 supabase/migrations/001_init.sql
 tailwind.config.ts
 ```
+
+---
+## Update — menu, i18n, auth, legal, admin
+- **Logo = side menu** (`components/layout/SideMenu.tsx`): language (EN default / ES), sign in (optional), profile, admin (admins only), Privacy, Terms.
+- **i18n**: `lib/i18n/` (dict.ts has every string in EN + ES; locale kept in `locale` cookie). Admin screens are English-only.
+- **Auth**: Supabase email magic link (`/signin`, `/auth/callback`). Needs Supabase Auth → URL Configuration: Site URL = production URL, Redirect URLs include `https://<domain>/auth/callback`.
+- **Admins**: `admins` table (email allowlist, seed via SQL, never commit emails) + `is_admin()`; RLS in `supabase/migrations/005_*`.
+- **Admin area** `/admin`: submissions queue (create mural / apply location / reject), mural editor (photos, coordinates, artists + Instagram, credits), comment moderation.
+- **Legal**: `/privacy`, `/terms` (EN/ES, Mexico-oriented; `NEXT_PUBLIC_CONTACT_EMAIL` env var shows the contact address). Have a lawyer review before launch.
+- **Submit**: pin from map link (`/api/resolve-map-link`), device GPS or photo EXIF; photos re-encoded client-side (EXIF stripped).

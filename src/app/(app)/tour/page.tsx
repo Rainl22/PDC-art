@@ -6,9 +6,12 @@ import { getTourIds, clearTour, buildGoogleMapsUrl } from '@/lib/tour'
 import { getMuralGradient } from '@/lib/gradients'
 import { Clock, Navigation, Plus, GripVertical, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { MenuButton } from '@/components/layout/SideMenu'
+import { useT } from '@/lib/i18n/client'
 import type { Mural } from '@/types/mural'
 
 export default function TourPage() {
+  const { t } = useT()
   const router = useRouter()
   const [stops, setStops]   = useState<Mural[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,13 +53,13 @@ export default function TourPage() {
       <div className="w-16 h-16 rounded-2xl bg-sea-tint flex items-center justify-center">
         <Navigation size={28} className="text-sea" />
       </div>
-      <h1 className="font-display font-bold text-xl">No tour yet</h1>
+      <h1 className="font-display font-bold text-xl">{t('tour.emptyTitle')}</h1>
       <p className="text-ink-2 text-[14px] leading-relaxed">
-        Go to the gallery, tap <strong>Select</strong>, choose your murals, then hit <strong>Build Tour</strong>.
+        {t('tour.emptyBody')}
       </p>
       <Link href="/gallery"
         className="mt-2 bg-sea text-white rounded-full px-6 py-3 font-display font-semibold text-[14px]">
-        Browse Gallery
+        {t('tour.browse')}
       </Link>
     </div>
   )
@@ -65,17 +68,18 @@ export default function TourPage() {
     <div className="flex flex-col min-h-[calc(100dvh-var(--nav-h))] bg-bg">
       {/* header */}
       <header className="bg-surface border-b border-groove sticky top-0 z-10 px-4 pt-safe pb-0">
-        <div className="py-3 flex items-start justify-between">
-          <div>
-            <h1 className="font-display font-bold text-[17px]">My Tour</h1>
+        <div className="py-3 flex items-start gap-3">
+          <MenuButton />
+          <div className="flex-1">
+            <h1 className="font-display font-bold text-[17px]">{t('tour.title')}</h1>
             <div className="flex items-center gap-1.5 mt-1 text-[12px] text-ink-3">
               <Clock size={12} />
-              <span>~{walkMins} min walk · {stops.length} stop{stops.length > 1 ? 's' : ''}</span>
+              <span>{t('tour.walkMin', { n: walkMins })} · {t(stops.length === 1 ? 'tour.stops.one' : 'tour.stops.many', { n: stops.length })}</span>
             </div>
           </div>
           <button onClick={() => { clearTour(); setStops([]) }}
             className="text-[12px] text-ink-3 font-medium mt-1">
-            Clear
+            {t('tour.clear')}
           </button>
         </div>
       </header>
@@ -113,7 +117,7 @@ export default function TourPage() {
             {i < stops.length - 1 && (
               <div className="flex items-center gap-2 py-2 pl-9">
                 <div className="w-0.5 h-5 bg-groove rounded-full" />
-                <span className="text-[11px] text-ink-3">~10 min walk</span>
+                <span className="text-[11px] text-ink-3">{t('tour.walkMin', { n: 10 })}</span>
               </div>
             )}
           </div>
@@ -123,7 +127,7 @@ export default function TourPage() {
         <Link href="/gallery"
           className="mt-2 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-groove rounded-xl">
           <Plus size={15} className="text-ink-3" />
-          <span className="text-[13px] text-ink-3 font-display font-semibold">Add another mural</span>
+          <span className="text-[13px] text-ink-3 font-display font-semibold">{t('tour.add')}</span>
         </Link>
       </div>
 
@@ -133,17 +137,17 @@ export default function TourPage() {
         <div className="flex items-center mb-4">
           <div className="flex-1 text-center">
             <p className="font-display font-bold text-[17px]">{stops.length}</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">murals</p>
+            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.murals')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
             <p className="font-display font-bold text-[17px]">~{walkMins}m</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">walk time</p>
+            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.walkTime')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
             <p className="font-display font-bold text-[17px]">{(stops.length * 0.4).toFixed(1)} km</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">distance</p>
+            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.distance')}</p>
           </div>
         </div>
         <button
@@ -152,7 +156,7 @@ export default function TourPage() {
           className="w-full bg-sea text-white rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-[14px] disabled:opacity-50"
         >
           <Navigation size={15} />
-          {canNavigate ? 'Start Tour in Google Maps' : 'Coordinates pending verification'}
+          {canNavigate ? t('tour.start') : t('tour.pending')}
         </button>
       </div>
     </div>

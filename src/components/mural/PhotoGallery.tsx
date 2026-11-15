@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { useT } from '@/lib/i18n/client'
 
 interface Props {
   photos: string[]
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
+  const { t } = useT()
   const [index, setIndex] = useState(0)
   const [open, setOpen] = useState<number | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
@@ -46,7 +48,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
         <div ref={scroller} onScroll={onScroll}
           className="flex h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {photos.map((src, i) => (
-            <button key={src} type="button" onClick={() => setOpen(i)} aria-label={`View photo ${i + 1} of ${n} full screen`}
+            <button key={src} type="button" onClick={() => setOpen(i)} aria-label={t('photo.viewFull', { i: i + 1, n })}
               className="shrink-0 w-full h-full snap-center cursor-zoom-in">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt={`${title} — photo ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'}
@@ -68,11 +70,11 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
           <span className="absolute bottom-3 right-4 text-[11px] font-display font-semibold text-white bg-black/50 rounded-full px-2 py-0.5 pointer-events-none">
             {index + 1} / {n}
           </span>
-          <button type="button" aria-label="Previous photo" onClick={() => goTo(Math.max(index - 1, 0))}
+          <button type="button" aria-label={t('photo.prev')} onClick={() => goTo(Math.max(index - 1, 0))}
             className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 items-center justify-center">
             <ChevronLeft size={18} />
           </button>
-          <button type="button" aria-label="Next photo" onClick={() => goTo(Math.min(index + 1, n - 1))}
+          <button type="button" aria-label={t('photo.next')} onClick={() => goTo(Math.min(index + 1, n - 1))}
             className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 items-center justify-center">
             <ChevronRight size={18} />
           </button>
@@ -91,17 +93,17 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
           }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photos[open]} alt={`${title} — photo ${open + 1}`} className="max-w-full max-h-full object-contain select-none" draggable={false} />
-          <button type="button" aria-label="Close" onClick={() => setOpen(null)}
+          <button type="button" aria-label={t('photo.close')} onClick={() => setOpen(null)}
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
             <X size={20} />
           </button>
           {n > 1 && (
             <>
-              <button type="button" aria-label="Previous photo" onClick={() => step(-1)}
+              <button type="button" aria-label={t('photo.prev')} onClick={() => step(-1)}
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
                 <ChevronLeft size={22} />
               </button>
-              <button type="button" aria-label="Next photo" onClick={() => step(1)}
+              <button type="button" aria-label={t('photo.next')} onClick={() => step(1)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
                 <ChevronRight size={22} />
               </button>

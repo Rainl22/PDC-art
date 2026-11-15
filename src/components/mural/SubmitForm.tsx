@@ -5,6 +5,7 @@ import { ImagePlus, X, CheckCircle2, ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { submitMural } from '@/lib/murals'
 import { prepareImage } from '@/lib/image'
+import { useT } from '@/lib/i18n/client'
 import { LocationPicker, type LocationSource } from './LocationPicker'
 import type { Coordinates } from '@/types/mural'
 
@@ -14,6 +15,7 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 export function SubmitForm({ existing }: { existing?: { slug: string; title: string } | null }) {
+  const { t } = useT()
   const [title, setTitle] = useState(existing?.title ?? '')
   const [artist, setArtist] = useState('')
   const [location, setLocation] = useState('')
@@ -30,8 +32,8 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
     const next = [...files]
     const added: File[] = []
     for (const f of Array.from(list)) {
-      if (!TYPES.includes(f.type)) { setError('Photos must be JPEG, PNG or WebP.'); continue }
-      if (f.size > MAX_BYTES) { setError('Each photo must be under 25 MB.'); continue }
+      if (!TYPES.includes(f.type)) { setError(t('submit.errPhotoType')); continue }
+      if (f.size > MAX_BYTES) { setError(t('submit.errPhotoSize')); continue }
       if (next.length < MAX_PHOTOS) { next.push(f); added.push(f) }
     }
     setFiles(next)
@@ -75,7 +77,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
       })
       setDone(true)
     } catch {
-      setError('Something went wrong. Please try again.')
+      setError(t('submit.errGeneric'))
     } finally {
       setLoading(false)
     }
@@ -85,12 +87,12 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
     return (
       <div className="bg-surface rounded-md p-6 text-center">
         <CheckCircle2 className="mx-auto text-certain" size={36} />
-        <p className="font-display font-semibold mt-3">Thank you!</p>
-        <p className="text-[13px] text-ink-2 mt-1">Your submission is pending review.</p>
+        <p className="font-display font-semibold mt-3">{t('submit.thanks')}</p>
+        <p className="text-[13px] text-ink-2 mt-1">{t('submit.pending')}</p>
         <Link href={existing ? `/gallery/${existing.slug}` : '/gallery'}
           className="inline-flex items-center gap-1 mt-5 rounded-full border border-sea text-sea px-4 py-2 text-[13px] font-display font-semibold">
           <ChevronLeft size={15} />
-          {existing ? `Back to ${existing.title}` : 'Back to gallery'}
+          {existing ? t('submit.backTo', { title: existing.title }) : t('submit.backGallery')}
         </Link>
       </div>
     )
@@ -98,11 +100,11 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <input className={field} placeholder="Title (if you know it)" value={title} onChange={e => setTitle(e.target.value)} />
-      <input className={field} placeholder="Artist (if you know it)" value={artist} onChange={e => setArtist(e.target.value)} />
-      <input className={field} required={!coords} placeholder={`Where is it? Street, cross street, landmark${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
+      <input className={field} placeholder={t('submit.titlePh')} value={title} onChange={e => setTitle(e.target.value)} />
+      <input className={field} placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
+      <input className={field} required={!coords} placeholder={`${t('submit.wherePh')}${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
       <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
-      <textarea className={field} rows={3} placeholder="Notes" value={notes} onChange={e => setNotes(e.target.value)} />
+      <textarea className={field} rows={3} placeholder={t('submit.notesPh')} value={notes} onChange={e => setNotes(e.target.value)} />
 
       <div>
         <div className="grid grid-cols-4 gap-2">
@@ -110,7 +112,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
             <div key={i} className="relative aspect-square rounded-sm overflow-hidden bg-groove">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
-              <button type="button" aria-label="Remove photo" onClick={() => setFiles(files.filter((_, j) => j !== i))}
+              <button type="button" aria-label={t('submit.removePhoto')} onClick={() => setFiles(files.filter((_, j) => j !== i))}
                 className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center">
                 <X size={12} />
               </button>
@@ -124,13 +126,18 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
             </label>
           )}
         </div>
-        <p className="text-[11px] text-ink-3 mt-1.5">Up to {MAX_PHOTOS} photos. If a photo has location data, we\u2019ll use it for the pin.</p>
+        <p className="text-[11px] text-ink-3 mt-1.5">{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
       </div>
+
+      <p className="text-[11px] text-ink-3 leading-snug">
+        {t('submit.rights')}{' '}
+        <Link href="/terms" className="underline underline-offset-2">{t('submit.rightsLink')}</Link>.
+      </p>
 
       {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
       <button type="submit" disabled={(!location.trim() && !coords) || loading}
         className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
-        {loading ? 'Submitting…' : 'Submit mural'}
+        {loading ? t('submit.submitting') : t('submit.submit')}
       </button>
     </form>
   )

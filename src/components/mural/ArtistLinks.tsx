@@ -1,9 +1,12 @@
+'use client'
 import type { Mural } from '@/types/mural'
+import { useT } from '@/lib/i18n/client'
 
 /** Artist name(s); each links to their Instagram when we have the handle. */
 export function ArtistLinks({ mural, className = '' }: { mural: Pick<Mural, 'artist' | 'artists'>; className?: string }) {
+  const { t } = useT()
   const artists = mural.artists?.length ? mural.artists : mural.artist ? [{ name: mural.artist }] : []
-  if (artists.length === 0) return <span className="text-ink-3">Artist unknown</span>
+  if (artists.length === 0) return <span className="text-ink-3">{t('card.artistUnknown')}</span>
   return (
     <span className={className}>
       {artists.map((a, i) => (

@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { useT } from '@/lib/i18n/client'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { getMuralGradient } from '@/lib/gradients'
 
@@ -6,6 +8,7 @@ export interface PagerMural { slug: string; title: string; cover_photo: string |
 
 function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) {
   const Icon = dir === 'prev' ? ChevronLeft : ChevronRight
+  const { t } = useT()
   return (
     <Link href={`/gallery/${mural.slug}`}
       className={`flex-1 min-w-0 bg-bg rounded-md overflow-hidden flex flex-col ${dir === 'next' ? 'text-right' : ''}`}>
@@ -18,7 +21,7 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
       <div className="p-2.5">
         <p className={`flex items-center gap-1 text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 ${dir === 'next' ? 'justify-end' : ''}`}>
           {dir === 'prev' && <Icon size={11} />}
-          {dir === 'prev' ? 'Previous' : 'Next'}
+          {dir === 'prev' ? t('pager.previous') : t('pager.next')}
           {dir === 'next' && <Icon size={11} />}
         </p>
         <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
@@ -28,9 +31,10 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
 }
 
 export function MuralPager({ prev, next }: { prev: PagerMural | null; next: PagerMural | null }) {
+  const { t } = useT()
   if (!prev && !next) return null
   return (
-    <nav aria-label="More murals" className="flex gap-2.5">
+    <nav aria-label={t('pager.more')} className="flex gap-2.5">
       {prev ? <PagerCard mural={prev} dir="prev" /> : <div className="flex-1" />}
       {next ? <PagerCard mural={next} dir="next" /> : <div className="flex-1" />}
     </nav>
