@@ -42,6 +42,7 @@ const en = {
   'map.search': 'Playa del Carmen', 'map.missing.one': '{n} mural not on the map yet · location needed',
   'map.missing.many': '{n} murals not on the map yet · location needed',
   'map.soon': 'Map coming soon', 'map.soonBody': 'Pins will appear here once locations are added.',
+  'map.locate': 'Show my location', 'map.locError': 'Couldn’t get your location. Check that location access is allowed for this site.', 'map.away': '{d} away',
   'map.takeMe': 'Take me there', 'map.details': 'View details', 'map.close': 'Close',
   // tour
   'tour.title': 'My Tour', 'tour.clear': 'Clear', 'tour.stops.one': '{n} stop', 'tour.stops.many': '{n} stops',
@@ -124,6 +125,7 @@ const es: Record<Key, string> = {
   'map.search': 'Playa del Carmen', 'map.missing.one': '{n} mural aún no está en el mapa · falta ubicación',
   'map.missing.many': '{n} murales aún no están en el mapa · falta ubicación',
   'map.soon': 'El mapa llegará pronto', 'map.soonBody': 'Los puntos aparecerán aquí cuando se agreguen las ubicaciones.',
+  'map.locate': 'Mostrar mi ubicación', 'map.locError': 'No pudimos obtener tu ubicación. Revisa que el acceso a la ubicación esté permitido para este sitio.', 'map.away': 'a {d}',
   'map.takeMe': 'Llévame', 'map.details': 'Ver detalles', 'map.close': 'Cerrar',
   'tour.title': 'Mi recorrido', 'tour.clear': 'Borrar', 'tour.stops.one': '{n} parada', 'tour.stops.many': '{n} paradas',
   'tour.walkMin': '~{n} min caminando', 'tour.add': 'Agregar otro mural', 'tour.murals': 'murales', 'tour.walkTime': 'a pie', 'tour.distance': 'distancia',
