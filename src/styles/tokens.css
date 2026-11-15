@@ -1,5 +1,7 @@
 /* Murales PDC — Design Tokens */
 :root {
+  /* bottom navigation: fixed row + device safe area (gesture bar / home indicator) */
+  --nav-h:       calc(3.5rem + env(safe-area-inset-bottom, 0px));
   --bg:          #F3F1EC;
   --surface:     #FFFFFF;
   --groove:      #E5E2DA;

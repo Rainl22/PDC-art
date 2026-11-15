@@ -99,7 +99,7 @@ export default function MapPage() {
   const missing = murals.length - withCoords
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-16 bg-bg overflow-hidden overscroll-none">
+    <div className="fixed inset-x-0 top-0 bottom-[var(--nav-h)] bg-bg overflow-hidden overscroll-none">
       {/* map */}
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
