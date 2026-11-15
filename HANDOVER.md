@@ -109,3 +109,9 @@ tailwind.config.ts
 - Mural detail → "Add photos / report a change" → `/submit?mural=<slug>&mode=photos` (photo required; user picks same painting / repainted). Stored as `submissions.kind` = `photos_same` | `photos_repainted` + `mural_slug`.
 - Admin submissions: photo updates get one button; repainted moves old photos to `previous_photos`, replaces photos, tags Changed. Mural editor has an Artwork select.
 - Not built: AI same-vs-new check (admin decides from the user's choice + photos).
+
+## To do (owner)
+- [ ] Run `supabase/migrations/008_walls.sql` in the Supabase SQL editor, from `create or replace function recompute_walls` to the end (the table/column part is already applied). The MCP SQL tool times out on its confirmation prompt for this script. Then ask Claude to verify the groups (school wall pair; Maria Felix + Mayan Woman) and the `changes_often` tags.
+- [ ] Apply `supabase/migrations/009_verify_submissions.sql` (only needed if a `verify_location` kind is ever used; the Verify-location flow currently uses kind `location`).
+- [ ] "Only with proof" auto-verify trigger (photo + device/EXIF GPS within ~50 m of the pin): not built yet; needs a new migration.
+- [ ] Decide on new-mural submissions with GPS + photo (Frida, Viva Playa del Carmen, Gober restaurant are pending in /admin).
