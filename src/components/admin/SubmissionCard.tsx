@@ -6,6 +6,7 @@ import { ExternalLink, Check, X, Plus, MapPin } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/slug'
 import { metresBetween } from '@/lib/geo'
+import { AddressLocator } from './AddressLocator'
 import { useKnownArtists } from '@/lib/useKnownArtists'
 import { enrichAndSaveArtists, parseArtistLine, useArtistDirectory } from '@/lib/artistDirectory'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
@@ -35,6 +36,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const [location, setLocation] = useState(s.location_description)
   const [confidence, setConfidence] = useState<ConfidenceLevel>('unverified')
   const [handle, setHandle] = useState('')
+  const [pinned, setPinned] = useState<{ lat: number; lng: number } | null>(s.coordinates ?? null)
   const [mural, setMural] = useState<{ id: string; artist: string | null; coordinates: { lat: number; lng: number } | null } | null>(null)
   const [qArtist, setQArtist] = useState('')
   const [qHandle, setQHandle] = useState('')
@@ -119,7 +121,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
       slug, title: title.trim() || 'Untitled',
       artist: artists.length ? artists.map(a => a.name).join(', ') : null,
       artists: artists.length ? artists : null, artist_verified: artists.length > 0,
-      location_description: location.trim(), coordinates: s.coordinates ?? null,
+      location_description: location.trim(), coordinates: pinned,
       confidence, precision: precision || null, photos: photos, cover_photo: photos[0] ?? null,
       notes: s.notes ?? null,
     })
@@ -247,6 +249,14 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
             </>
           )}
           <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>
+          {!existingSlug && (
+            <div className="space-y-1.5">
+              {pinned
+                ? <p className="text-[12px] text-ink-2 flex items-center gap-1.5"><MapPin size={12} className="text-sea" />Pin: {pinned.lat.toFixed(5)}, {pinned.lng.toFixed(5)} <button type="button" className="text-sea underline underline-offset-2" onClick={() => setPinned(null)}>clear</button></p>
+                : <p className="text-[11px] text-guessing">No pin yet. The mural won’t show on the map until it has one.</p>}
+              <AddressLocator address={location} onPick={(c, p) => { setPinned(c); setPrecision(p) }} />
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-2">
             {!existingSlug && (
               <div><label className={adminLabel}>Status</label>

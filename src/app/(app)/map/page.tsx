@@ -135,7 +135,6 @@ export default function MapPage() {
   }, [])
 
   const withCoords = murals.filter(m => m.coordinates).length
-  const missing = murals.length - withCoords
 
   return (
     <div className="fixed inset-x-0 top-0 bottom-[var(--nav-h)] bg-bg overflow-hidden overscroll-none">
@@ -164,15 +163,6 @@ export default function MapPage() {
         </button>
         {locError && <p className="bg-white/95 rounded-lg shadow-md px-3 py-1.5 text-[11px] text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
       </div>
-
-      {/* murals we can't place yet */}
-      {withCoords > 0 && missing > 0 && !active && (
-        <Link href="/gallery"
-          className="absolute top-[4.75rem] left-3 z-10 inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md px-3 py-1.5 text-[11px] font-display font-semibold text-ink-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-guessing" />
-          {t(missing === 1 ? 'map.missing.one' : 'map.missing.many', { n: missing })}
-        </Link>
-      )}
 
       {/* no-coords notice */}
       {withCoords === 0 && (
