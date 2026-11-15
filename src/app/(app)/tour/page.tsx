@@ -40,13 +40,13 @@ export default function TourPage() {
   const walkMins    = stops.length * 10 // rough estimate
 
   if (loading) return (
-    <div className="flex items-center justify-center h-dvh">
+    <div className="flex items-center justify-center h-[calc(100dvh-var(--nav-h))]">
       <div className="w-8 h-8 border-2 border-sea border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   if (stops.length === 0) return (
-    <div className="flex flex-col items-center justify-center h-dvh gap-4 px-8 text-center">
+    <div className="flex flex-col items-center justify-center h-[calc(100dvh-var(--nav-h))] gap-4 px-8 text-center">
       <div className="w-16 h-16 rounded-2xl bg-sea-tint flex items-center justify-center">
         <Navigation size={28} className="text-sea" />
       </div>
@@ -62,7 +62,7 @@ export default function TourPage() {
   )
 
   return (
-    <div className="flex flex-col min-h-dvh bg-bg">
+    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-h))] bg-bg">
       {/* header */}
       <header className="bg-surface border-b border-groove sticky top-0 z-10 px-4 pt-safe pb-0">
         <div className="py-3 flex items-start justify-between">
@@ -128,7 +128,7 @@ export default function TourPage() {
       </div>
 
       {/* footer */}
-      <div className="bg-surface border-t border-groove px-4 py-4 pb-safe-or-4">
+      <div className="bg-surface border-t border-groove px-4 py-4 sticky bottom-[var(--nav-h)] z-10">
         {/* stats */}
         <div className="flex items-center mb-4">
           <div className="flex-1 text-center">
