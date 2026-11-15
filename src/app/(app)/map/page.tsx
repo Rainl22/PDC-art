@@ -45,23 +45,8 @@ export default function MapPage() {
     if (mapRef.current || !containerRef.current) return
     mapRef.current = new maplibregl.Map({
       container: containerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          carto: {
-            type: 'raster',
-            tiles: [
-              'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-              'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-              'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-            ],
-            tileSize: 256,
-            attribution: '© OpenStreetMap contributors © CARTO',
-            maxzoom: 19,
-          },
-        },
-        layers: [{ id: 'carto-tiles', type: 'raster', source: 'carto' }],
-      },
+      // OpenFreeMap: free vector tiles, no API key (attribution is added automatically)
+      style: 'https://tiles.openfreemap.org/styles/positron',
       center: PDC_CENTER,
       zoom: 14,
     })
