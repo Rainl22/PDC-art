@@ -4,6 +4,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createClient } from '@/lib/supabase/client'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import { ArtistLinks } from '@/components/mural/ArtistLinks'
@@ -153,8 +154,9 @@ export default function MapPage() {
               {/* drag handle */}
               <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-white/50 rounded-full" />
               {/* badge */}
-              <div className="absolute top-4 left-3">
+              <div className="absolute top-4 left-3 flex gap-1">
                 <ConfidenceBadge level={active.confidence} sm />
+                <ArtworkBadge mural={active} sm />
               </div>
               {/* close */}
               <button onClick={() => setActive(null)}

@@ -103,3 +103,9 @@ tailwind.config.ts
 - Forms also have a honeypot field; `/api/resolve-map-link` has a best-effort rate limit.
 - Service worker (`public/sw.js`, `public/offline.html`): pages network-first with offline fallback; hashed build files + mural photos cached. Bump `VERSION` in sw.js to purge caches.
 - Removed: unused `seed-data.ts`, `mapbox-gl`, the non-functional heart button.
+
+## Artwork changes + photo updates (migration 007, applied)
+- `murals.artwork_status` (`original`|`changed`), `artwork_changed_at`, `previous_photos`. Location is `confidence`/`precision`; the painting itself is `artwork_status`. Cards/detail/map show a **Changed** tag.
+- Mural detail → "Add photos / report a change" → `/submit?mural=<slug>&mode=photos` (photo required; user picks same painting / repainted). Stored as `submissions.kind` = `photos_same` | `photos_repainted` + `mural_slug`.
+- Admin submissions: photo updates get one button; repainted moves old photos to `previous_photos`, replaces photos, tags Changed. Mural editor has an Artwork select.
+- Not built: AI same-vs-new check (admin decides from the user's choice + photos).

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useT } from '@/lib/i18n/client'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
 import { isLocationUnknown } from '@/lib/location'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
@@ -37,8 +38,9 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
           </span>
         )}
         {/* badge */}
-        <div className="absolute bottom-2 left-2">
+        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
           <ConfidenceBadge level={mural.confidence} sm />
+          <ArtworkBadge mural={mural} sm />
         </div>
         {/* selection checkmark */}
         {selectable && (
