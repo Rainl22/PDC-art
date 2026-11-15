@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { ImagePlus, X, CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
+import { ImagePlus, X, CheckCircle2, ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { submitMural } from '@/lib/murals'
 
@@ -66,6 +67,11 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
         <CheckCircle2 className="mx-auto text-certain" size={36} />
         <p className="font-display font-semibold mt-3">Thank you!</p>
         <p className="text-[13px] text-ink-2 mt-1">Your submission is pending review.</p>
+        <Link href={existing ? `/gallery/${existing.slug}` : '/gallery'}
+          className="inline-flex items-center gap-1 mt-5 rounded-full border border-sea text-sea px-4 py-2 text-[13px] font-display font-semibold">
+          <ChevronLeft size={15} />
+          {existing ? `Back to ${existing.title}` : 'Back to gallery'}
+        </Link>
       </div>
     )
   }
