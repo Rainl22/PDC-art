@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { addComment } from '@/lib/murals'
+import { addComment, spamCode } from '@/lib/murals'
 import { useT } from '@/lib/i18n/client'
 import { Send } from 'lucide-react'
 
@@ -11,14 +11,20 @@ export function CommentForm({ muralId }: { muralId: string }) {
   const [text, setText]     = useState('')
   const [name, setName]     = useState('')
   const [loading, setLoading] = useState(false)
+  const [trap, setTrap]     = useState('')   // honeypot: real people never see or fill this
+  const [error, setError]   = useState<string | null>(null)
 
   async function submit() {
     if (!text.trim() || loading) return
-    setLoading(true)
+    if (trap) { setText(''); return }          // bot: pretend it worked
+    setLoading(true); setError(null)
     try {
-      await addComment(muralId, text.trim(), name.trim() || null, null)
+      await addComment(muralId, text.trim(), name.trim() || null)
       setText('')
       router.refresh()
+    } catch (e) {
+      const code = spamCode(e)
+      setError(code === 'rate_limited' ? t('spam.rate') : code === 'too_many_links' ? t('spam.links') : code === 'too_long' ? t('spam.long') : t('submit.errGeneric'))
     } finally {
       setLoading(false)
     }
@@ -26,8 +32,11 @@ export function CommentForm({ muralId }: { muralId: string }) {
 
   return (
     <div className="space-y-2">
+      <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
+        className="absolute left-[-9999px] w-px h-px opacity-0" />
       <input
         type="text"
+        maxLength={60}
         placeholder={t('comment.name')}
         value={name}
         onChange={e => setName(e.target.value)}
@@ -36,6 +45,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
       <div className="flex items-center gap-2 bg-bg rounded-full pl-4 pr-1.5 py-1.5">
         <input
           type="text"
+          maxLength={1000}
           placeholder={t('comment.add')}
           value={text}
           onChange={e => setText(e.target.value)}
@@ -50,6 +60,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
           <Send size={13} />
         </button>
       </div>
+      {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
     </div>
   )
 }

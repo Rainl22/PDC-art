@@ -77,6 +77,7 @@ const en = {
   'profile.title': 'My profile', 'profile.email': 'Email', 'profile.role': 'Role', 'profile.roleAdmin': 'Administrator', 'profile.roleUser': 'Member',
   'profile.adminArea': 'Admin area', 'profile.adminBody': 'Review submissions, edit murals and moderate comments.', 'profile.openAdmin': 'Open admin',
   // legal
+  'spam.rate': 'You\u2019re posting too fast. Please wait a few minutes and try again.', 'spam.links': 'Please include at most one link.', 'spam.long': 'That\u2019s too long. Please shorten it.', 'spam.voted': 'You already voted on this mural today. Thanks!',
   'legal.updated': 'Last updated', 'legal.back': 'Back',
 } as const
 
@@ -147,6 +148,7 @@ const es: Record<Key, string> = {
   'auth.error': 'No se pudo enviar el enlace. Revisa el correo e inténtalo de nuevo.', 'auth.callbackError': 'Ese enlace no funcionó o ya venció. Solicita uno nuevo.',
   'profile.title': 'Mi perfil', 'profile.email': 'Correo', 'profile.role': 'Rol', 'profile.roleAdmin': 'Administrador', 'profile.roleUser': 'Miembro',
   'profile.adminArea': 'Área de administración', 'profile.adminBody': 'Revisa envíos, edita murales y modera comentarios.', 'profile.openAdmin': 'Abrir administración',
+  'spam.rate': 'Estás publicando muy rápido. Espera unos minutos e inténtalo de nuevo.', 'spam.links': 'Incluye como máximo un enlace.', 'spam.long': 'Es demasiado largo. Acórtalo, por favor.', 'spam.voted': 'Ya votaste por este mural hoy. ¡Gracias!',
   'legal.updated': 'Última actualización', 'legal.back': 'Volver',
 }
 

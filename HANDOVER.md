@@ -97,3 +97,9 @@ tailwind.config.ts
 - **Admin area** `/admin`: submissions queue (create mural / apply location / reject), mural editor (photos, coordinates, artists + Instagram, credits), comment moderation.
 - **Legal**: `/privacy`, `/terms` (EN/ES, Mexico-oriented; `NEXT_PUBLIC_CONTACT_EMAIL` env var shows the contact address). Have a lawyer review before launch.
 - **Submit**: pin from map link (`/api/resolve-map-link`), device GPS or photo EXIF; photos re-encoded client-side (EXIF stripped).
+
+## Spam protection + offline (latest)
+- `supabase/migrations/006_spam_protection.sql` — DB-side limits (comment 5/10 min, submission 5/hour, 1 link per comment, size limits, 1 vote/mural/IP/day via SECURITY DEFINER `increment_vote`; IPs stored only as a hash). **Apply it** (the Supabase prompt needs approval).
+- Forms also have a honeypot field; `/api/resolve-map-link` has a best-effort rate limit.
+- Service worker (`public/sw.js`, `public/offline.html`): pages network-first with offline fallback; hashed build files + mural photos cached. Bump `VERSION` in sw.js to purge caches.
+- Removed: unused `seed-data.ts`, `mapbox-gl`, the non-functional heart button.

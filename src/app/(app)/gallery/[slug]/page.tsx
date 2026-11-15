@@ -12,7 +12,7 @@ import { MuralPager, type PagerMural } from '@/components/mural/MuralPager'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
-import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart, Plus } from 'lucide-react'
+import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Plus } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
 export const revalidate = 30
@@ -83,7 +83,6 @@ export default async function MuralDetailPage({ params }: Props) {
         <div>
           <div className="flex items-start justify-between gap-3">
             <h1 className="font-display font-bold text-[22px] leading-tight tracking-tight flex-1">{m.title?.trim() || t('card.untitled')}</h1>
-            <button className="text-ink-3 hover:text-sea mt-1 shrink-0"><Heart size={20} /></button>
           </div>
           <p className="text-sea text-[13px] font-medium mt-1"><ArtistLinks mural={m} /></p>
         </div>

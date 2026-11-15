@@ -9,9 +9,21 @@ const ALLOWED = new Set([
   'www.google.com.mx', 'maps.apple.com', 'maps.apple',
 ])
 
+// Best-effort per-instance limit: 20 lookups / 10 min / IP (the database enforces the real limits on what gets saved).
+const hits = new Map<string, number[]>()
+function limited(ip: string) {
+  const now = Date.now()
+  const recent = (hits.get(ip) ?? []).filter(t => now - t < 10 * 60_000)
+  recent.push(now); hits.set(ip, recent)
+  if (hits.size > 5000) hits.clear()
+  return recent.length > 20
+}
+
 const hostOk = (u: URL) => u.protocol === 'https:' && ALLOWED.has(u.hostname)
 
 export async function POST(req: Request) {
+  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
+  if (limited(ip)) return NextResponse.json({ error: 'Too many requests. Please wait a few minutes.' }, { status: 429 })
   let input = ''
   try { input = String((await req.json()).url ?? '').trim() } catch { /* handled below */ }
   if (!input || input.length > 2000) return NextResponse.json({ error: 'Paste a map link.' }, { status: 400 })

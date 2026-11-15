@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { LocaleProvider } from '@/lib/i18n/client'
+import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
 import { getLocale } from '@/lib/i18n/server'
 
 export const metadata: Metadata = {
@@ -39,7 +40,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
       </head>
-      <body><LocaleProvider initial={locale}>{children}</LocaleProvider></body>
+      <body><LocaleProvider initial={locale}>{children}</LocaleProvider>
+        <ServiceWorkerRegister /></body>
     </html>
   )
 }

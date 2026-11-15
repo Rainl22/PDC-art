@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ImagePlus, X, CheckCircle2, ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { submitMural } from '@/lib/murals'
+import { submitMural, spamCode } from '@/lib/murals'
 import { prepareImage } from '@/lib/image'
 import { useT } from '@/lib/i18n/client'
 import { LocationPicker, type LocationSource } from './LocationPicker'
@@ -26,6 +26,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
+  const [trap, setTrap] = useState('') // honeypot: real people never see or fill this
 
   async function addFiles(list: FileList | null) {
     if (!list) return
@@ -54,6 +55,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if ((!location.trim() && !coords) || loading) return
+    if (trap) { setDone(true); return } // bot: pretend it worked
     setLoading(true)
     setError(null)
     try {
@@ -76,8 +78,9 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
         photo_paths: paths,
       })
       setDone(true)
-    } catch {
-      setError(t('submit.errGeneric'))
+    } catch (e) {
+      const code = spamCode(e)
+      setError(code === 'rate_limited' ? t('spam.rate') : code === 'too_long' ? t('spam.long') : t('submit.errGeneric'))
     } finally {
       setLoading(false)
     }
@@ -100,6 +103,8 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
 
   return (
     <form onSubmit={submit} className="space-y-3">
+      <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
+        className="absolute left-[-9999px] w-px h-px opacity-0" />
       <input className={field} placeholder={t('submit.titlePh')} value={title} onChange={e => setTitle(e.target.value)} />
       <input className={field} placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
       <input className={field} required={!coords} placeholder={`${t('submit.wherePh')}${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
