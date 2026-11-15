@@ -9,6 +9,7 @@ import { slugify } from '@/lib/slug'
 import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
 import { useKnownArtists } from '@/lib/useKnownArtists'
 import { LocationPicker, type LocationSource } from '@/components/mural/LocationPicker'
+import { AddressLocator } from './AddressLocator'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
 import type { Mural, Coordinates, ConfidenceLevel, PrecisionLabel, Artist } from '@/types/mural'
 
@@ -139,6 +140,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
       <div className="bg-surface rounded-xl p-4 space-y-3">
         <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>
         <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
+        <AddressLocator address={location} onPick={(c, p) => { setCoords(c); setSource(null); setPrecision(p) }} />
         <p className="text-[10px] text-ink-3">Set precision above to mark the location as confirmed (anything except “lead” or none).</p>
       </div>
 
