@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
+import { LocationPill, isLocationUnconfirmed } from '@/components/ui/LocationPill'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart } from 'lucide-react'
@@ -89,6 +90,7 @@ export default async function MuralDetailPage({ params }: Props) {
             <div>
               <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">Location</p>
               <p className="text-[12px] text-ink-2 leading-relaxed">{m.location_description}</p>
+              {isLocationUnconfirmed(m) && <div className="mt-1.5"><LocationPill /></div>}
             </div>
           </div>
           {m.precision && (

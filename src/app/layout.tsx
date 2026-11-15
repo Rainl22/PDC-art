@@ -5,6 +5,14 @@ export const metadata: Metadata = {
   title: 'Murales PDC',
   description: 'Discover the street art of Playa del Carmen — maps, tours, and community verified murals.',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Murales PDC' },
   openGraph: {
     title: 'Murales PDC',

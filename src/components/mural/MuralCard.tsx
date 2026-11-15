@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { LocationPill, isLocationUnconfirmed } from '@/components/ui/LocationPill'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
@@ -50,7 +51,9 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
         {mural.artist && (
           <p className="text-[11px] text-sea mt-0.5 truncate">{mural.artist}</p>
         )}
-        <p className="text-[10px] text-ink-3 mt-0.5 truncate">{mural.location_description}</p>
+        {isLocationUnconfirmed(mural)
+          ? <div className="mt-1"><LocationPill sm /></div>
+          : <p className="text-[10px] text-ink-3 mt-0.5 truncate">{mural.location_description}</p>}
       </div>
     </div>
   )
