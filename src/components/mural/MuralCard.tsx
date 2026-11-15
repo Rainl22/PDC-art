@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
-import { LocationPill, isLocationUnconfirmed } from '@/components/ui/LocationPill'
+import { isLocationUnconfirmed } from '@/components/ui/LocationPill'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
@@ -17,7 +17,7 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
   const cover    = mural.cover_photo ?? null
 
   const inner = (
-    <div className={`relative bg-surface rounded-md overflow-hidden flex flex-col
+    <div className={`relative bg-surface rounded-md overflow-hidden flex flex-col h-full
       ${selectable ? 'cursor-pointer' : ''}
       ${selected   ? 'ring-2 ring-sea ring-offset-1' : ''}`}
       onClick={selectable ? () => onSelect?.(mural.id) : undefined}
@@ -45,20 +45,24 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
           </div>
         )}
       </div>
-      {/* info */}
-      <div className="p-2.5">
-        <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2">{mural.title}</p>
-        {mural.artist && (
-          <p className="text-[11px] text-sea mt-0.5 truncate">{mural.artist}</p>
-        )}
-        {isLocationUnconfirmed(mural)
-          ? <div className="mt-1"><LocationPill sm /></div>
-          : <p className="text-[10px] text-ink-3 mt-0.5 truncate">{mural.location_description}</p>}
+      {/* info — fixed rows so every card is the same height */}
+      <div className="p-2.5 flex-1">
+        <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2 min-h-[36px]">
+          {mural.title?.trim() || 'Untitled'}
+        </p>
+        <p className={`text-[11px] mt-0.5 truncate ${mural.artist ? 'text-sea' : 'text-ink-3'}`}>
+          {mural.artist || 'Artist unknown'}
+        </p>
+        <p className="text-[10px] text-ink-3 mt-0.5 truncate">
+          {isLocationUnconfirmed(mural) || !mural.location_description?.trim()
+            ? 'Location unknown'
+            : mural.location_description}
+        </p>
       </div>
     </div>
   )
 
   if (selectable) return inner
 
-  return <Link href={`/gallery/${mural.slug}`} className="block">{inner}</Link>
+  return <Link href={`/gallery/${mural.slug}`} className="block h-full">{inner}</Link>
 }

@@ -7,7 +7,7 @@ import { CommentForm } from '@/components/mural/CommentForm'
 import { LocationPill, isLocationUnconfirmed } from '@/components/ui/LocationPill'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
-import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart } from 'lucide-react'
+import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart, Plus } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
 export const revalidate = 30
@@ -75,12 +75,10 @@ export default async function MuralDetailPage({ params }: Props) {
         {/* title row */}
         <div>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="font-display font-bold text-[22px] leading-tight tracking-tight flex-1">{m.title}</h1>
+            <h1 className="font-display font-bold text-[22px] leading-tight tracking-tight flex-1">{m.title?.trim() || 'Untitled'}</h1>
             <button className="text-ink-3 hover:text-sea mt-1 shrink-0"><Heart size={20} /></button>
           </div>
-          {m.artist && (
-            <p className="text-sea text-[13px] font-medium mt-1">{m.artist}</p>
-          )}
+          <p className={`text-[13px] font-medium mt-1 ${m.artist ? 'text-sea' : 'text-ink-3'}`}>{m.artist || 'Artist unknown'}</p>
         </div>
 
         {/* meta card */}
@@ -115,15 +113,32 @@ export default async function MuralDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* google maps link */}
-        <a href={gmapsUrl} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-between bg-sea-tint text-sea rounded-xl px-4 py-3">
-          <div className="flex items-center gap-2 text-[13px] font-medium">
-            <MapPin size={15} />
-            Open in Google Maps
+        {/* google maps link — disabled until a location is known */}
+        {isLocationUnconfirmed(m) ? (
+          <div className="space-y-2">
+            <div aria-disabled="true" className="flex items-center justify-between bg-groove text-ink-3 rounded-xl px-4 py-3 cursor-not-allowed">
+              <div className="flex items-center gap-2 text-[13px] font-medium">
+                <MapPin size={15} />
+                Open in Google Maps
+              </div>
+              <span className="text-[11px] font-display font-semibold uppercase tracking-wide">No location yet</span>
+            </div>
+            <Link href={`/submit?mural=${encodeURIComponent(m.slug)}&title=${encodeURIComponent(m.title)}`}
+              className="flex items-center justify-center gap-2 border border-sea text-sea rounded-xl px-4 py-3 text-[13px] font-display font-semibold">
+              <Plus size={15} />
+              Add location
+            </Link>
           </div>
-          <ExternalLink size={14} />
-        </a>
+        ) : (
+          <a href={gmapsUrl} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-between bg-sea-tint text-sea rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 text-[13px] font-medium">
+              <MapPin size={15} />
+              Open in Google Maps
+            </div>
+            <ExternalLink size={14} />
+          </a>
+        )}
 
         {/* status voting */}
         <div>

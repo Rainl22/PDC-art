@@ -9,8 +9,8 @@ const MAX_BYTES = 5 * 1024 * 1024
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
-export function SubmitForm() {
-  const [title, setTitle] = useState('')
+export function SubmitForm({ existing }: { existing?: { slug: string; title: string } | null }) {
+  const [title, setTitle] = useState(existing?.title ?? '')
   const [artist, setArtist] = useState('')
   const [location, setLocation] = useState('')
   const [notes, setNotes] = useState('')
@@ -49,7 +49,7 @@ export function SubmitForm() {
         title: title.trim() || null,
         artist: artist.trim() || null,
         location_description: location.trim(),
-        notes: notes.trim() || null,
+        notes: [existing ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
         photo_paths: paths,
       })
       setDone(true)

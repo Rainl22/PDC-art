@@ -9,7 +9,7 @@ export function LocationPill({ sm }: { sm?: boolean }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full font-display font-semibold tracking-wide uppercase bg-guessing-bg text-guessing ${size}`}>
       <MapPinOff size={sm ? 9 : 10} className="shrink-0" />
-      Location unconfirmed
+      Location unknown
     </span>
   )
 }
