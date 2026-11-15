@@ -53,6 +53,8 @@ export interface Submission {
   location_description: string
   notes: string | null
   photo_paths: string[]
+  coordinates?: Coordinates | null
+  location_source?: 'link' | 'device' | 'photo' | 'manual' | null
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
 }

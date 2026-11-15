@@ -4,9 +4,12 @@ import Link from 'next/link'
 import { ImagePlus, X, CheckCircle2, ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { submitMural } from '@/lib/murals'
+import { prepareImage } from '@/lib/image'
+import { LocationPicker, type LocationSource } from './LocationPicker'
+import type { Coordinates } from '@/types/mural'
 
 const MAX_PHOTOS = 4
-const MAX_BYTES = 5 * 1024 * 1024
+const MAX_BYTES = 25 * 1024 * 1024 // originals are resized before upload
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
@@ -16,40 +19,57 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
   const [location, setLocation] = useState('')
   const [notes, setNotes] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  const [coords, setCoords] = useState<Coordinates | null>(null)
+  const [source, setSource] = useState<LocationSource | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
-  function addFiles(list: FileList | null) {
+  async function addFiles(list: FileList | null) {
     if (!list) return
     const next = [...files]
+    const added: File[] = []
     for (const f of Array.from(list)) {
       if (!TYPES.includes(f.type)) { setError('Photos must be JPEG, PNG or WebP.'); continue }
-      if (f.size > MAX_BYTES) { setError('Each photo must be under 5 MB.'); continue }
-      if (next.length < MAX_PHOTOS) next.push(f)
+      if (f.size > MAX_BYTES) { setError('Each photo must be under 25 MB.'); continue }
+      if (next.length < MAX_PHOTOS) { next.push(f); added.push(f) }
     }
     setFiles(next)
+    // Use GPS tagged in the photo (if any and no pin set yet). The upload itself is re-encoded without it.
+    if (!coords) {
+      try {
+        const exifr = await import('exifr')
+        for (const f of added) {
+          const g = await exifr.gps(f)
+          if (g && Number.isFinite(g.latitude) && Number.isFinite(g.longitude)) {
+            setCoords({ lat: g.latitude, lng: g.longitude }); setSource('photo'); break
+          }
+        }
+      } catch { /* no metadata — fine */ }
+    }
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!location.trim() || loading) return
+    if ((!location.trim() && !coords) || loading) return
     setLoading(true)
     setError(null)
     try {
       const supabase = createClient()
       const paths: string[] = []
       for (const f of files) {
-        const ext = f.type === 'image/png' ? 'png' : f.type === 'image/webp' ? 'webp' : 'jpg'
-        const path = `${crypto.randomUUID()}.${ext}`
-        const { error: upErr } = await supabase.storage.from('submissions').upload(path, f, { contentType: f.type })
+        const path = `${crypto.randomUUID()}.jpg`
+        const body = await prepareImage(f)
+        const { error: upErr } = await supabase.storage.from('submissions').upload(path, body, { contentType: 'image/jpeg' })
         if (upErr) throw upErr
         paths.push(path)
       }
       await submitMural({
         title: title.trim() || null,
         artist: artist.trim() || null,
-        location_description: location.trim(),
+        location_description: location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
+        coordinates: coords,
+        location_source: coords ? source : location.trim() ? 'manual' : null,
         notes: [existing ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
         photo_paths: paths,
       })
@@ -80,7 +100,8 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
     <form onSubmit={submit} className="space-y-3">
       <input className={field} placeholder="Title (if you know it)" value={title} onChange={e => setTitle(e.target.value)} />
       <input className={field} placeholder="Artist (if you know it)" value={artist} onChange={e => setArtist(e.target.value)} />
-      <input className={field} required placeholder="Where is it? Street, cross street, landmark *" value={location} onChange={e => setLocation(e.target.value)} />
+      <input className={field} required={!coords} placeholder={`Where is it? Street, cross street, landmark${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
+      <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
       <textarea className={field} rows={3} placeholder="Notes" value={notes} onChange={e => setNotes(e.target.value)} />
 
       <div>
@@ -103,11 +124,11 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
             </label>
           )}
         </div>
-        <p className="text-[11px] text-ink-3 mt-1.5">Up to {MAX_PHOTOS} photos, 5 MB each.</p>
+        <p className="text-[11px] text-ink-3 mt-1.5">Up to {MAX_PHOTOS} photos. If a photo has location data, we\u2019ll use it for the pin.</p>
       </div>
 
       {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
-      <button type="submit" disabled={!location.trim() || loading}
+      <button type="submit" disabled={(!location.trim() && !coords) || loading}
         className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
         {loading ? 'Submitting…' : 'Submit mural'}
       </button>
