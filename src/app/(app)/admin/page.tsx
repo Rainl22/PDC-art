@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Inbox, Images, MessageSquare, ChevronRight } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
+import { EnableAlerts } from '@/components/admin/EnableAlerts'
 
 export default async function AdminHome() {
   const { supabase } = await requireAdmin()
@@ -16,6 +17,7 @@ export default async function AdminHome() {
   ]
   return (
     <div className="space-y-3">
+      <EnableAlerts />
       {cards.map(({ href, label, n, Icon, hot }) => (
         <Link key={href} href={href} className="bg-surface rounded-xl p-4 flex items-center gap-3">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${hot ? 'bg-likely-bg text-likely' : 'bg-sea-tint text-sea'}`}><Icon size={18} /></div>

@@ -9,7 +9,7 @@ const TABS = [
   { href: '/admin/comments', label: 'Comments' },
 ]
 
-export function AdminTabs() {
+export function AdminTabs({ pending = 0 }: { pending?: number }) {
   const path = usePathname()
   return (
     <nav className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
@@ -20,6 +20,9 @@ export function AdminTabs() {
             className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-display font-semibold tracking-wide transition-colors
               ${active ? 'bg-ink text-surface' : 'bg-groove text-ink-2'}`}>
             {t.label}
+            {t.href === '/admin/submissions' && pending > 0 && (
+              <span className={`ml-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold ${active ? 'bg-surface text-ink' : 'bg-likely text-white'}`}>{pending}</span>
+            )}
           </Link>
         )
       })}
