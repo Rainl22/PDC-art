@@ -34,6 +34,19 @@ export default function MapPage() {
   const [active, setActive]       = useState<Mural | null>(null)
   const [search, setSearch]       = useState('')
 
+  // the map is a fixed full-screen view: stop the page itself from scrolling
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActive(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   // fetch murals
   useEffect(() => {
     const sb = createClient()
@@ -50,6 +63,7 @@ export default function MapPage() {
       center: PDC_CENTER,
       zoom: 14,
     })
+    mapRef.current.on('click', () => setActive(null))
     return () => { mapRef.current?.remove(); mapRef.current = null }
   }, [])
 
@@ -73,7 +87,7 @@ export default function MapPage() {
           box-shadow:0 2px 8px rgba(0,0,0,.28);
           cursor:pointer;
         `
-        el.addEventListener('click', () => setActive(mural))
+        el.addEventListener('click', e => { e.stopPropagation(); setActive(mural) })
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat([mural.coordinates!.lng, mural.coordinates!.lat])
           .addTo(mapRef.current!)
@@ -84,7 +98,7 @@ export default function MapPage() {
   const withCoords = murals.filter(m => m.coordinates).length
 
   return (
-    <div className="relative h-dvh bg-bg overflow-hidden">
+    <div className="fixed inset-x-0 top-0 bottom-16 bg-bg overflow-hidden overscroll-none">
       {/* map */}
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
@@ -113,7 +127,7 @@ export default function MapPage() {
 
       {/* bottom drawer */}
       {active && (
-        <div className="absolute bottom-16 left-0 right-0 z-20">
+        <div className="absolute bottom-0 left-0 right-0 z-20">
           <div className="bg-surface rounded-t-2xl shadow-xl overflow-hidden">
             {/* mural image */}
             <div className="relative h-36">
@@ -130,8 +144,9 @@ export default function MapPage() {
               </div>
               {/* close */}
               <button onClick={() => setActive(null)}
-                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 flex items-center justify-center text-white">
-                <X size={13} />
+                aria-label="Close"
+                className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-black/40 flex items-center justify-center text-white">
+                <X size={16} />
               </button>
             </div>
             {/* info */}
