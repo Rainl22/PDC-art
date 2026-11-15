@@ -21,10 +21,14 @@ export function clearTour(): void {
   } catch {}
 }
 
+/** Google Maps accepts an origin + destination + up to 9 waypoints. */
+export const MAX_ROUTE_STOPS = 11
+
 export function buildGoogleMapsUrl(
   stops: { lat: number; lng: number }[]
 ): string | null {
   if (stops.length < 2) return null
+  stops = stops.slice(0, MAX_ROUTE_STOPS)
   const origin = `${stops[0].lat},${stops[0].lng}`
   const dest   = `${stops[stops.length - 1].lat},${stops[stops.length - 1].lng}`
   const wps    = stops.slice(1, -1).map(s => `${s.lat},${s.lng}`).join('|')

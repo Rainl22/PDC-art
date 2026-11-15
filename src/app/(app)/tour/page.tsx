@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { getTourIds, clearTour, buildGoogleMapsUrl } from '@/lib/tour'
+import { getTourIds, clearTour, buildGoogleMapsUrl, MAX_ROUTE_STOPS } from '@/lib/tour'
+import { distanceKm } from '@/lib/geo'
 import { getMuralGradient } from '@/lib/gradients'
 import { Clock, Navigation, Plus, GripVertical, Trash2 } from 'lucide-react'
 import Link from 'next/link'
@@ -38,9 +39,14 @@ export default function TourPage() {
     if (url) window.open(url, '_blank')
   }
 
-  const hasCoords   = stops.filter(s => s.coordinates).length
-  const canNavigate = hasCoords >= 2
-  const walkMins    = stops.length * 10 // rough estimate
+  // Only stops with coordinates can be routed. Estimates use straight-line distance × 1.3 (street detours), at 5 km/h.
+  const routable    = stops.filter(s => s.coordinates)
+  const canNavigate = routable.length >= 2
+  const legKm = (a: Mural, b: Mural) => (a.coordinates && b.coordinates ? distanceKm(a.coordinates, b.coordinates) * 1.3 : null)
+  const legMins = (km: number) => Math.max(1, Math.round((km / 5) * 60))
+  const usedStops   = routable.slice(0, MAX_ROUTE_STOPS)
+  const totalKm     = usedStops.slice(1).reduce((sum, s, i) => sum + (legKm(usedStops[i], s) ?? 0), 0)
+  const walkMins    = legMins(totalKm)
 
   if (loading) return (
     <div className="flex items-center justify-center h-[calc(100dvh-var(--nav-h))]">
@@ -74,7 +80,7 @@ export default function TourPage() {
             <h1 className="font-display font-bold text-[17px]">{t('tour.title')}</h1>
             <div className="flex items-center gap-1.5 mt-1 text-[12px] text-ink-3">
               <Clock size={12} />
-              <span>{t('tour.walkMin', { n: walkMins })} · {t(stops.length === 1 ? 'tour.stops.one' : 'tour.stops.many', { n: stops.length })}</span>
+              <span>{canNavigate ? `${t('tour.walkMin', { n: walkMins })} · ` : ''}{t(stops.length === 1 ? 'tour.stops.one' : 'tour.stops.many', { n: stops.length })}</span>
             </div>
           </div>
           <button onClick={() => { clearTour(); setStops([]) }}
@@ -101,7 +107,9 @@ export default function TourPage() {
               {/* info */}
               <div className="flex-1 px-3 min-w-0">
                 <p className="text-[13px] font-medium text-ink truncate">{stop.title}</p>
-                <p className="text-[11px] text-ink-3 truncate mt-0.5">{stop.artist ?? stop.location_description}</p>
+                {stop.coordinates
+                  ? <p className="text-[11px] text-ink-3 truncate mt-0.5">{stop.artist ?? stop.location_description}</p>
+                  : <p className="text-[11px] text-guessing truncate mt-0.5">{t('tour.noPin')}</p>}
               </div>
               {/* actions */}
               <div className="flex items-center pr-2 gap-1">
@@ -117,7 +125,10 @@ export default function TourPage() {
             {i < stops.length - 1 && (
               <div className="flex items-center gap-2 py-2 pl-9">
                 <div className="w-0.5 h-5 bg-groove rounded-full" />
-                <span className="text-[11px] text-ink-3">{t('tour.walkMin', { n: 10 })}</span>
+                {(() => {
+                  const km = legKm(stop, stops[i + 1])
+                  return km !== null && <span className="text-[11px] text-ink-3">{t('tour.walkMin', { n: legMins(km) })}</span>
+                })()}
               </div>
             )}
           </div>
@@ -136,27 +147,33 @@ export default function TourPage() {
         {/* stats */}
         <div className="flex items-center mb-4">
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">{stops.length}</p>
+            <p className="font-display font-bold text-[17px]">{canNavigate ? usedStops.length : stops.length}</p>
             <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.murals')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">~{walkMins}m</p>
+            <p className="font-display font-bold text-[17px]">{canNavigate ? `~${walkMins}m` : '—'}</p>
             <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.walkTime')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">{(stops.length * 0.4).toFixed(1)} km</p>
+            <p className="font-display font-bold text-[17px]">{canNavigate ? `${totalKm.toFixed(1)} km` : '—'}</p>
             <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.distance')}</p>
           </div>
         </div>
+        {routable.length < stops.length && (
+          <p className="text-[11px] text-guessing text-center mb-3">{t('tour.partial', { n: routable.length, m: stops.length })}</p>
+        )}
+        {routable.length > MAX_ROUTE_STOPS && (
+          <p className="text-[11px] text-ink-3 text-center mb-3">{t('tour.cap', { n: MAX_ROUTE_STOPS })}</p>
+        )}
         <button
           onClick={startTour}
           disabled={!canNavigate}
           className="w-full bg-sea text-white rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-[14px] disabled:opacity-50"
         >
           <Navigation size={15} />
-          {canNavigate ? t('tour.start') : t('tour.pending')}
+          {canNavigate ? (routable.length < stops.length ? t('tour.startPartial', { n: usedStops.length }) : t('tour.start')) : t('tour.pending')}
         </button>
       </div>
     </div>
