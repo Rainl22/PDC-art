@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useT } from '@/lib/i18n/client'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
-import { isLocationUnknown } from '@/components/ui/LocationPill'
+import { isLocationUnknown } from '@/lib/location'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
