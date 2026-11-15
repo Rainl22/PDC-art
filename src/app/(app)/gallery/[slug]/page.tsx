@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
+import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Heart } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
@@ -52,22 +53,20 @@ export default async function MuralDetailPage({ params }: Props) {
   return (
     <div className="bg-surface min-h-dvh">
       {/* hero */}
-      <div className="relative h-72 overflow-hidden">
-        {m.cover_photo
-          ? <img src={m.cover_photo} alt={m.title} className="w-full h-full object-cover" />
-          : <div className="w-full h-full" style={{ background: gradient }} />
-        }
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/10" />
-        {/* back */}
-        <Link href="/gallery"
-          className="absolute top-safe-or-12 left-4 w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
-          <ChevronLeft size={18} />
-        </Link>
-        {/* badge */}
-        <div className="absolute top-safe-or-12 right-4">
-          <ConfidenceBadge level={m.confidence} />
-        </div>
-      </div>
+      <PhotoGallery
+        photos={m.photos?.length ? m.photos : m.cover_photo ? [m.cover_photo] : []}
+        title={m.title}
+        gradient={gradient}
+        overlay={<>
+          <Link href="/gallery"
+            className="absolute top-safe-or-12 left-4 w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
+            <ChevronLeft size={18} />
+          </Link>
+          <div className="absolute top-safe-or-12 right-4">
+            <ConfidenceBadge level={m.confidence} />
+          </div>
+        </>}
+      />
 
       {/* content */}
       <div className="px-5 py-5 space-y-5">

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getMuralGradient } from '@/lib/gradients'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
-import { Check } from 'lucide-react'
+import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
 interface Props {
@@ -27,6 +27,11 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
           ? <img src={cover} alt={mural.title} className="w-full h-full object-cover" />
           : <div className="w-full h-full" style={{ background: gradient }} />
         }
+        {mural.photos?.length > 1 && (
+          <span className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-display font-semibold text-white bg-black/50 rounded-full px-1.5 py-0.5">
+            <Images size={10} />{mural.photos.length}
+          </span>
+        )}
         {/* badge */}
         <div className="absolute bottom-2 left-2">
           <ConfidenceBadge level={mural.confidence} sm />
