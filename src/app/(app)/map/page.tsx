@@ -4,12 +4,13 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createClient } from '@/lib/supabase/client'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import { ArtistLinks } from '@/components/mural/ArtistLinks'
 import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
-import { Search, Navigation, ChevronRight, X } from 'lucide-react'
+import { Search, Navigation, ChevronRight, X, LocateFixed, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import type { Mural } from '@/types/mural'
 
@@ -24,6 +25,15 @@ const PIN_COLOR: Record<string, string> = {
   removed:    '#6038A0',
 }
 
+/** Straight-line distance in metres between two points. */
+function metresBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371000, rad = (d: number) => d * Math.PI / 180
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng)
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(h))
+}
+const formatDistance = (m: number) => (m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`)
+
 // Playa del Carmen centre
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]
 
@@ -36,6 +46,12 @@ export default function MapPage() {
   const [murals, setMurals]       = useState<Mural[]>([])
   const [active, setActive]       = useState<Mural | null>(null)
   const [search, setSearch]       = useState('')
+  const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
+  const [locating, setLocating]   = useState(false)
+  const [locError, setLocError]   = useState(false)
+  const watchRef  = useRef<number | null>(null)
+  const meMarker  = useRef<maplibregl.Marker | null>(null)
+  const centered  = useRef(false)
 
   // the map is a fixed full-screen view: stop the page itself from scrolling
   useEffect(() => {
@@ -98,6 +114,34 @@ export default function MapPage() {
       })
   }, [murals])
 
+  // "my location": starts on tap (so the browser's permission prompt is a response to a user action)
+  const locate = useCallback(() => {
+    const map = mapRef.current
+    if (!map) return
+    if (me && watchRef.current !== null) { map.easeTo({ center: [me.lng, me.lat], zoom: Math.max(map.getZoom(), 16) }); return }
+    if (!('geolocation' in navigator)) { setLocError(true); return }
+    setLocating(true); setLocError(false)
+    watchRef.current = navigator.geolocation.watchPosition(
+      pos => {
+        const p = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        setMe(p); setLocating(false)
+        if (!meMarker.current) {
+          const el = document.createElement('div')
+          el.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#2F6FEB;border:3px solid white;box-shadow:0 0 0 6px rgba(47,111,235,.25),0 2px 6px rgba(0,0,0,.3);'
+          meMarker.current = new maplibregl.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(map)
+        } else meMarker.current.setLngLat([p.lng, p.lat])
+        if (!centered.current) { centered.current = true; map.easeTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 16) }) }
+      },
+      () => { setLocating(false); setLocError(true); if (watchRef.current !== null) { navigator.geolocation.clearWatch(watchRef.current); watchRef.current = null } },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
+    )
+  }, [me])
+
+  useEffect(() => () => {
+    if (watchRef.current !== null) navigator.geolocation.clearWatch(watchRef.current)
+    meMarker.current?.remove()
+  }, [])
+
   const withCoords = murals.filter(m => m.coordinates).length
   const missing = murals.length - withCoords
 
@@ -118,6 +162,15 @@ export default function MapPage() {
             className="flex-1 text-[13px] outline-none placeholder:text-ink-3"
           />
         </div>
+      </div>
+
+      {/* my location */}
+      <div className="absolute top-[4.75rem] right-3 z-10 flex flex-col items-end gap-1.5">
+        <button onClick={locate} aria-label={t('map.locate')}
+          className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center ${me ? 'bg-white text-[#2F6FEB]' : 'bg-white text-ink-2'}`}>
+          {locating ? <Loader2 size={17} className="animate-spin" /> : <LocateFixed size={17} />}
+        </button>
+        {locError && <p className="bg-white/95 rounded-lg shadow-md px-3 py-1.5 text-[11px] text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
       </div>
 
       {/* murals we can't place yet */}
@@ -153,8 +206,9 @@ export default function MapPage() {
               {/* drag handle */}
               <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-white/50 rounded-full" />
               {/* badge */}
-              <div className="absolute top-4 left-3">
+              <div className="absolute top-4 left-3 flex gap-1">
                 <ConfidenceBadge level={active.confidence} sm />
+                <ArtworkBadge mural={active} sm />
               </div>
               {/* close */}
               <button onClick={() => setActive(null)}
@@ -168,6 +222,9 @@ export default function MapPage() {
               <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
               {(active.artist || active.artists?.length) && <p className="text-sea text-[12px] font-medium mb-1"><ArtistLinks mural={active} /></p>}
               <p className="text-ink-3 text-[11px] mb-2">{active.location_description}</p>
+              {me && active.coordinates && (
+                <p className="text-[12px] font-display font-semibold text-sea mb-2">{t('map.away', { d: formatDistance(metresBetween(me, active.coordinates)) })}</p>
+              )}
               {active.precision === 'lead' && <div className="mb-3"><LocationPill mural={active} sm /></div>}
               <div className="flex gap-3">
                 {active.coordinates && (

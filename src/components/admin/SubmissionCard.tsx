@@ -16,6 +16,8 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const existingSlug = s.notes?.match(EXISTING)?.[1] ?? null
   const photos = (s.photo_paths ?? []).map(p => sb.storage.from('submissions').getPublicUrl(p).data.publicUrl)
   const pending = s.status === 'pending'
+  const photoUpdate = s.kind === 'photos_same' || s.kind === 'photos_repainted'
+  const repainted = s.kind === 'photos_repainted'
 
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -35,6 +37,20 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
     setBusy(true); setError(null)
     try { await fn() } catch (e) { setError(e instanceof Error ? e.message : 'Something went wrong') } finally { setBusy(false) }
   }
+
+  /** Photo update for an existing mural: repainted → old photos move to history, mural is tagged Changed. */
+  const addPhotos = () => run(async () => {
+    const { data: m, error: e1 } = await sb.from('murals').select('id,photos,cover_photo,previous_photos').eq('slug', s.mural_slug!).maybeSingle()
+    if (e1) throw e1
+    if (!m) throw new Error(`Mural "${s.mural_slug}" not found`)
+    const patch: Record<string, unknown> = repainted
+      ? { photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
+          artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
+      : { photos: [...(m.photos ?? []), ...photos], cover_photo: m.cover_photo ?? photos[0] ?? null }
+    const { error: e2 } = await sb.from('murals').update(patch).eq('id', m.id)
+    if (e2) throw e2
+    await finish('approved')
+  })
 
   const createMural = () => run(async () => {
     const base = slugify(title || location)
@@ -69,6 +85,11 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
           <p className="font-display font-semibold text-[14px] truncate">{s.title || 'Untitled'}</p>
           <p className="text-[11px] text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
         </div>
+        {photoUpdate && s.mural_slug && (
+          <Link href={`/gallery/${s.mural_slug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">
+            {repainted ? 'Repainted: ' : 'Photos for '}{s.mural_slug}
+          </Link>
+        )}
         {existingSlug && <Link href={`/gallery/${existingSlug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">Location for {existingSlug}</Link>}
       </div>
 
@@ -96,7 +117,16 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         {s.notes && <p className="whitespace-pre-line"><span className="text-ink-3">Notes:</span> {s.notes}</p>}
       </div>
 
-      {pending && !open && (
+      {pending && photoUpdate && (
+        <div className="flex flex-wrap gap-2">
+          <button className={primaryBtn} disabled={busy || photos.length === 0} onClick={addPhotos}>
+            <Check size={12} className="inline -mt-0.5" /> {repainted ? 'Replace photos & tag Changed' : 'Add photos to mural'}
+          </button>
+          <button className={ghostBtn} disabled={busy} onClick={() => run(() => finish('rejected'))}><X size={12} className="inline -mt-0.5" /> Reject</button>
+        </div>
+      )}
+
+      {pending && !photoUpdate && !open && (
         <div className="flex flex-wrap gap-2">
           <button className={primaryBtn} onClick={() => setOpen(true)}>
             {existingSlug ? <><Check size={12} className="inline -mt-0.5" /> Apply location…</> : <><Plus size={12} className="inline -mt-0.5" /> Create mural…</>}
@@ -105,7 +135,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         </div>
       )}
 
-      {pending && open && (
+      {pending && !photoUpdate && open && (
         <div className="space-y-2 border-t border-groove pt-3">
           {!existingSlug && (
             <>

@@ -14,7 +14,7 @@ const MAX_BYTES = 25 * 1024 * 1024 // originals are resized before upload
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
-export function SubmitForm({ existing }: { existing?: { slug: string; title: string } | null }) {
+export function SubmitForm({ existing, photosMode = false }: { existing?: { slug: string; title: string } | null; photosMode?: boolean }) {
   const { t } = useT()
   const [title, setTitle] = useState(existing?.title ?? '')
   const [artist, setArtist] = useState('')
@@ -26,6 +26,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
+  const [photoKind, setPhotoKind] = useState<'photos_same' | 'photos_repainted'>('photos_same')
   const [trap, setTrap] = useState('') // honeypot: real people never see or fill this
 
   async function addFiles(list: FileList | null) {
@@ -54,7 +55,8 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if ((!location.trim() && !coords) || loading) return
+    if ((!photosMode && !location.trim() && !coords) || loading) return
+    if ((!existing || photosMode) && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
     if (trap) { setDone(true); return } // bot: pretend it worked
     setLoading(true)
     setError(null)
@@ -69,12 +71,14 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
         paths.push(path)
       }
       await submitMural({
-        title: title.trim() || null,
-        artist: artist.trim() || null,
-        location_description: location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
-        coordinates: coords,
-        location_source: coords ? source : location.trim() ? 'manual' : null,
-        notes: [existing ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
+        kind: photosMode ? photoKind : existing ? 'location' : 'new',
+        mural_slug: existing?.slug ?? null,
+        title: photosMode ? existing!.title : title.trim() || null,
+        artist: photosMode ? null : artist.trim() || null,
+        location_description: photosMode ? `Photo update for existing mural: ${existing!.slug}` : location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
+        coordinates: photosMode ? null : coords,
+        location_source: photosMode ? null : coords ? source : location.trim() ? 'manual' : null,
+        notes: [existing && !photosMode ? `Location suggestion for existing mural: ${existing.slug}` : '', notes.trim()].filter(Boolean).join('\n') || null,
         photo_paths: paths,
       })
       setDone(true)
@@ -105,10 +109,24 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
     <form onSubmit={submit} className="space-y-3">
       <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
         className="absolute left-[-9999px] w-px h-px opacity-0" />
-      <input className={field} placeholder={t('submit.titlePh')} value={title} onChange={e => setTitle(e.target.value)} />
-      <input className={field} placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
-      <input className={field} required={!coords} placeholder={`${t('submit.wherePh')}${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
-      <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
+      {photosMode ? (
+        <fieldset className="space-y-2">
+          <legend className="text-[12px] font-medium text-ink-2 mb-1">{t('submit.photoKindQ')}</legend>
+          {(['photos_same', 'photos_repainted'] as const).map(k => (
+            <label key={k} className={`flex items-center gap-2 rounded-md px-3 py-2.5 text-[13px] border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
+              <input type="radio" name="photoKind" checked={photoKind === k} onChange={() => setPhotoKind(k)} className="accent-sea" />
+              {k === 'photos_same' ? t('submit.photoSame') : t('submit.photoRepainted')}
+            </label>
+          ))}
+        </fieldset>
+      ) : (
+        <>
+          <input className={field} placeholder={t('submit.titlePh')} value={title} onChange={e => setTitle(e.target.value)} />
+          <input className={field} placeholder={t('submit.artistPh')} value={artist} onChange={e => setArtist(e.target.value)} />
+          <input className={field} required={!coords} placeholder={`${t('submit.wherePh')}${coords ? '' : ' *'}`} value={location} onChange={e => setLocation(e.target.value)} />
+          <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
+        </>
+      )}
       <textarea className={field} rows={3} placeholder={t('submit.notesPh')} value={notes} onChange={e => setNotes(e.target.value)} />
 
       <div>
@@ -127,11 +145,11 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
             <label className="aspect-square rounded-sm border border-dashed border-ink-3 flex items-center justify-center text-ink-3 cursor-pointer">
               <ImagePlus size={20} />
               <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
-                onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+                onChange={e => { setError(null); addFiles(e.target.files); e.target.value = '' }} />
             </label>
           )}
         </div>
-        <p className="text-[11px] text-ink-3 mt-1.5">{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
+        <p className="text-[11px] text-ink-3 mt-1.5">{existing && !photosMode ? '' : '* '}{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
       </div>
 
       <p className="text-[11px] text-ink-3 leading-snug">
@@ -140,7 +158,7 @@ export function SubmitForm({ existing }: { existing?: { slug: string; title: str
       </p>
 
       {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
-      <button type="submit" disabled={(!location.trim() && !coords) || loading}
+      <button type="submit" disabled={(!photosMode && !location.trim() && !coords) || loading}
         className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
         {loading ? t('submit.submitting') : t('submit.submit')}
       </button>

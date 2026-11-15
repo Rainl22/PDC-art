@@ -38,6 +38,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
   const [credit, setCredit] = useState(mural?.photo_credit ?? '')
   const [creditUrl, setCreditUrl] = useState(mural?.photo_credit_url ?? '')
   const [photos, setPhotos] = useState<string[]>(mural?.photos ?? [])
+  const [artwork, setArtwork] = useState<'original' | 'changed'>(mural?.artwork_status ?? 'original')
   const [busy, setBusy] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
@@ -80,6 +81,13 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         year: year ? parseInt(year, 10) : null, medium: medium.trim() || null, notes: notes.trim() || null,
         photo_credit: credit.trim() || null, photo_credit_url: creditUrl.trim() || null,
         photos, cover_photo: coverFor(photos[0]),
+        artwork_status: artwork,
+        // First time it's tagged Changed: keep the photos that were replaced as history.
+        ...(artwork === 'changed' && mural?.artwork_status !== 'changed' ? {
+          artwork_changed_at: new Date().toISOString(),
+          previous_photos: [...(mural?.previous_photos ?? []), ...(mural?.photos ?? []).filter(u => !photos.includes(u))],
+        } : {}),
+        ...(artwork === 'original' ? { artwork_changed_at: null } : {}),
       }
       if (!row.title) throw new Error('Title is required')
       if (mural) {
@@ -118,6 +126,10 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
           <div><label className={adminLabel}>Precision</label>
             <select className={adminField} value={precision} onChange={e => setPrecision(e.target.value as PrecisionLabel | '')}>
               <option value="">(none — shows as location unknown)</option>{PRECISION.map(p => <option key={p}>{p}</option>)}</select></div>
+          <div className="col-span-2"><label className={adminLabel}>Artwork (the painting itself)</label>
+            <select className={adminField} value={artwork} onChange={e => setArtwork(e.target.value as 'original' | 'changed')}>
+              <option value="original">original</option><option value="changed">changed — repainted at the same spot</option></select>
+            <p className="text-[10px] text-ink-3 mt-1">Status above is about the location; this is about the mural. When set to changed, replaced photos are kept as history.</p></div>
         </div>
       </div>
 

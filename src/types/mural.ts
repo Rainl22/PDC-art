@@ -1,5 +1,7 @@
 export type ConfidenceLevel = 'verified' | 'likely' | 'unverified' | 'removed'
 export type PrecisionLabel = 'intersection' | 'landmark' | 'block' | 'area' | 'lead'
+export type ArtworkStatus = 'original' | 'changed'
+export type SubmissionKind = 'new' | 'location' | 'photos_same' | 'photos_repainted'
 export type StatusVote = 'still_here' | 'removed' | 'unsure'
 
 export interface Coordinates {
@@ -29,6 +31,9 @@ export interface Mural {
   medium: string | null
   notes: string | null
   photos: string[]          // Supabase storage URLs
+  artwork_status?: ArtworkStatus      // 'changed' = same wall, repainted
+  artwork_changed_at?: string | null
+  previous_photos?: string[]
   cover_photo: string | null
   still_here_count: number
   removed_count: number
@@ -55,6 +60,8 @@ export interface Submission {
   photo_paths: string[]
   coordinates?: Coordinates | null
   location_source?: 'link' | 'device' | 'photo' | 'manual' | null
+  kind?: SubmissionKind
+  mural_slug?: string | null
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
 }

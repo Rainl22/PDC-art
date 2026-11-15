@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
+import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
 import { LocationPill } from '@/components/ui/LocationPill'
@@ -12,7 +13,7 @@ import { MuralPager, type PagerMural } from '@/components/mural/MuralPager'
 import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
-import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Plus } from 'lucide-react'
+import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
 export const revalidate = 30
@@ -68,8 +69,9 @@ export default async function MuralDetailPage({ params }: Props) {
             className="absolute top-safe-or-12 left-4 w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
             <ChevronLeft size={18} />
           </Link>
-          <div className="absolute top-safe-or-12 right-4">
+          <div className="absolute top-safe-or-12 right-4 flex flex-col items-end gap-1">
             <ConfidenceBadge level={m.confidence} />
+            <ArtworkBadge mural={m} />
           </div>
         </>}
       />
@@ -145,6 +147,18 @@ export default async function MuralDetailPage({ params }: Props) {
             <ExternalLink size={14} />
           </a>
         )}
+
+        {m.artwork_status === 'changed' && (
+          <p className="text-[12px] text-ink-2 bg-likely-bg rounded-xl px-4 py-3 leading-relaxed">
+            {t('detail.changedNote')}{m.artwork_changed_at ? ` (${new Date(m.artwork_changed_at).toLocaleDateString(locale, { month: 'short', year: 'numeric' })})` : ''}
+          </p>
+        )}
+
+        <Link href={`/submit?mural=${encodeURIComponent(m.slug)}&title=${encodeURIComponent(m.title)}&mode=photos`}
+          className="flex items-center justify-center gap-2 border border-sea text-sea rounded-xl px-4 py-3 text-[13px] font-display font-semibold">
+          <Camera size={15} />
+          {t('detail.addPhotos')}
+        </Link>
 
         {m.notes && (
           <div>
