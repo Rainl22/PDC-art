@@ -6,8 +6,7 @@ create table if not exists walls (
   created_at timestamptz not null default now()
 );
 alter table walls enable row level security;
-drop policy if exists "walls_public_read" on walls;
-drop policy if exists "walls_admin_write" on walls;
+-- (re-running on an existing database: drop the two policies below first)
 create policy "walls_public_read" on walls for select using (true);
 create policy "walls_admin_write" on walls for all to authenticated using (is_admin()) with check (is_admin());
 
@@ -29,7 +28,7 @@ declare changed int;
 begin
   create temp table if not exists _wl (id uuid primary key, lat float8, lng float8, label text) on commit drop;
   create temp table if not exists _wc (label text primary key, wall uuid) on commit drop;
-  truncate _wl; truncate _wc;
+  delete from _wl; delete from _wc;
 
   insert into _wl
     select id, (coordinates->>'lat')::float8, (coordinates->>'lng')::float8, id::text
@@ -75,8 +74,7 @@ begin
   perform recompute_walls();
   return null;
 end $$;
-drop trigger if exists murals_walls on murals;
-create trigger murals_walls after insert or update of coordinates on murals
+create or replace trigger murals_walls after insert or update of coordinates on murals
   for each statement execute function murals_walls_trg();
 
 select recompute_walls();
