@@ -35,6 +35,7 @@ export interface Mural {
   artwork_status?: ArtworkStatus      // 'changed' = same wall, repainted
   artwork_changed_at?: string | null
   previous_photos?: string[]
+  artwork_history?: { title: string; photos: string[]; replaced_at: string }[]  // earlier versions: old name + old photos
   cover_photo: string | null
   still_here_count: number
   removed_count: number

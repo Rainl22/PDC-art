@@ -37,7 +37,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const [confidence, setConfidence] = useState<ConfidenceLevel>('unverified')
   const [handle, setHandle] = useState('')
   const [pinned, setPinned] = useState<{ lat: number; lng: number } | null>(s.coordinates ?? null)
-  const [mural, setMural] = useState<{ id: string; artist: string | null; coordinates: { lat: number; lng: number } | null } | null>(null)
+  const [mural, setMural] = useState<{ id: string; title: string; artist: string | null; coordinates: { lat: number; lng: number } | null } | null>(null)
   const [qArtist, setQArtist] = useState('')
   const [qHandle, setQHandle] = useState('')
   const muralCoords = mural?.coordinates ?? null
@@ -45,7 +45,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
 
   useEffect(() => {
     if (!targetSlug) return
-    sb.from('murals').select('id,artist,coordinates').eq('slug', targetSlug).maybeSingle().then(({ data }) => setMural(data ?? null))
+    sb.from('murals').select('id,title,artist,coordinates').eq('slug', targetSlug).maybeSingle().then(({ data }) => setMural(data ?? null))
   }, [targetSlug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /** "Name1, Name2" + a handle/link for the first name → Artist[] (known artists get their saved link). */
@@ -80,11 +80,15 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
 
   /** Photo update for an existing mural: repainted → old photos move to history, mural is tagged Changed. */
   const addPhotos = () => run(async () => {
-    const { data: m, error: e1 } = await sb.from('murals').select('id,photos,cover_photo,previous_photos').eq('slug', s.mural_slug!).maybeSingle()
+    const { data: m, error: e1 } = await sb.from('murals').select('id,title,photos,cover_photo,previous_photos,artwork_history').eq('slug', s.mural_slug!).maybeSingle()
     if (e1) throw e1
     if (!m) throw new Error(`Mural "${s.mural_slug}" not found`)
+    // repainted + new name: the old name stays with the old photos
+    const newName = s.title?.trim() && s.title.trim().toLowerCase() !== m.title.trim().toLowerCase() ? s.title.trim() : null
     const patch: Record<string, unknown> = repainted
       ? { photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
+          ...(newName ? { title: newName } : {}),
+          artwork_history: [...(m.artwork_history ?? []), { title: m.title, photos: m.photos ?? [], replaced_at: new Date().toISOString() }],
           artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
       : (m.photos ?? []).every((u: string) => u.startsWith('/murals/'))
         // the bundled placeholder photos get replaced by the first real ones
@@ -184,6 +188,10 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         )}
         {s.notes && <p className="whitespace-pre-line"><span className="text-ink-3">Notes:</span> {s.notes}</p>}
       </div>
+
+      {repainted && mural && s.title && s.title.trim().toLowerCase() !== mural.title.trim().toLowerCase() && (
+        <p className="text-[12px] font-display font-semibold text-sea">Rename: “{mural.title}” → “{s.title}” (the old name stays with the old photos)</p>
+      )}
 
       {targetSlug && mural && (
         <div className="rounded-lg bg-bg p-3 space-y-2">
