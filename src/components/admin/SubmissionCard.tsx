@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ExternalLink, Check, X, Plus, MapPin } from 'lucide-react'
+import { Lightbox } from '@/components/ui/Lightbox'
+import { errMsg } from '@/lib/errors'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/slug'
 import { metresBetween } from '@/lib/geo'
@@ -23,7 +25,12 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const knownArtists = useKnownArtists()
   const directory = useArtistDirectory()
   const targetSlug = verifySlug ?? existingSlug ?? s.mural_slug ?? null
-  const photos = (s.photo_paths ?? []).map(p => sb.storage.from('submissions').getPublicUrl(p).data.publicUrl)
+  const allPhotos = (s.photo_paths ?? []).map(p => sb.storage.from('submissions').getPublicUrl(p).data.publicUrl)
+  // Ticked photos are the ones to use; with none ticked, all of them are used.
+  const [picked, setPicked] = useState<string[]>([])
+  const [viewer, setViewer] = useState<number | null>(null)
+  const photos = picked.length ? allPhotos.filter(u => picked.includes(u)) : allPhotos
+  const togglePick = (u: string) => setPicked(p => p.includes(u) ? p.filter(x => x !== u) : [...p, u])
   const pending = s.status === 'pending'
   const photoUpdate = s.kind === 'photos_same' || s.kind === 'photos_repainted'
   const repainted = s.kind === 'photos_repainted'
@@ -69,18 +76,21 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const verifyDistance = s.coordinates && muralCoords ? metresBetween(s.coordinates, muralCoords) : null
 
   async function finish(status: 'approved' | 'rejected') {
-    const { error: e } = await sb.from('submissions').update({ status }).eq('id', s.id)
+    // keep a record of which photos were used
+    const patch: { status: string; photo_paths?: string[] } = { status }
+    if (status === 'approved' && picked.length) patch.photo_paths = (s.photo_paths ?? []).filter((_, i) => picked.includes(allPhotos[i]))
+    const { error: e } = await sb.from('submissions').update(patch).eq('id', s.id)
     if (e) throw e
     router.refresh()
   }
   const run = async (fn: () => Promise<void>) => {
     setBusy(true); setError(null)
-    try { await fn() } catch (e) { setError(e instanceof Error ? e.message : 'Something went wrong') } finally { setBusy(false) }
+    try { await fn() } catch (e) { setError(errMsg(e)) } finally { setBusy(false) }
   }
 
   /** Photo update for an existing mural: repainted → old photos move to history, mural is tagged Changed. */
   const addPhotos = () => run(async () => {
-    const { data: m, error: e1 } = await sb.from('murals').select('id,title,artist,photos,cover_photo,previous_photos,artwork_history').eq('slug', s.mural_slug!).maybeSingle()
+    const { data: m, error: e1 } = await sb.from('murals').select('id,title,artist,photos,cover_photo,previous_photos,artwork_history,confidence,precision').eq('slug', s.mural_slug!).maybeSingle()
     if (e1) throw e1
     if (!m) throw new Error(`Mural "${s.mural_slug}" not found`)
     // repainted + new name: the old name stays with the old photos
@@ -92,7 +102,11 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
           ...(artists ? { artist: artists.map(a => a.name).join(', '), artists, artist_verified: true } : {}), photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
           ...(newName ? { title: newName } : {}),
           artwork_history: [...(m.artwork_history ?? []), { title: m.title, artist: m.artist, photos: m.photos ?? [], replaced_at: new Date().toISOString() }],
-          artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
+          artwork_status: 'changed', artwork_changed_at: new Date().toISOString(),
+          // approving the replacement also confirms the spot: verified, and the pin follows the submission when it has one
+          ...(m.confidence === 'removed' ? {} : { confidence: 'verified' }),
+          ...(s.coordinates ? { coordinates: s.coordinates } : {}),
+          ...(s.coordinates && (!m.precision || m.precision === 'lead') ? { precision: 'landmark' } : {}) }
       : (m.photos ?? []).every((u: string) => u.startsWith('/murals/'))
         // the bundled placeholder photos get replaced by the first real ones
         ? { photos, cover_photo: photos[0] ?? null }
@@ -168,16 +182,35 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         {existingSlug && <Link href={`/gallery/${existingSlug}`} className="shrink-0 text-[11px] text-sea underline underline-offset-2">Location for {existingSlug}</Link>}
       </div>
 
-      {photos.length > 0 && (
-        <div className="grid grid-cols-4 gap-2">
-          {photos.map(u => (
-            <a key={u} href={u} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-sm overflow-hidden bg-groove block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt="" className="w-full h-full object-cover" />
-            </a>
-          ))}
+      {allPhotos.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="grid grid-cols-4 gap-2">
+            {allPhotos.map((u, i) => {
+              const on = picked.includes(u)
+              return (
+                <div key={u} className={`relative aspect-square rounded-sm overflow-hidden bg-groove ${on ? 'ring-2 ring-sea' : ''}`}>
+                  <button type="button" onClick={() => setViewer(i)} aria-label={`View photo ${i + 1}`} className="block w-full h-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={u} alt="" className={`w-full h-full object-cover ${picked.length && !on ? 'opacity-40' : ''}`} />
+                  </button>
+                  {pending && allPhotos.length > 1 && (
+                    <button type="button" onClick={() => togglePick(u)} aria-pressed={on} aria-label={on ? `Unselect photo ${i + 1}` : `Select photo ${i + 1}`}
+                      className={`absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center border ${on ? 'bg-sea border-sea text-white' : 'bg-black/40 border-white text-transparent'}`}>
+                      <Check size={13} />
+                    </button>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {pending && allPhotos.length > 1 && (
+            <p className="text-caption text-ink-3">
+              {picked.length ? `${picked.length} of ${allPhotos.length} selected — only these will be used.` : 'Tap the circle on photos to keep. None selected = all are used.'}
+            </p>
+          )}
         </div>
       )}
+      {viewer !== null && <Lightbox photos={allPhotos} start={viewer} onClose={() => setViewer(null)} />}
 
       <div className="text-[12px] text-ink-2 space-y-1">
         {s.artist && <p><span className="text-ink-3">Artist:</span> {s.artist}</p>}
@@ -236,7 +269,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
       {pending && photoUpdate && (
         <div className="flex flex-wrap gap-2">
           <button className={primaryBtn} disabled={busy || photos.length === 0} onClick={addPhotos}>
-            <Check size={12} className="inline -mt-0.5" /> {repainted ? 'Replace photos & tag Changed' : 'Add photos to mural'}
+            <Check size={12} className="inline -mt-0.5" /> {repainted ? 'Replace photos, verify & tag Changed' : 'Add photos to mural'}
           </button>
           <button className={ghostBtn} disabled={busy} onClick={() => run(() => finish('rejected'))}><X size={12} className="inline -mt-0.5" /> Reject</button>
         </div>

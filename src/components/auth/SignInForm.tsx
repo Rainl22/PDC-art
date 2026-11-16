@@ -20,7 +20,8 @@ function GoogleMark() {
 
 export function SignInForm({ next }: { next?: string }) {
   const { t } = useT()
-  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/profile'
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null
+  const nextQuery = safeNext ? `?next=${encodeURIComponent(safeNext)}` : ''
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState<string | null>(null)
@@ -33,6 +34,24 @@ export function SignInForm({ next }: { next?: string }) {
       .then(r => r.json()).then(s => setGoogle(!!s?.external?.google)).catch(() => {})
   }, [])
 
+  // The emailed link usually opens in a new tab. When that tab signs in, this one notices and moves on too.
+  useEffect(() => {
+    if (!sentTo) return
+    const sb = createClient()
+    let stop = false
+    const check = async () => {
+      const { data: { user } } = await sb.auth.getUser()
+      if (!user || stop) return
+      stop = true
+      if (safeNext) { window.location.replace(safeNext); return }
+      const { data } = await sb.rpc('is_admin')
+      window.location.replace(data === true ? '/admin' : '/profile')
+    }
+    const timer = setInterval(check, 3000)
+    document.addEventListener('visibilitychange', check)
+    return () => { stop = true; clearInterval(timer); document.removeEventListener('visibilitychange', check) }
+  }, [sentTo, safeNext])
+
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     const address = email.trim()
@@ -40,7 +59,7 @@ export function SignInForm({ next }: { next?: string }) {
     setBusy(true); setError(null)
     const { error: err } = await createImplicitClient().auth.signInWithOtp({
       email: address,
-      options: { emailRedirectTo: `${window.location.origin}/auth/finish?next=${encodeURIComponent(safeNext)}` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/finish${nextQuery}` },
     })
     setBusy(false)
     // too many emails requested in a short time (the hourly limit of the email service), not a problem with the address
@@ -52,7 +71,7 @@ export function SignInForm({ next }: { next?: string }) {
     setBusy(true); setError(null)
     const { error: err } = await createClient().auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}` },
+      options: { redirectTo: `${window.location.origin}/auth/callback${nextQuery}` },
     })
     if (err) { setBusy(false); setError('send') }
   }

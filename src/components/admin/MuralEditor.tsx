@@ -6,6 +6,7 @@ import { ArrowUp, ArrowDown, Trash2, ImagePlus, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { prepareImage } from '@/lib/image'
 import { slugify } from '@/lib/slug'
+import { errMsg } from '@/lib/errors'
 import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
 import { useKnownArtists } from '@/lib/useKnownArtists'
 import { PLACE_TYPES } from '@/lib/places'
@@ -67,7 +68,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         urls.push(sb.storage.from('mural-photos').getPublicUrl(path).data.publicUrl)
       }
       setPhotos(p => [...p, ...urls])
-    } catch (e) { setMsg({ ok: false, text: e instanceof Error ? e.message : 'Upload failed' }) }
+    } catch (e) { setMsg({ ok: false, text: errMsg(e, 'Upload failed') }) }
     finally { setUploading(false); if (fileInput.current) fileInput.current.value = '' }
   }
 
@@ -106,7 +107,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         if (error) throw error
         router.push(`/admin/murals/${data.id}`)
       }
-    } catch (e) { setMsg({ ok: false, text: e instanceof Error ? e.message : 'Save failed' }) }
+    } catch (e) { setMsg({ ok: false, text: errMsg(e, 'Save failed') }) }
     finally { setBusy(false) }
   }
 

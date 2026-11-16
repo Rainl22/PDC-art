@@ -83,7 +83,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if ((!photosMode && !verifyMode && !updateMode && !location.trim() && !coords) || loading) return
-    if ((!existing || photosMode || verifyMode || updateMode) && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
+    if ((!existing || photosMode || updateMode) && files.length === 0) { setError(t('submit.errPhotoRequired')); return }
     if (verifyMode && !coords) { setError(t('submit.errVerifyCoords')); return }
     if (trap) { setDone(true); return } // bot: pretend it worked
     setLoading(true)

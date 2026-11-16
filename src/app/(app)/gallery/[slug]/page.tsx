@@ -16,7 +16,8 @@ import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { VerifyMenu } from '@/components/mural/VerifyMenu'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
-import { ChevronLeft, MapPin, Crosshair, ExternalLink, Plus, Camera } from 'lucide-react'
+import { BackButton } from '@/components/ui/BackButton'
+import { MapPin, Crosshair, ExternalLink, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
 export const revalidate = 30
@@ -67,10 +68,7 @@ export default async function MuralDetailPage({ params }: Props) {
         title={m.title}
         gradient={gradient}
         overlay={
-          <Link href="/gallery" aria-label={t('detail.back')}
-            className="absolute top-controls left-gutter w-control h-control rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
-            <ChevronLeft size={18} />
-          </Link>
+          <BackButton fallback="/gallery" label={t('detail.back')} />
         }
       />
 
