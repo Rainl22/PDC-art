@@ -2,11 +2,13 @@
 import type { Mural } from '@/types/mural'
 import { useT } from '@/lib/i18n/client'
 
-export function PhotoCredit({ mural }: { mural: Pick<Mural, 'photo_credit' | 'photo_credit_url'> }) {
+/** Credit for photos we didn't take. Hidden once none of those photos are shown any more (bundled ones live under /murals/). */
+export function PhotoCredit({ mural }: { mural: Pick<Mural, 'photo_credit' | 'photo_credit_url' | 'photos'> }) {
   const { t } = useT()
-  if (!mural.photo_credit) return null
+  const stillShown = (mural.photos ?? []).some(p => p.startsWith('/murals/'))
+  if (!mural.photo_credit || !stillShown) return null
   return (
-    <p className="px-5 pt-2 text-[10px] text-ink-3 leading-snug">
+    <p className="text-caption text-ink-3">
       {t('photo.credit')}{' '}
       {mural.photo_credit_url ? (
         <a href={mural.photo_credit_url} target="_blank" rel="noopener noreferrer"
