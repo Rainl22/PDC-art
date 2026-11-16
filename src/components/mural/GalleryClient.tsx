@@ -10,7 +10,7 @@ import { metresBetween, formatDistance } from '@/lib/geo'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
 type Filter = ConfidenceLevel | 'all' | 'changed'
-type Sort = 'name' | 'updated' | 'nearest'
+type Sort = 'name' | 'artist' | 'updated' | 'nearest'
 
 const FILTERS: { label: Key; value: Filter }[] = [
   { label: 'filter.all',        value: 'all'        },
@@ -22,9 +22,13 @@ const FILTERS: { label: Key; value: Filter }[] = [
 
 const SORTS: { value: Sort; label: Key }[] = [
   { value: 'name',    label: 'sort.name'    },
+  { value: 'artist',  label: 'sort.artist'  },
   { value: 'updated', label: 'sort.updated' },
   { value: 'nearest', label: 'sort.nearest' },
 ]
+
+/** First artist's name without a leading @, so "@ron.e.rox" sorts under R; empty when unknown. */
+const artistKey = (m: Mural) => (m.artists?.[0]?.name ?? m.artist ?? '').trim().replace(/^@/, '').toLowerCase()
 
 /** When a mural was added or last repainted (photos added to the same painting don't count). */
 const lastChanged = (m: Mural) => Math.max(Date.parse(m.created_at) || 0, Date.parse(m.artwork_changed_at ?? '') || 0)
@@ -59,6 +63,12 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
     const list = murals.filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : m.confidence === filter)
     const by: Record<Sort, (a: Mural, b: Mural) => number> = {
       name: (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
+      // unknown artists go last; ties fall back to the title
+      artist: (a, b) => {
+        const x = artistKey(a), y = artistKey(b)
+        if (!x !== !y) return x ? -1 : 1
+        return x.localeCompare(y) || (a.title ?? '').localeCompare(b.title ?? '')
+      },
       updated: (a, b) => lastChanged(b) - lastChanged(a),
       // murals without a pin go last
       nearest: (a, b) => (distanceOf(a) ?? Infinity) - (distanceOf(b) ?? Infinity),
