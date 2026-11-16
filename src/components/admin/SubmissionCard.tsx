@@ -44,7 +44,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   const [confidence, setConfidence] = useState<ConfidenceLevel>('unverified')
   const [handle, setHandle] = useState('')
   const [pinned, setPinned] = useState<{ lat: number; lng: number } | null>(s.coordinates ?? null)
-  const [mural, setMural] = useState<{ id: string; title: string; artist: string | null; coordinates: { lat: number; lng: number } | null } | null>(null)
+  const [mural, setMural] = useState<{ id: string; title: string; artist: string | null; coordinates: { lat: number; lng: number } | null; confidence?: string } | null>(null)
   const [qArtist, setQArtist] = useState('')
   const [qHandle, setQHandle] = useState('')
   const muralCoords = mural?.coordinates ?? null
@@ -52,7 +52,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
 
   useEffect(() => {
     if (!targetSlug) return
-    sb.from('murals').select('id,title,artist,coordinates').eq('slug', targetSlug).maybeSingle().then(({ data }) => setMural(data ?? null))
+    sb.from('murals').select('id,title,artist,coordinates,confidence').eq('slug', targetSlug).maybeSingle().then(({ data }) => setMural(data ?? null))
   }, [targetSlug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /** "Name1, Name2" + a handle/link for the first name → Artist[] (known artists get their saved link). */
@@ -152,7 +152,11 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
 
   const applyLocation = () => run(async () => {
     const patch: Record<string, unknown> = { location_description: location.trim(), precision: precision || null }
-    if (s.coordinates) patch.coordinates = s.coordinates
+    if (s.coordinates) {
+      patch.coordinates = s.coordinates
+      // a pinned location that you approve counts as confirmed (unless the mural is marked removed)
+      if (mural?.confidence !== 'removed') patch.confidence = 'verified'
+    }
     const { error: e } = await sb.from('murals').update(patch).eq('slug', existingSlug!)
     if (e) throw e
     await finish('approved')
