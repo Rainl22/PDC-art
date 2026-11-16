@@ -32,6 +32,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
+  const [newName, setNewName] = useState('')
   const [photoKind, setPhotoKind] = useState<'photos_same' | 'photos_repainted'>('photos_same')
   const [trap, setTrap] = useState('') // honeypot: real people never see or fill this
 
@@ -67,7 +68,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
 
   function another() {
     setTitle(existing?.title ?? ''); setArtist(''); setLocation(''); setNotes(''); setFiles([])
-    setCoords(null); setSource(null); setError(null); setPhotoKind('photos_same'); setDone(false)
+    setCoords(null); setSource(null); setError(null); setPhotoKind('photos_same'); setNewName(''); setDone(false)
     window.scrollTo({ top: 0 })
   }
 
@@ -92,7 +93,8 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       await submitMural({
         kind: photosMode ? photoKind : existing ? 'location' : 'new',
         mural_slug: existing?.slug ?? null,
-        title: photosMode || verifyMode ? existing!.title : title.trim() || null,
+        // repainted: the name can change (optional); the old name stays with the old photos
+        title: photosMode ? (photoKind === 'photos_repainted' && newName.trim() ? newName.trim() : existing!.title) : verifyMode ? existing!.title : title.trim() || null,
         artist: photosMode || verifyMode ? null : artist.trim() || null,
         location_description: photosMode ? `Photo update for existing mural: ${existing!.slug}` : verifyMode ? `Location verification for existing mural: ${existing!.slug}` : location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : ''),
         coordinates: coords,
@@ -144,6 +146,12 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
               {k === 'photos_same' ? t('submit.photoSame') : t('submit.photoRepainted')}
             </label>
           ))}
+          {photoKind === 'photos_repainted' && (
+            <div>
+              <input className={field} maxLength={120} value={newName} onChange={e => setNewName(e.target.value)} placeholder={`${t('submit.newName')} — ${existing!.title}`} />
+              <p className="text-[11px] text-ink-3 mt-1">{t('submit.newNameHint')}</p>
+            </div>
+          )}
           <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
         </fieldset>
       ) : verifyMode ? (

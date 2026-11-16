@@ -113,7 +113,13 @@ tailwind.config.ts
 ## To do (owner)
 - [x] Walls migration applied (school wall pair; Maria Felix + Mayan Woman); `changes_often` set on dia-de-muertos-2025 and dia-de-muertos-school. New/moved murals regroup automatically (20 m, chained).
 - [x] Auto-verify (011), artist directory (010), push alerts (012 + `notify-submission` Edge Function) are live.
+- [ ] Run the `remove_team_member` function from `supabase/migrations/013_team_roles.sql` in the Supabase SQL editor (the rest of 013 is applied; Remove on the Team page fails until this runs).
 - [ ] Turn on alerts: open /admin on the live site on each device and press Enable alerts (iPhone: add to Home Screen first).
 - [ ] Review the 3 pending new-mural submissions in /admin (Frida, Viva Playa del Carmen, Gober restaurant).
 - [ ] Decide how walls and the `changes_often` tag should look in the UI (data only so far).
 - [ ] `009_verify_submissions.sql` is optional (only needed if a `verify_location` kind is ever used).
+
+## Team + renames
+- `admins.role`: `owner` (first admin; can't be removed by anyone) / `moderator` (everything else, can add/remove other moderators). Managed on /admin/team through `list_team`, `add_team_member`, `remove_team_member`, `my_role` (migration 013).
+- Repainted photo updates can carry a new name. `murals.artwork_history` keeps `{title, photos, replaced_at}` for each earlier version (written by the auto-verify trigger and the admin approve button). No UI for history yet.
+- Note: `supabase/functions/` is excluded from `tsconfig.json` (Deno code); including it breaks the Next.js build.
