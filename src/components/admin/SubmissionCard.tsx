@@ -80,15 +80,18 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
 
   /** Photo update for an existing mural: repainted → old photos move to history, mural is tagged Changed. */
   const addPhotos = () => run(async () => {
-    const { data: m, error: e1 } = await sb.from('murals').select('id,title,photos,cover_photo,previous_photos,artwork_history').eq('slug', s.mural_slug!).maybeSingle()
+    const { data: m, error: e1 } = await sb.from('murals').select('id,title,artist,photos,cover_photo,previous_photos,artwork_history').eq('slug', s.mural_slug!).maybeSingle()
     if (e1) throw e1
     if (!m) throw new Error(`Mural "${s.mural_slug}" not found`)
     // repainted + new name: the old name stays with the old photos
     const newName = s.title?.trim() && s.title.trim().toLowerCase() !== m.title.trim().toLowerCase() ? s.title.trim() : null
+    const newArtist = s.artist?.trim() && s.artist.trim().toLowerCase() !== (m.artist ?? '').trim().toLowerCase() ? s.artist.trim() : null
+    const artists = newArtist ? await buildArtists(newArtist, '') : null
     const patch: Record<string, unknown> = repainted
-      ? { photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
+      ? {
+          ...(artists ? { artist: artists.map(a => a.name).join(', '), artists, artist_verified: true } : {}), photos, cover_photo: photos[0] ?? null, previous_photos: [...(m.previous_photos ?? []), ...(m.photos ?? [])],
           ...(newName ? { title: newName } : {}),
-          artwork_history: [...(m.artwork_history ?? []), { title: m.title, photos: m.photos ?? [], replaced_at: new Date().toISOString() }],
+          artwork_history: [...(m.artwork_history ?? []), { title: m.title, artist: m.artist, photos: m.photos ?? [], replaced_at: new Date().toISOString() }],
           artwork_status: 'changed', artwork_changed_at: new Date().toISOString() }
       : (m.photos ?? []).every((u: string) => u.startsWith('/murals/'))
         // the bundled placeholder photos get replaced by the first real ones
@@ -189,6 +192,9 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         {s.notes && <p className="whitespace-pre-line"><span className="text-ink-3">Notes:</span> {s.notes}</p>}
       </div>
 
+      {repainted && mural && s.artist?.trim() && s.artist.trim().toLowerCase() !== (mural.artist ?? '').trim().toLowerCase() && (
+        <p className="text-[12px] font-display font-semibold text-sea">New artist: {mural.artist ? `“${mural.artist}” → ` : ''}“{s.artist}”</p>
+      )}
       {repainted && mural && s.title && s.title.trim().toLowerCase() !== mural.title.trim().toLowerCase() && (
         <p className="text-[12px] font-display font-semibold text-sea">Rename: “{mural.title}” → “{s.title}” (the old name stays with the old photos)</p>
       )}

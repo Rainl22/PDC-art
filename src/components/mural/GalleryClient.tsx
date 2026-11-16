@@ -1,28 +1,71 @@
 'use client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MuralCard } from './MuralCard'
 import { saveTourIds } from '@/lib/tour'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
+import { metresBetween, formatDistance } from '@/lib/geo'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
-const FILTERS: { label: Key; value: ConfidenceLevel | 'all' }[] = [
+type Filter = ConfidenceLevel | 'all' | 'changed'
+type Sort = 'name' | 'updated' | 'nearest'
+
+const FILTERS: { label: Key; value: Filter }[] = [
   { label: 'filter.all',        value: 'all'        },
   { label: 'filter.verified',   value: 'verified'   },
   { label: 'filter.likely',     value: 'likely'     },
   { label: 'filter.unverified', value: 'unverified' },
+  { label: 'filter.changed',    value: 'changed'    },
 ]
+
+const SORTS: { value: Sort; label: Key }[] = [
+  { value: 'name',    label: 'sort.name'    },
+  { value: 'updated', label: 'sort.updated' },
+  { value: 'nearest', label: 'sort.nearest' },
+]
+
+/** When a mural was added or last repainted (photos added to the same painting don't count). */
+const lastChanged = (m: Mural) => Math.max(Date.parse(m.created_at) || 0, Date.parse(m.artwork_changed_at ?? '') || 0)
 
 export function GalleryClient({ murals }: { murals: Mural[] }) {
   const router = useRouter()
   const { t } = useT()
-  const [filter, setFilter]       = useState<ConfidenceLevel | 'all'>('all')
+  const [filter, setFilter]       = useState<Filter>('all')
+  const [sort, setSort]           = useState<Sort>('name')
+  const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
+  const [locating, setLocating]   = useState(false)
+  const [locError, setLocError]   = useState(false)
   const [selecting, setSelecting] = useState(false)
   const [selected, setSelected]   = useState<Set<string>>(new Set())
 
-  const filtered = murals.filter(m => filter === 'all' || m.confidence === filter)
+  function chooseSort(next: Sort) {
+    setLocError(false)
+    if (next !== 'nearest' || me) { setSort(next); return }
+    // "Nearest" needs your position: ask when the person picks it
+    if (!('geolocation' in navigator)) { setLocError(true); return }
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      pos => { setMe({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setSort('nearest'); setLocating(false) },
+      () => { setLocError(true); setLocating(false) },
+      { enableHighAccuracy: false, maximumAge: 60_000, timeout: 15_000 },
+    )
+  }
+
+  const distanceOf = (m: Mural) => (me && m.coordinates ? metresBetween(me, m.coordinates) : null)
+
+  const visible = useMemo(() => {
+    const list = murals.filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : m.confidence === filter)
+    const by: Record<Sort, (a: Mural, b: Mural) => number> = {
+      name: (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
+      updated: (a, b) => lastChanged(b) - lastChanged(a),
+      // murals without a pin go last
+      nearest: (a, b) => (distanceOf(a) ?? Infinity) - (distanceOf(b) ?? Infinity),
+    }
+    return [...list].sort(by[sort])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [murals, filter, sort, me])
 
   function toggleSelect(id: string) {
     setSelected(prev => {
@@ -68,14 +111,27 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
             </button>
           ))}
         </div>
+        {/* sort */}
+        <div className="flex items-center gap-2 px-4 pb-3">
+          <label htmlFor="sort" className="text-[11px] text-ink-3 font-display font-semibold uppercase tracking-wide">{t('sort.label')}</label>
+          <select id="sort" value={sort} disabled={locating} onChange={e => chooseSort(e.target.value as Sort)}
+            className="text-[12px] font-display font-semibold bg-groove text-ink rounded-full px-3 py-1 outline-none">
+            {SORTS.map(s => <option key={s.value} value={s.value}>{t(s.label)}</option>)}
+          </select>
+          {locating && <span className="text-[11px] text-ink-3">{t('sort.locating')}</span>}
+          {locError && <span className="text-[11px] text-guessing">{t('sort.locError')}</span>}
+        </div>
       </header>
+
+      {visible.length === 0 && <p className="text-center text-[13px] text-ink-3 py-10">{t('filter.none')}</p>}
 
       {/* grid */}
       <div className="grid grid-cols-2 gap-2.5 p-3 pb-4">
-        {filtered.map(m => (
+        {visible.map(m => (
           <MuralCard
             key={m.id}
             mural={m}
+            distance={sort === 'nearest' && distanceOf(m) !== null ? formatDistance(distanceOf(m)!) : undefined}
             selectable={selecting}
             selected={selected.has(m.id)}
             onSelect={toggleSelect}

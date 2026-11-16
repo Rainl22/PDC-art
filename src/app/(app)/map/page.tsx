@@ -41,6 +41,8 @@ export default function MapPage() {
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating]   = useState(false)
   const [locError, setLocError]   = useState(false)
+  const [mapReady, setMapReady]   = useState(false)
+  const [hint, setHint]           = useState<'tap' | 'blocked' | null>(null)
   const watchRef  = useRef<number | null>(null)
   const meMarker  = useRef<maplibregl.Marker | null>(null)
   const centered  = useRef(false)
@@ -75,6 +77,7 @@ export default function MapPage() {
       zoom: 14,
     })
     mapRef.current.on('click', () => setActive(null))
+    setMapReady(true)
     return () => { mapRef.current?.remove(); mapRef.current = null }
   }, [])
 
@@ -116,7 +119,8 @@ export default function MapPage() {
     watchRef.current = navigator.geolocation.watchPosition(
       pos => {
         const p = { lat: pos.coords.latitude, lng: pos.coords.longitude }
-        setMe(p); setLocating(false)
+        setMe(p); setLocating(false); setHint(null)
+        try { localStorage.setItem('pdc.located', '1') } catch { /* private mode */ }
         if (!meMarker.current) {
           const el = document.createElement('div')
           el.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#2F6FEB;border:3px solid white;box-shadow:0 0 0 6px rgba(47,111,235,.25),0 2px 6px rgba(0,0,0,.3);'
@@ -128,6 +132,32 @@ export default function MapPage() {
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
     )
   }, [me])
+
+  // Show my location automatically when the browser already allows it; otherwise explain the button.
+  // (Browsers only ask for permission after a tap, so the first time it has to be the button.)
+  useEffect(() => {
+    if (!mapReady) return
+    let off = false
+    ;(async () => {
+      let state: string = 'unknown'
+      try { state = (await navigator.permissions.query({ name: 'geolocation' as PermissionName })).state } catch { /* Permissions API not available */ }
+      if (off) return
+      let before = false
+      try { before = localStorage.getItem('pdc.located') === '1' } catch { /* ignore */ }
+      if (state === 'granted' || (state === 'unknown' && before)) locate()
+      else if (state === 'denied') setHint('blocked')
+      else setHint('tap')
+    })()
+    return () => { off = true }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady])
+
+  // the hint goes away on its own
+  useEffect(() => {
+    if (!hint) return
+    const id = setTimeout(() => setHint(null), 9000)
+    return () => clearTimeout(id)
+  }, [hint])
 
   useEffect(() => () => {
     if (watchRef.current !== null) navigator.geolocation.clearWatch(watchRef.current)
@@ -157,10 +187,16 @@ export default function MapPage() {
 
       {/* my location */}
       <div className="absolute top-[4.75rem] right-3 z-10 flex flex-col items-end gap-1.5">
-        <button onClick={locate} aria-label={t('map.locate')}
+        <button onClick={() => { setHint(null); locate() }} aria-label={t('map.locate')}
           className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center ${me ? 'bg-white text-[#2F6FEB]' : 'bg-white text-ink-2'}`}>
           {locating ? <Loader2 size={17} className="animate-spin" /> : <LocateFixed size={17} />}
         </button>
+        {hint && !me && (
+          <div role="status" className="bg-ink text-surface rounded-xl shadow-lg px-3 py-2 text-[11px] leading-snug max-w-[220px] flex items-start gap-2">
+            <span className="flex-1">{hint === 'tap' ? t('map.hintTap') : t('map.hintBlocked')}</span>
+            <button onClick={() => setHint(null)} aria-label={t('map.close')} className="opacity-70 hover:opacity-100"><X size={12} /></button>
+          </div>
+        )}
         {locError && <p className="bg-white/95 rounded-lg shadow-md px-3 py-1.5 text-[11px] text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
       </div>
 
