@@ -14,7 +14,7 @@ import { PhotoGallery } from '@/components/mural/PhotoGallery'
 import { VerifyMenu } from '@/components/mural/VerifyMenu'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
-import { ChevronLeft, MapPin, Crosshair, Eye, ExternalLink, Plus, Camera } from 'lucide-react'
+import { ChevronLeft, MapPin, Crosshair, ExternalLink, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
 export const revalidate = 30
@@ -52,7 +52,6 @@ export default async function MuralDetailPage({ params }: Props) {
   const m = mural as Mural
   const c = (comments ?? []) as Comment[]
   const gradient = getMuralGradient(m.slug)
-  const totalVotes = m.still_here_count + m.removed_count + m.unsure_count
 
   const gmapsUrl = m.coordinates
     ? `https://www.google.com/maps/search/?api=1&query=${m.coordinates.lat},${m.coordinates.lng}`
@@ -112,17 +111,6 @@ export default async function MuralDetailPage({ params }: Props) {
               </div>
             </div>
           )}
-          <div className="flex gap-3">
-            <Eye size={14} className="text-ink-3 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.communityStatus')}</p>
-              <p className="text-[12px] text-ink-2">
-                {totalVotes === 0
-                  ? t('detail.noReports')
-                  : t('detail.statusSummary', { a: m.still_here_count, b: m.removed_count, c: m.unsure_count })}
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* google maps link — disabled until a location is known */}
