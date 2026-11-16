@@ -25,7 +25,7 @@ export function VerifyMenu({ slug, title }: { slug: string; title: string }) {
         <BadgeCheck size={11} />{t('detail.verify')}
       </button>
       {open && (
-        <div role="menu" className="absolute left-0 top-full mt-1.5 z-20 w-44 bg-surface rounded-xl shadow-xl border border-groove overflow-hidden">
+        <div role="menu" className="absolute left-0 top-full mt-1.5 z-20 w-44 bg-surface rounded-sheet shadow-xl border border-groove overflow-hidden">
           <Link role="menuitem" href={`/submit?${q}&mode=verify`} className={item}><MapPin size={14} className="text-sea" />{t('detail.verifyLocation')}</Link>
           <Link role="menuitem" href={`/submit?${q}&mode=photos`} className={`${item} border-t border-groove`}><Camera size={14} className="text-sea" />{t('detail.verifyImage')}</Link>
         </div>

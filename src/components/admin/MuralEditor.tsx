@@ -121,7 +121,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div><label className={adminLabel}>Title</label><input className={adminField} value={title} onChange={e => setTitle(e.target.value)} /></div>
         <div><label className={adminLabel}>Slug (URL)</label>
           <input className={adminField} value={slug} placeholder={slugify(title)} onChange={e => setSlug(e.target.value)} disabled={!!mural} />
@@ -149,20 +149,20 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>
         <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
         <AddressLocator address={location} onPick={(c, p) => { setCoords(c); setSource(null); setPrecision(p) }} />
         <p className="text-caption text-ink-3">Set precision above to mark the location as confirmed (anything except “lead” or none).</p>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <p className={adminLabel}>Photos — first is the cover</p>
         <div className="space-y-2">
           {photos.map((u, i) => (
             <div key={u} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt="" className="w-14 h-14 rounded-sm object-cover bg-groove shrink-0" />
+              <img src={u} alt="" className="w-14 h-14 rounded-inset object-cover bg-groove shrink-0" />
               <p className="flex-1 min-w-0 text-caption text-ink-3 truncate">{i === 0 ? 'Cover · ' : ''}{u.split('/').slice(-2).join('/')}</p>
               <button type="button" aria-label="Move up" onClick={() => move(i, -1)} className="p-1.5 text-ink-2"><ArrowUp size={15} /></button>
               <button type="button" aria-label="Move down" onClick={() => move(i, 1)} className="p-1.5 text-ink-2"><ArrowDown size={15} /></button>
@@ -180,7 +180,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div className="grid grid-cols-2 gap-2">
           <div><label className={adminLabel}>Year</label><input className={adminField} value={year} onChange={e => setYear(e.target.value.replace(/\D/g, ''))} inputMode="numeric" /></div>
           <div><label className={adminLabel}>Medium</label><input className={adminField} value={medium} onChange={e => setMedium(e.target.value)} /></div>

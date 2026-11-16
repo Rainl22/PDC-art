@@ -57,7 +57,7 @@ export function EnableAlerts() {
 
   if (state === 'checking') return null
   return (
-    <div className="bg-surface rounded-xl p-4 flex items-start gap-3">
+    <div className="bg-surface rounded-sheet p-4 flex items-start gap-3">
       <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${state === 'on' ? 'bg-certain-bg text-certain' : 'bg-groove text-ink-3'}`}>
         {state === 'on' ? <Bell size={16} /> : <BellOff size={16} />}
       </div>

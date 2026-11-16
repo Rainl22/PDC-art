@@ -33,7 +33,7 @@ export function LikeButton({ muralId, count }: { muralId: string; count: number 
   return (
     <button type="button" onClick={toggle} aria-pressed={liked} aria-label={liked ? t('like.remove') : t('like.add')}
       className={`shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-full border text-small font-display font-semibold transition-colors
-        ${liked ? 'border-guessing/30 bg-guessing-bg text-guessing' : 'border-groove text-ink-2 hover:border-sea hover:text-sea'}`}>
+        ${liked ? 'border-guessing-line bg-guessing-bg text-guessing' : 'border-groove text-ink-2 hover:border-sea hover:text-sea'}`}>
       <Heart size={15} className={liked ? 'fill-current' : ''} />
       {n}
     </button>

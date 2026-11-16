@@ -159,7 +159,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
   })
 
   return (
-    <div className="bg-surface rounded-xl p-4 space-y-3">
+    <div className="bg-surface rounded-sheet p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-display font-semibold text-body truncate">{s.title || 'Untitled'}</p>
@@ -188,14 +188,14 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
             {allPhotos.map((u, i) => {
               const on = picked.includes(u)
               return (
-                <div key={u} className={`relative aspect-square rounded-sm overflow-hidden bg-groove ${on ? 'ring-2 ring-sea' : ''}`}>
+                <div key={u} className={`relative aspect-square rounded-inset overflow-hidden bg-groove ${on ? 'ring-2 ring-sea' : ''}`}>
                   <button type="button" onClick={() => setViewer(i)} aria-label={`View photo ${i + 1}`} className="block w-full h-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={u} alt="" className={`w-full h-full object-cover ${picked.length && !on ? 'opacity-40' : ''}`} />
                   </button>
                   {pending && allPhotos.length > 1 && (
                     <button type="button" onClick={() => togglePick(u)} aria-pressed={on} aria-label={on ? `Unselect photo ${i + 1}` : `Select photo ${i + 1}`}
-                      className={`absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center border ${on ? 'bg-sea border-sea text-white' : 'bg-black/40 border-white text-transparent'}`}>
+                      className={`absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center border ${on ? 'bg-sea border-sea text-on-dark' : 'bg-scrim border-on-dark text-transparent'}`}>
                       <Check size={13} />
                     </button>
                   )}
@@ -233,7 +233,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
       )}
 
       {targetSlug && mural && (
-        <div className="rounded-lg bg-bg p-3 space-y-2">
+        <div className="rounded-card bg-bg p-3 space-y-2">
           <p className="text-small text-ink-2">
             <span className="text-ink-3">Mural’s artist:</span> {mural.artist || <span className="text-guessing">missing</span>}
             {' · '}<Link href={`/admin/murals/${mural.id}`} className="text-sea underline underline-offset-2">Edit mural</Link>

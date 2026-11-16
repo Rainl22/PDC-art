@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { createImplicitClient } from '@/lib/supabase/implicit'
 import { useT } from '@/lib/i18n/client'
 
-const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 function GoogleMark() {
   return (
@@ -78,7 +78,7 @@ export function SignInForm({ next }: { next?: string }) {
 
   if (sentTo) {
     return (
-      <div className="bg-surface rounded-md p-6 text-center">
+      <div className="bg-surface rounded-panel p-6 text-center">
         <div>
           <MailCheck className="mx-auto text-certain" size={36} />
           <p className="font-display font-semibold mt-3">{t('auth.checkTitle')}</p>
@@ -106,7 +106,7 @@ export function SignInForm({ next }: { next?: string }) {
           placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} />
         {error && <p className="text-small text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : 'auth.error')}</p>}
         <button type="submit" disabled={!email.trim() || busy}
-          className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-body disabled:opacity-40 inline-flex items-center justify-center gap-2">
+          className="w-full rounded-full bg-sea text-on-dark font-display font-medium py-3 text-body disabled:opacity-40 inline-flex items-center justify-center gap-2">
           {busy && <Loader2 size={15} className="animate-spin" />}
           {busy ? t('auth.sending') : t('auth.send')}
         </button>

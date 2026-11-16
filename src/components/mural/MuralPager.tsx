@@ -11,7 +11,7 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
   const { t } = useT()
   return (
     <Link href={`/gallery/${mural.slug}`}
-      className={`flex-1 min-w-0 bg-bg rounded-md overflow-hidden flex flex-col ${dir === 'next' ? 'text-right' : ''}`}>
+      className={`flex-1 min-w-0 bg-bg rounded-panel overflow-hidden flex flex-col ${dir === 'next' ? 'text-right' : ''}`}>
       <div className="aspect-[4/3] relative overflow-hidden shrink-0">
         {mural.cover_photo
           // eslint-disable-next-line @next/next/no-img-element

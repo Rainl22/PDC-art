@@ -17,7 +17,7 @@ export function CommentRow({ row }: { row: Row }) {
     router.refresh()
   }
   return (
-    <div className="bg-surface rounded-xl p-3 flex items-start gap-3">
+    <div className="bg-surface rounded-sheet p-3 flex items-start gap-3">
       <div className="flex-1 min-w-0">
         <p className="text-caption text-ink-3">
           {row.author_name ?? 'Anonymous'} · {new Date(row.created_at).toLocaleDateString()}

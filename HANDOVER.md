@@ -1,6 +1,6 @@
 # Murales PDC — Handover
 
-Last updated: 2026-11-16. Read this first, then `README.md` if you need the basics.
+Last updated: 2026-11-16 (admin photo picker, sign-in link fixes, token conversion). Read this first, then `README.md` if you need the basics.
 
 ## 1. What this is
 A mobile-first PWA that maps the street murals of Playa del Carmen (Quintana Roo, Mexico). Visitors browse a gallery and a map, build walking tours, like murals, and submit new murals, photos, location confirmations and "this spot has a new mural" updates. A small team (one **Owner**, optional **Moderators**) reviews submissions in `/admin`. It's a free hobby project: no ads, no payments, optional sign-in (only needed for the admin area).
@@ -61,7 +61,7 @@ Local dev: `.env.local` with the two `NEXT_PUBLIC_SUPABASE_*` values (anon key i
 ## 6. Design system (src/styles/tokens.css + tailwind.config.ts)
 - Radius roles `rounded-panel` 16 / `rounded-card` 24 / `rounded-sheet` 32. Spacing roles: `gutter`, `grid`, `card-inset` (bottom gap 10 px), `card-inset-x` (side gap 4 px), `sheet-overlap`, `control` (44 px), `gap-control`, `controls` (top offset 24 px for back/menu/search/page titles; every page title row sits at the same y). Type scale: `text-tag-sm` 8, `text-tag` 9, `text-caption` 11, `text-small` 12, `text-body` 14, `text-card` 15, `text-title` 22.
 - One pill component `components/ui/Tag.tsx` (ConfidenceBadge, ArtworkBadge, PlaceTags wrap it). Place types: `lib/places.ts` + DB check + `place.*` i18n. Tag labels: "At a restaurant/bar/school/dive shop/hotel/gym", "Rotating wall" (`changes_often`).
-- **Converted to tokens**: gallery, mural page, map header, page headers. **Still hard-coded**: submit form, admin, tour, profile, side menu, legal (next step for the design system).
+- **Everything uses tokens now**: font sizes (no `text-[Npx]`), radii (only `rounded-inset` 8 / `panel` 16 / `card` 24 / `sheet` 32 / `full`; the raw sm/md/lg/xl are removed), colours (Tailwind colours point at CSS variables in `tokens.css`, the single source; extra tokens: `on-dark`, `backdrop`, `you`, `glass`, `glass-dim`, `glass-faint`, `scrim`, `groove-soft`, `guessing-line`), map pins and the logo. Don't write raw hex, `text-white`/`bg-white`/`bg-black` or `rounded-md/lg/xl` in components. Left on purpose: mural placeholder gradients (`lib/gradients.ts`), the Google logo colours, `themeColor` in `layout.tsx`, Tailwind's own spacing/shadow scales.
 - i18n: every public string is in `lib/i18n/dict.ts` (EN + ES, typed keys); locale in the `locale` cookie.
 
 ## 7. Owner to-do (needs the owner's accounts)

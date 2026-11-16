@@ -20,10 +20,10 @@ export function Lightbox({ photos, start, onClose }: { photos: string[]; start: 
     return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
   }, [onClose, step])
 
-  const btn = 'absolute w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center'
+  const btn = 'absolute w-10 h-10 rounded-full bg-glass-faint text-on-dark flex items-center justify-center'
   return (
     <div role="dialog" aria-modal="true" aria-label={`Photo ${i + 1} of ${n}`}
-      className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
+      className="fixed inset-0 z-[100] bg-backdrop flex items-center justify-center"
       onTouchStart={e => { touchX.current = e.touches[0].clientX }}
       onTouchEnd={e => {
         if (touchX.current === null || n < 2) return
@@ -38,7 +38,7 @@ export function Lightbox({ photos, start, onClose }: { photos: string[]; start: 
         <>
           <button type="button" aria-label="Previous photo" onClick={() => step(-1)} className={`${btn} left-3 top-1/2 -translate-y-1/2`}><ChevronLeft size={22} /></button>
           <button type="button" aria-label="Next photo" onClick={() => step(1)} className={`${btn} right-3 top-1/2 -translate-y-1/2`}><ChevronRight size={22} /></button>
-          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-white/90 font-display">{i + 1} / {n}</span>
+          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-on-dark font-display">{i + 1} / {n}</span>
         </>
       )}
     </div>

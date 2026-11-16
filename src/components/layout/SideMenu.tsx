@@ -60,7 +60,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     <MenuCtx.Provider value={{ open }}>
       {children}
       <div className={`fixed inset-0 z-[70] ${isOpen ? '' : 'pointer-events-none'}`} aria-hidden={!isOpen}>
-        <div onClick={close} className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
+        <div onClick={close} className={`absolute inset-0 bg-scrim transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
         <aside role="dialog" aria-modal="true" aria-label={t('menu.open')}
           className={`absolute inset-y-0 left-0 w-[84%] max-w-xs bg-surface shadow-xl flex flex-col transition-transform duration-200 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           {/* brand */}
@@ -85,7 +85,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 {LOCALES.map(l => (
                   <button key={l} onClick={() => setLocale(l)} aria-pressed={locale === l}
                     className={`flex-1 rounded-full py-2 text-body font-display font-semibold transition-colors
-                      ${locale === l ? 'bg-sea text-white' : 'bg-groove text-ink-2 hover:bg-groove/80'}`}>
+                      ${locale === l ? 'bg-sea text-on-dark' : 'bg-groove text-ink-2 hover:bg-groove-soft'}`}>
                     {LANG_LABEL[l]}
                   </button>
                 ))}
@@ -144,7 +144,7 @@ export function MenuButton({ className = '' }: { className?: string }) {
   const { open } = useMenu()
   const { t } = useT()
   return (
-    <button onClick={open} aria-label={t('menu.open')} className={`shrink-0 rounded-lg active:scale-95 transition-transform ${className}`}>
+    <button onClick={open} aria-label={t('menu.open')} className={`shrink-0 rounded-card active:scale-95 transition-transform ${className}`}>
       <Logo size={34} />
     </button>
   )

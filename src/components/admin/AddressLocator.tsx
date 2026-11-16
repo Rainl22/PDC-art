@@ -30,7 +30,7 @@ export function AddressLocator({ address, onPick }: { address: string; onPick: (
       {results && results.length > 0 && (
         <ul className="space-y-1.5">
           {results.map((c, i) => (
-            <li key={i} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2 text-small text-ink-2">
+            <li key={i} className="flex items-center gap-2 bg-bg rounded-card px-3 py-2 text-small text-ink-2">
               <span className="flex-1 min-w-0">
                 <span className="block truncate">{c.label}</span>
                 <span className="text-caption text-ink-3">{c.coords.lat.toFixed(5)}, {c.coords.lng.toFixed(5)} · approximate ({c.precision})</span>

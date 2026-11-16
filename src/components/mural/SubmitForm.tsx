@@ -14,7 +14,7 @@ import type { Coordinates } from '@/types/mural'
 const MAX_PHOTOS = 4
 const MAX_BYTES = 25 * 1024 * 1024 // originals are resized before upload
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 export function SubmitForm({ existing, mode }: { existing?: { slug: string; title: string } | null; mode?: 'photos' | 'verify' | 'update' }) {
   const photosMode = mode === 'photos'
@@ -121,13 +121,13 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
 
   if (done) {
     return (
-      <div className="bg-surface rounded-md p-6 text-center">
+      <div className="bg-surface rounded-panel p-6 text-center">
         <CheckCircle2 className="mx-auto text-certain" size={36} />
         <p className="font-display font-semibold mt-3">{t('submit.thanks')}</p>
         <p className="text-body text-ink-2 mt-1">{t('submit.pending')}</p>
         <div className="mt-5 flex flex-col items-center gap-2">
           <button type="button" onClick={goBack}
-            className="inline-flex items-center gap-1 rounded-full bg-sea text-white px-5 py-2.5 text-body font-display font-semibold">
+            className="inline-flex items-center gap-1 rounded-full bg-sea text-on-dark px-5 py-2.5 text-body font-display font-semibold">
             <ChevronLeft size={15} />
             {existing ? t('submit.backTo', { title: existing.title }) : t('submit.goBack')}
           </button>
@@ -154,7 +154,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
         <fieldset className="space-y-2">
           <legend className="text-small font-medium text-ink-2 mb-1">{t('submit.photoKindQ')}</legend>
           {(['photos_same', 'photos_repainted'] as const).map(k => (
-            <label key={k} className={`flex items-center gap-2 rounded-md px-3 py-2.5 text-body border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
+            <label key={k} className={`flex items-center gap-2 rounded-panel px-3 py-2.5 text-body border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
               <input type="radio" name="photoKind" checked={photoKind === k} onChange={() => setPhotoKind(k)} className="accent-sea" />
               {k === 'photos_same' ? t('submit.photoSame') : t('submit.photoRepainted')}
             </label>
@@ -191,17 +191,17 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       <div>
         <div className="grid grid-cols-4 gap-2">
           {files.map((f, i) => (
-            <div key={i} className="relative aspect-square rounded-sm overflow-hidden bg-groove">
+            <div key={i} className="relative aspect-square rounded-inset overflow-hidden bg-groove">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
               <button type="button" aria-label={t('submit.removePhoto')} onClick={() => setFiles(files.filter((_, j) => j !== i))}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center">
+                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-scrim text-on-dark flex items-center justify-center">
                 <X size={12} />
               </button>
             </div>
           ))}
           {files.length < MAX_PHOTOS && (
-            <label className="aspect-square rounded-sm border border-dashed border-ink-3 flex items-center justify-center text-ink-3 cursor-pointer">
+            <label className="aspect-square rounded-inset border border-dashed border-ink-3 flex items-center justify-center text-ink-3 cursor-pointer">
               <ImagePlus size={20} />
               <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
                 onChange={e => { setError(null); addFiles(e.target.files); e.target.value = '' }} />
@@ -218,7 +218,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
 
       {error && <p className="text-small text-guessing" role="alert">{error}</p>}
       <button type="submit" disabled={(!photosMode && !verifyMode && !updateMode && !location.trim() && !coords) || loading}
-        className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-body disabled:opacity-40">
+        className="w-full rounded-full bg-sea text-on-dark font-display font-medium py-3 text-body disabled:opacity-40">
         {loading ? t('submit.submitting') : t('submit.submit')}
       </button>
       <button type="button" onClick={cancel} disabled={loading}

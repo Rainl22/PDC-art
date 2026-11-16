@@ -35,7 +35,7 @@ export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: 
     }
   }
 
-  const btn = 'flex-1 py-2 rounded-md text-small font-display font-semibold border text-center transition-colors'
+  const btn = 'flex-1 py-2 rounded-panel text-small font-display font-semibold border text-center transition-colors'
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -48,7 +48,7 @@ export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: 
           </button>
         ))}
         {isAdmin ? (
-          <Link href={`/admin/murals/${muralId}`} className={`${btn} ${voted ? 'flex-none px-4' : ''} border-sea bg-sea text-white`}>
+          <Link href={`/admin/murals/${muralId}`} className={`${btn} ${voted ? 'flex-none px-4' : ''} border-sea bg-sea text-on-dark`}>
             Edit
           </Link>
         ) : (

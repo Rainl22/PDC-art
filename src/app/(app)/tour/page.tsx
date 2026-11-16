@@ -58,7 +58,7 @@ export default function TourPage() {
   if (stops.length === 0) return (
     <div className="relative flex flex-col items-center justify-center h-[calc(100dvh-var(--nav-h))] gap-4 px-8 text-center">
       <MenuButton className="absolute top-controls left-gutter" />
-      <div className="w-16 h-16 rounded-2xl bg-sea-tint flex items-center justify-center">
+      <div className="w-16 h-16 rounded-panel bg-sea-tint flex items-center justify-center">
         <Navigation size={28} className="text-sea" />
       </div>
       <h1 className="font-display font-bold text-xl">{t('tour.emptyTitle')}</h1>
@@ -66,7 +66,7 @@ export default function TourPage() {
         {t('tour.emptyBody')}
       </p>
       <Link href="/gallery"
-        className="mt-2 bg-sea text-white rounded-full px-6 py-3 font-display font-semibold text-body">
+        className="mt-2 bg-sea text-on-dark rounded-full px-6 py-3 font-display font-semibold text-body">
         {t('tour.browse')}
       </Link>
     </div>
@@ -96,7 +96,7 @@ export default function TourPage() {
       <div className="flex-1 p-3">
         {stops.map((stop, i) => (
           <div key={stop.id}>
-            <div className="bg-surface rounded-xl overflow-hidden flex items-center gap-0 shadow-sm">
+            <div className="bg-surface rounded-sheet overflow-hidden flex items-center gap-0 shadow-sm">
               {/* number */}
               <div className="w-9 text-center font-display font-bold text-body text-ink-3 shrink-0">{i + 1}</div>
               {/* thumb */}
@@ -138,7 +138,7 @@ export default function TourPage() {
 
         {/* add more */}
         <Link href="/gallery"
-          className="mt-2 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-groove rounded-xl">
+          className="mt-2 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-groove rounded-sheet">
           <Plus size={15} className="text-ink-3" />
           <span className="text-body text-ink-3 font-display font-semibold">{t('tour.add')}</span>
         </Link>
@@ -172,7 +172,7 @@ export default function TourPage() {
         <button
           onClick={startTour}
           disabled={!canNavigate}
-          className="w-full bg-sea text-white rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-body disabled:opacity-50"
+          className="w-full bg-sea text-on-dark rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-body disabled:opacity-50"
         >
           <Navigation size={15} />
           {canNavigate ? (routable.length < stops.length ? t('tour.startPartial', { n: usedStops.length }) : t('tour.start')) : t('tour.pending')}

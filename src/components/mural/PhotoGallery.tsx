@@ -64,18 +64,18 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
         <>
           <div className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
             {photos.map((_, i) => (
-              <span key={i} className={`h-1.5 rounded-full transition-all ${i === index ? 'w-4 bg-white' : 'w-1.5 bg-white/60'}`} />
+              <span key={i} className={`h-1.5 rounded-full transition-all ${i === index ? 'w-4 bg-surface' : 'w-1.5 bg-glass-dim'}`} />
             ))}
           </div>
-          <span className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] right-4 text-caption font-display font-semibold text-white bg-black/50 rounded-full px-2 py-0.5 pointer-events-none">
+          <span className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] right-4 text-caption font-display font-semibold text-on-dark bg-scrim rounded-full px-2 py-0.5 pointer-events-none">
             {index + 1} / {n}
           </span>
           <button type="button" aria-label={t('photo.prev')} onClick={() => goTo(Math.max(index - 1, 0))}
-            className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 items-center justify-center">
+            className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-glass items-center justify-center">
             <ChevronLeft size={18} />
           </button>
           <button type="button" aria-label={t('photo.next')} onClick={() => goTo(Math.min(index + 1, n - 1))}
-            className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 items-center justify-center">
+            className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-glass items-center justify-center">
             <ChevronRight size={18} />
           </button>
         </>
@@ -83,7 +83,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
 
       {open !== null && (
         <div role="dialog" aria-modal="true" aria-label={`${title} photo ${open + 1} of ${n}`}
-          className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
+          className="fixed inset-0 z-[100] bg-backdrop flex items-center justify-center"
           onTouchStart={e => { touchX.current = e.touches[0].clientX }}
           onTouchEnd={e => {
             if (touchX.current === null || n < 2) return
@@ -94,20 +94,20 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photos[open]} alt={`${title} — photo ${open + 1}`} className="max-w-full max-h-full object-contain select-none" draggable={false} />
           <button type="button" aria-label={t('photo.close')} onClick={() => setOpen(null)}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-glass-faint text-on-dark flex items-center justify-center">
             <X size={20} />
           </button>
           {n > 1 && (
             <>
               <button type="button" aria-label={t('photo.prev')} onClick={() => step(-1)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-glass-faint text-on-dark flex items-center justify-center">
                 <ChevronLeft size={22} />
               </button>
               <button type="button" aria-label={t('photo.next')} onClick={() => step(1)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-glass-faint text-on-dark flex items-center justify-center">
                 <ChevronRight size={22} />
               </button>
-              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-white/90 font-display">{open + 1} / {n}</span>
+              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-on-dark font-display">{open + 1} / {n}</span>
             </>
           )}
         </div>

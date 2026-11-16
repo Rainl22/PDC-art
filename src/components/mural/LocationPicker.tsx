@@ -15,7 +15,7 @@ interface Props {
 
 const SOURCE_KEY = { link: 'locpick.fromLink', device: 'locpick.fromDevice', photo: 'locpick.fromPhoto' } as const
 const btn = 'flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-sea text-sea px-3 py-2 text-small font-display font-semibold disabled:opacity-40'
-const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 export function LocationPicker({ coords, source, onChange }: Props) {
   const { t } = useT()
@@ -62,7 +62,7 @@ export function LocationPicker({ coords, source, onChange }: Props) {
   return (
     <div className="space-y-2">
       {coords ? (
-        <div className="bg-sea-tint text-sea rounded-md px-3 py-2.5 text-small flex items-start gap-2">
+        <div className="bg-sea-tint text-sea rounded-panel px-3 py-2.5 text-small flex items-start gap-2">
           <Crosshair size={14} className="mt-0.5 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-display font-semibold">{t('locpick.pinSet')} {source ? t(SOURCE_KEY[source]) : ''}</p>
@@ -97,7 +97,7 @@ export function LocationPicker({ coords, source, onChange }: Props) {
                   value={link} onChange={e => setLink(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); resolveLink() } }} />
                 <button type="button" onClick={resolveLink} disabled={!link.trim() || busy !== null}
-                  className="shrink-0 rounded-full bg-sea text-white px-4 text-small font-display font-semibold disabled:opacity-40">
+                  className="shrink-0 rounded-full bg-sea text-on-dark px-4 text-small font-display font-semibold disabled:opacity-40">
                   {busy === 'link' ? <Loader2 size={13} className="animate-spin" /> : t('locpick.getPin')}
                 </button>
               </div>

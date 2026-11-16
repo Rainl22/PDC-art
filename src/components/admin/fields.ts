@@ -1,6 +1,6 @@
-export const adminField = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+export const adminField = 'w-full text-body bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 export const adminLabel = 'block text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1'
-export const primaryBtn = 'rounded-full bg-sea text-white px-4 py-2 text-small font-display font-semibold disabled:opacity-40'
+export const primaryBtn = 'rounded-full bg-sea text-on-dark px-4 py-2 text-small font-display font-semibold disabled:opacity-40'
 export const ghostBtn = 'rounded-full border border-groove text-ink-2 px-4 py-2 text-small font-display font-semibold disabled:opacity-40'
 export const CONFIDENCE = ['verified', 'unverified', 'removed'] as const
 export const PRECISION = ['intersection', 'landmark', 'block', 'area', 'lead'] as const
