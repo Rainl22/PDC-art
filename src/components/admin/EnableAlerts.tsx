@@ -57,22 +57,22 @@ export function EnableAlerts() {
 
   if (state === 'checking') return null
   return (
-    <div className="bg-surface rounded-xl p-4 flex items-start gap-3">
+    <div className="bg-surface rounded-sheet p-4 flex items-start gap-3">
       <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${state === 'on' ? 'bg-certain-bg text-certain' : 'bg-groove text-ink-3'}`}>
         {state === 'on' ? <Bell size={16} /> : <BellOff size={16} />}
       </div>
       <div className="flex-1 min-w-0 space-y-2">
-        <p className="font-display font-semibold text-[13px]">New-submission alerts {state === 'on' ? 'are on for this device' : ''}</p>
-        {state === 'unsupported' && <p className="text-[12px] text-ink-2">Not available here. On iPhone, add the site to your Home Screen and open it from there (iOS 16.4 or later); on other devices use the live site in a recent browser.</p>}
-        {state === 'denied' && <p className="text-[12px] text-ink-2">Notifications are blocked for this site. Allow them in your browser or phone settings, then reload.</p>}
-        {state === 'off' && <p className="text-[12px] text-ink-2">Get a notification on this device whenever someone submits a mural or photos.</p>}
-        {state === 'on' && <p className="text-[12px] text-ink-2">You’ll be notified when something needs review. Turn it on in each browser or phone you use.</p>}
+        <p className="font-display font-semibold text-body">New-submission alerts {state === 'on' ? 'are on for this device' : ''}</p>
+        {state === 'unsupported' && <p className="text-small text-ink-2">Not available here. On iPhone, add the site to your Home Screen and open it from there (iOS 16.4 or later); on other devices use the live site in a recent browser.</p>}
+        {state === 'denied' && <p className="text-small text-ink-2">Notifications are blocked for this site. Allow them in your browser or phone settings, then reload.</p>}
+        {state === 'off' && <p className="text-small text-ink-2">Get a notification on this device whenever someone submits a mural or photos.</p>}
+        {state === 'on' && <p className="text-small text-ink-2">You’ll be notified when something needs review. Turn it on in each browser or phone you use.</p>}
         {(state === 'off' || state === 'on') && (
           <button className={state === 'off' ? primaryBtn : ghostBtn} disabled={busy} onClick={state === 'off' ? enable : disable}>
             {busy && <Loader2 size={12} className="inline animate-spin -mt-0.5 mr-1" />}{state === 'off' ? 'Enable alerts' : 'Turn off'}
           </button>
         )}
-        {error && <p className="text-[11px] text-guessing" role="alert">{error}</p>}
+        {error && <p className="text-caption text-guessing" role="alert">{error}</p>}
       </div>
     </div>
   )

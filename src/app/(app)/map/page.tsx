@@ -19,11 +19,12 @@ import type { Mural } from '@/types/mural'
 maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
 
 // confidence → pin colour
+// (design tokens, so pins always match the status badges)
 const PIN_COLOR: Record<string, string> = {
-  verified:   '#0A7560',
-  likely:     '#A86C10',
-  unverified: '#9E2222',
-  removed:    '#6038A0',
+  verified:   'var(--certain)',
+  likely:     'var(--likely)',
+  unverified: 'var(--guessing)',
+  removed:    'var(--removed)',
 }
 
 // Playa del Carmen centre
@@ -93,11 +94,11 @@ export default function MapPage() {
       .forEach(mural => {
         const el = document.createElement('div')
         const lead = mural.precision === 'lead'
-        const color = PIN_COLOR[mural.confidence] ?? '#326A82'
+        const color = PIN_COLOR[mural.confidence] ?? 'var(--sea)'
         el.style.cssText = `
           width:20px;height:20px;border-radius:50%;
-          background:${lead ? 'white' : color};
-          border:3px ${lead ? `dashed ${color}` : 'solid white'};
+          background:${lead ? 'var(--surface)' : color};
+          border:3px ${lead ? `dashed ${color}` : 'solid var(--on-dark)'};
           box-shadow:0 2px 8px rgba(0,0,0,.28);
           cursor:pointer;
         `
@@ -123,7 +124,7 @@ export default function MapPage() {
         try { localStorage.setItem('pdc.located', '1') } catch { /* private mode */ }
         if (!meMarker.current) {
           const el = document.createElement('div')
-          el.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#2F6FEB;border:3px solid white;box-shadow:0 0 0 6px rgba(47,111,235,.25),0 2px 6px rgba(0,0,0,.3);'
+          el.style.cssText = 'width:16px;height:16px;border-radius:50%;background:var(--you);border:3px solid var(--on-dark);box-shadow:0 0 0 6px color-mix(in srgb, var(--you) 25%, transparent),0 2px 6px rgb(0 0 0 / .3);'
           meMarker.current = new maplibregl.Marker({ element: el }).setLngLat([p.lng, p.lat]).addTo(map)
         } else meMarker.current.setLngLat([p.lng, p.lat])
         if (!centered.current) { centered.current = true; map.easeTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 16) }) }
@@ -174,7 +175,7 @@ export default function MapPage() {
       {/* search bar */}
       <div className="absolute top-controls left-gutter right-gutter z-10 flex items-center gap-2">
         <MenuButton className="shadow-md" />
-        <div className="flex-1 h-control bg-white rounded-full shadow-md px-4 flex items-center gap-2">
+        <div className="flex-1 h-control bg-surface rounded-full shadow-md px-4 flex items-center gap-2">
           <Search size={14} className="text-ink-3 shrink-0" />
           <input
             value={search}
@@ -188,7 +189,7 @@ export default function MapPage() {
       {/* my location */}
       <div className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+var(--gap-control))] right-gutter z-10 flex flex-col items-end gap-1.5">
         <button onClick={() => { setHint(null); locate() }} aria-label={t('map.locate')}
-          className={`w-control h-control rounded-full shadow-md flex items-center justify-center ${me ? 'bg-white text-[#2F6FEB]' : 'bg-white text-ink-2'}`}>
+          className={`w-control h-control rounded-full shadow-md flex items-center justify-center ${me ? 'bg-surface text-you' : 'bg-surface text-ink-2'}`}>
           {locating ? <Loader2 size={17} className="animate-spin" /> : <LocateFixed size={17} />}
         </button>
         {hint && !me && (
@@ -197,14 +198,14 @@ export default function MapPage() {
             <button onClick={() => setHint(null)} aria-label={t('map.close')} className="opacity-70 hover:opacity-100"><X size={12} /></button>
           </div>
         )}
-        {locError && <p className="bg-white/95 rounded-panel shadow-md px-3 py-1.5 text-caption text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
+        {locError && <p className="bg-glass rounded-panel shadow-md px-3 py-1.5 text-caption text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
       </div>
 
       {/* no-coords notice */}
       {withCoords === 0 && (
-        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-xl px-5 py-3 shadow-md text-center w-72">
-          <p className="text-[13px] font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
-          <p className="text-[11px] text-ink-2 leading-relaxed">
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-glass backdrop-blur-sm rounded-sheet px-5 py-3 shadow-md text-center w-72">
+          <p className="text-body font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
+          <p className="text-caption text-ink-2 leading-relaxed">
             {t('map.soonBody')}
           </p>
         </div>
@@ -213,7 +214,7 @@ export default function MapPage() {
       {/* bottom drawer */}
       {active && (
         <div className="absolute bottom-0 left-0 right-0 z-20">
-          <div className="bg-surface rounded-t-2xl shadow-xl overflow-hidden">
+          <div className="bg-surface rounded-t-panel shadow-xl overflow-hidden">
             {/* mural image */}
             <div className="relative h-36">
               {active.cover_photo
@@ -222,7 +223,7 @@ export default function MapPage() {
               }
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
               {/* drag handle */}
-              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-white/50 rounded-full" />
+              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-glass-dim rounded-full" />
               {/* badge */}
               <div className="absolute top-4 left-3 flex gap-1">
                 <ConfidenceBadge level={active.confidence} sm />
@@ -231,17 +232,17 @@ export default function MapPage() {
               {/* close */}
               <button onClick={() => setActive(null)}
                 aria-label={t('map.close')}
-                className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-black/40 flex items-center justify-center text-white">
+                className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-scrim flex items-center justify-center text-on-dark">
                 <X size={16} />
               </button>
             </div>
             {/* info */}
             <div className="px-4 py-4">
-              <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
-              {(active.artist || active.artists?.length) && <p className="text-sea text-[12px] font-medium mb-1"><ArtistLinks mural={active} /></p>}
-              <p className="text-ink-3 text-[11px] mb-2">{active.location_description}</p>
+              <p className="font-display font-bold text-card mb-0.5">{active.title}</p>
+              {(active.artist || active.artists?.length) && <p className="text-sea text-small font-medium mb-1"><ArtistLinks mural={active} /></p>}
+              <p className="text-ink-3 text-caption mb-2">{active.location_description}</p>
               {me && active.coordinates && (
-                <p className="text-[12px] font-display font-semibold text-sea mb-2">{t('map.away', { d: formatDistance(metresBetween(me, active.coordinates)) })}</p>
+                <p className="text-small font-display font-semibold text-sea mb-2">{t('map.away', { d: formatDistance(metresBetween(me, active.coordinates)) })}</p>
               )}
               {active.precision === 'lead' && <div className="mb-3"><LocationPill mural={active} sm /></div>}
               <div className="flex gap-3">
@@ -249,13 +250,13 @@ export default function MapPage() {
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${active.coordinates.lat},${active.coordinates.lng}&travelmode=walking`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 bg-sea text-white rounded-full py-2.5 flex items-center justify-center gap-2 text-[12px] font-display font-semibold"
+                    className="flex-1 bg-sea text-on-dark rounded-full py-2.5 flex items-center justify-center gap-2 text-small font-display font-semibold"
                   >
                     <Navigation size={13} /> {t('map.takeMe')}
                   </a>
                 )}
                 <Link href={`/gallery/${active.slug}`}
-                  className="flex-1 bg-bg text-ink rounded-full py-2.5 flex items-center justify-center gap-1 text-[12px] font-display font-semibold">
+                  className="flex-1 bg-bg text-ink rounded-full py-2.5 flex items-center justify-center gap-1 text-small font-display font-semibold">
                   {t('map.details')} <ChevronRight size={13} />
                 </Link>
               </div>

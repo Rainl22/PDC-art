@@ -21,6 +21,17 @@
   --removed:     #6038A0;
   --removed-bg:  #EEE6F7;
 
+  --on-dark:     #FFFFFF;   /* text/icons on the sea colour, photos and scrims */
+  --backdrop:    #000000;   /* full-screen photo viewer */
+  --you:         #2F6FEB;   /* "you are here" dot and active locate button */
+  /* translucent layers over photos */
+  --glass:       rgb(255 255 255 / 0.85);  /* round buttons and pills on photos */
+  --glass-dim:   rgb(255 255 255 / 0.6);   /* inactive carousel dots */
+  --glass-faint: rgb(255 255 255 / 0.15);  /* buttons on the dark photo viewer */
+  --scrim:       rgb(0 0 0 / 0.5);         /* counters and chips on photos */
+  --groove-soft: color-mix(in srgb, var(--groove) 80%, transparent);
+  --guessing-line: color-mix(in srgb, var(--guessing) 30%, transparent);
+
   --r-sm:   8px;
   --r-md:   16px;
   --r-lg:   24px;
@@ -32,6 +43,7 @@
   --image-tint-opacity: 0.5;
 
   /* radius roles (use these in components instead of raw values) */
+  --r-inset: var(--r-sm);   /* thumbnails, small chips */
   --r-panel: var(--r-md);   /* cards inside a card: info panel, inputs */
   --r-card:  var(--r-lg);   /* gallery card, overlay card */
   --r-sheet: var(--r-xl);   /* white sheet on the mural page */

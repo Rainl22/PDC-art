@@ -8,7 +8,7 @@ export function LocationPill({ mural, sm }: { mural: Pick<Mural, 'precision' | '
   const { t } = useT()
   const unknown = isLocationUnknown(mural)
   if (!unknown && !isLocationUnconfirmed(mural)) return null
-  const size = sm ? 'text-[9px] px-1.5 py-0.5' : 'text-[10px] px-2 py-0.5'
+  const size = sm ? 'text-tag px-1.5 py-0.5' : 'text-caption px-2 py-0.5'
   const Icon = unknown ? MapPinOff : MapPin
   return (
     <span className={`inline-flex items-center gap-1 rounded-full font-display font-semibold tracking-wide uppercase ${unknown ? 'bg-guessing-bg text-guessing' : 'bg-likely-bg text-likely'} ${size}`}>

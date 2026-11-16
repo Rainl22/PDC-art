@@ -121,15 +121,15 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div><label className={adminLabel}>Title</label><input className={adminField} value={title} onChange={e => setTitle(e.target.value)} /></div>
         <div><label className={adminLabel}>Slug (URL)</label>
           <input className={adminField} value={slug} placeholder={slugify(title)} onChange={e => setSlug(e.target.value)} disabled={!!mural} />
-          {mural && <p className="text-[10px] text-ink-3 mt-1">Slug can’t change after creation (it’s in the URL and photo paths).</p>}</div>
+          {mural && <p className="text-caption text-ink-3 mt-1">Slug can’t change after creation (it’s in the URL and photo paths).</p>}</div>
         <div><label className={adminLabel}>Artists — one per line, “Name | instagram handle or link”</label>
           <textarea className={adminField} rows={3} value={artists} onChange={e => setArtists(e.target.value)} placeholder={'Senkoe | senkoeone'} />
-          <p className="text-[10px] text-ink-3 mt-1">Known artists are filled in automatically: type just the name and their link is added on save. Handles are saved to the artist directory. Any non-Instagram link (TikTok, website…) works too.</p>
-          {knownArtists.length > 0 && <p className="text-[10px] text-ink-3 mt-1">Known: {knownArtists.slice(0, 12).join(', ')}{knownArtists.length > 12 ? '…' : ''}</p>}</div>
+          <p className="text-caption text-ink-3 mt-1">Known artists are filled in automatically: type just the name and their link is added on save. Handles are saved to the artist directory. Any non-Instagram link (TikTok, website…) works too.</p>
+          {knownArtists.length > 0 && <p className="text-caption text-ink-3 mt-1">Known: {knownArtists.slice(0, 12).join(', ')}{knownArtists.length > 12 ? '…' : ''}</p>}</div>
         <div className="grid grid-cols-2 gap-2">
           <div><label className={adminLabel}>Status</label>
             <select className={adminField} value={confidence} onChange={e => setConfidence(e.target.value as ConfidenceLevel)}>{CONFIDENCE.map(c => <option key={c}>{c}</option>)}</select></div>
@@ -139,31 +139,31 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
           <div><label className={adminLabel}>Place (tag)</label>
             <select className={adminField} value={placeType} onChange={e => setPlaceType(e.target.value)}>
               <option value="">(none)</option>{PLACE_TYPES.map(p => <option key={p} value={p}>{p.replace('_', ' ')}</option>)}</select></div>
-          <div className="flex items-end"><label className="flex items-center gap-2 text-[13px] text-ink-2 pb-2.5">
+          <div className="flex items-end"><label className="flex items-center gap-2 text-body text-ink-2 pb-2.5">
             <input type="checkbox" checked={changesOften} onChange={e => setChangesOften(e.target.checked)} className="accent-sea" />
             Rotating wall (changes often)</label></div>
           <div className="col-span-2"><label className={adminLabel}>Artwork (the painting itself)</label>
             <select className={adminField} value={artwork} onChange={e => setArtwork(e.target.value as 'original' | 'changed')}>
               <option value="original">original</option><option value="changed">changed — repainted at the same spot</option></select>
-            <p className="text-[10px] text-ink-3 mt-1">Status above is about the location; this is about the mural. When set to changed, replaced photos are kept as history.</p></div>
+            <p className="text-caption text-ink-3 mt-1">Status above is about the location; this is about the mural. When set to changed, replaced photos are kept as history.</p></div>
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div><label className={adminLabel}>Location description</label><input className={adminField} value={location} onChange={e => setLocation(e.target.value)} /></div>
         <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
         <AddressLocator address={location} onPick={(c, p) => { setCoords(c); setSource(null); setPrecision(p) }} />
-        <p className="text-[10px] text-ink-3">Set precision above to mark the location as confirmed (anything except “lead” or none).</p>
+        <p className="text-caption text-ink-3">Set precision above to mark the location as confirmed (anything except “lead” or none).</p>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <p className={adminLabel}>Photos — first is the cover</p>
         <div className="space-y-2">
           {photos.map((u, i) => (
             <div key={u} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt="" className="w-14 h-14 rounded-sm object-cover bg-groove shrink-0" />
-              <p className="flex-1 min-w-0 text-[10px] text-ink-3 truncate">{i === 0 ? 'Cover · ' : ''}{u.split('/').slice(-2).join('/')}</p>
+              <img src={u} alt="" className="w-14 h-14 rounded-inset object-cover bg-groove shrink-0" />
+              <p className="flex-1 min-w-0 text-caption text-ink-3 truncate">{i === 0 ? 'Cover · ' : ''}{u.split('/').slice(-2).join('/')}</p>
               <button type="button" aria-label="Move up" onClick={() => move(i, -1)} className="p-1.5 text-ink-2"><ArrowUp size={15} /></button>
               <button type="button" aria-label="Move down" onClick={() => move(i, 1)} className="p-1.5 text-ink-2"><ArrowDown size={15} /></button>
               <button type="button" aria-label="Remove photo" onClick={() => setPhotos(p => p.filter((_, j) => j !== i))} className="p-1.5 text-guessing"><Trash2 size={15} /></button>
@@ -180,7 +180,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         </div>
       </div>
 
-      <div className="bg-surface rounded-xl p-4 space-y-3">
+      <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div className="grid grid-cols-2 gap-2">
           <div><label className={adminLabel}>Year</label><input className={adminField} value={year} onChange={e => setYear(e.target.value.replace(/\D/g, ''))} inputMode="numeric" /></div>
           <div><label className={adminLabel}>Medium</label><input className={adminField} value={medium} onChange={e => setMedium(e.target.value)} /></div>
@@ -188,7 +188,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         <div><label className={adminLabel}>Notes</label><textarea className={adminField} rows={4} value={notes} onChange={e => setNotes(e.target.value)} /></div>
       </div>
 
-      {msg && <p className={`text-[12px] ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="status">{msg.text}</p>}
+      {msg && <p className={`text-small ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="status">{msg.text}</p>}
       <div className="flex flex-wrap gap-2">
         <button className={primaryBtn} onClick={save} disabled={busy || uploading}>{busy ? 'Saving…' : mural ? 'Save changes' : 'Create mural'}</button>
         {mural && <Link href={`/gallery/${mural.slug}`} className={ghostBtn}>View</Link>}

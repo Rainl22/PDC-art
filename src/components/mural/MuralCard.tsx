@@ -39,13 +39,13 @@ export function MuralCard({ mural, selectable, selected, onSelect, distance }: P
         style={{ background: 'var(--image-tint)', opacity: 'var(--image-tint-opacity)' }} />
 
       {mural.photos?.length > 1 && (
-        <span className="absolute top-2 left-2 flex items-center gap-1 text-caption font-display font-semibold text-white bg-black/50 rounded-full px-1.5 py-0.5">
+        <span className="absolute top-2 left-2 flex items-center gap-1 text-caption font-display font-semibold text-on-dark bg-scrim rounded-full px-1.5 py-0.5">
           <Images size={10} />{mural.photos.length}
         </span>
       )}
       {selectable && (
         <div className={`absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center transition-colors
-          ${selected ? 'bg-sea text-white' : 'bg-white/70 text-transparent'}`}>
+          ${selected ? 'bg-sea text-on-dark' : 'bg-glass text-transparent'}`}>
           <Check size={11} strokeWidth={3} />
         </div>
       )}

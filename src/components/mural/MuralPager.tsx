@@ -11,7 +11,7 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
   const { t } = useT()
   return (
     <Link href={`/gallery/${mural.slug}`}
-      className={`flex-1 min-w-0 bg-bg rounded-md overflow-hidden flex flex-col ${dir === 'next' ? 'text-right' : ''}`}>
+      className={`flex-1 min-w-0 bg-bg rounded-panel overflow-hidden flex flex-col ${dir === 'next' ? 'text-right' : ''}`}>
       <div className="aspect-[4/3] relative overflow-hidden shrink-0">
         {mural.cover_photo
           // eslint-disable-next-line @next/next/no-img-element
@@ -19,12 +19,12 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
           : <div className="absolute inset-0" style={{ background: getMuralGradient(mural.slug) }} />}
       </div>
       <div className="p-2.5">
-        <p className={`flex items-center gap-1 text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 ${dir === 'next' ? 'justify-end' : ''}`}>
+        <p className={`flex items-center gap-1 text-tag font-display font-bold uppercase tracking-wider text-ink-3 ${dir === 'next' ? 'justify-end' : ''}`}>
           {dir === 'prev' && <Icon size={11} />}
           {dir === 'prev' ? t('pager.previous') : t('pager.next')}
           {dir === 'next' && <Icon size={11} />}
         </p>
-        <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
+        <p className="text-body font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
       </div>
     </Link>
   )

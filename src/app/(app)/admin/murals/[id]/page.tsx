@@ -12,7 +12,7 @@ export default async function EditMural({ params }: { params: { id: string } }) 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <h1 className="flex-1 min-w-0 font-display font-bold text-[18px] truncate">{m.title}</h1>
+        <h1 className="flex-1 min-w-0 font-display font-bold text-card truncate">{m.title}</h1>
         <CloseButton fallback="/admin/murals" className="" />
       </div>
       <MuralEditor mural={m} />

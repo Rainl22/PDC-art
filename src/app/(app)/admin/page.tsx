@@ -19,16 +19,16 @@ export default async function AdminHome() {
     <div className="space-y-3">
       <EnableAlerts />
       {cards.map(({ href, label, n, Icon, hot }) => (
-        <Link key={href} href={href} className="bg-surface rounded-xl p-4 flex items-center gap-3">
+        <Link key={href} href={href} className="bg-surface rounded-sheet p-4 flex items-center gap-3">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${hot ? 'bg-likely-bg text-likely' : 'bg-sea-tint text-sea'}`}><Icon size={18} /></div>
           <div className="flex-1">
-            <p className="font-display font-bold text-[20px] leading-none">{n}</p>
-            <p className="text-[12px] text-ink-2 mt-1">{label}</p>
+            <p className="font-display font-bold text-title leading-none">{n}</p>
+            <p className="text-small text-ink-2 mt-1">{label}</p>
           </div>
           <ChevronRight size={16} className="text-ink-3" />
         </Link>
       ))}
-      <Link href="/admin/murals/new" className="block text-center rounded-full bg-sea text-white py-3 text-[13px] font-display font-semibold">
+      <Link href="/admin/murals/new" className="block text-center rounded-full bg-sea text-on-dark py-3 text-body font-display font-semibold">
         + Add a mural
       </Link>
     </div>
