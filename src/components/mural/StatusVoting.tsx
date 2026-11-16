@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { addVote, spamCode } from '@/lib/murals'
 import { useT } from '@/lib/i18n/client'
+import { useAuth } from '@/lib/auth/useAuth'
 import type { Key } from '@/lib/i18n/dict'
 import type { StatusVote } from '@/types/mural'
 
@@ -14,6 +15,7 @@ const VOTES: { value: StatusVote; label: Key }[] = [
 /** Still here / Removed are quick votes. "Update" starts a submission for a new mural at the same spot. */
 export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: string; title: string }) {
   const { t } = useT()
+  const { isAdmin } = useAuth()
   const [voted, setVoted] = useState<StatusVote | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -45,10 +47,16 @@ export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: 
             {t(label)}
           </button>
         ))}
-        <Link href={`/submit?mural=${encodeURIComponent(slug)}&title=${encodeURIComponent(title)}&mode=update`}
-          className={`${btn} ${voted ? 'flex-none px-4' : ''} border-sea text-sea`}>
-          {t('vote.update')}
-        </Link>
+        {isAdmin ? (
+          <Link href={`/admin/murals/${muralId}`} className={`${btn} ${voted ? 'flex-none px-4' : ''} border-sea bg-sea text-white`}>
+            Edit
+          </Link>
+        ) : (
+          <Link href={`/submit?mural=${encodeURIComponent(slug)}&title=${encodeURIComponent(title)}&mode=update`}
+            className={`${btn} ${voted ? 'flex-none px-4' : ''} border-sea text-sea`}>
+            {t('vote.update')}
+          </Link>
+        )}
       </div>
       {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
     </div>
