@@ -23,7 +23,7 @@ export function BottomNav() {
           <Link
             key={href}
             href={href}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 text-[10px] font-display font-medium tracking-wide transition-colors
+            className={`flex flex-col items-center justify-center gap-1 flex-1 py-2 text-caption font-display font-medium tracking-wide transition-colors
               ${active ? 'text-sea' : 'text-ink-3'}`}
           >
             <Icon size={18} strokeWidth={active ? 2.5 : 1.75} />

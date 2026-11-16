@@ -98,12 +98,12 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
       <header className="bg-surface border-b border-groove sticky top-0 z-20 pt-controls">
         <div className="px-gutter h-control mb-3 flex items-center gap-3">
           <MenuButton />
-          <h1 className="flex-1 font-display font-bold text-[17px] tracking-tight">
+          <h1 className="flex-1 font-display font-bold text-card tracking-tight">
             {selecting ? t('gallery.selectMurals') : t('gallery.title')}
           </h1>
           <button
             onClick={() => { setSelecting(s => !s); setSelected(new Set()) }}
-            className="text-sea text-[13px] font-display font-semibold border border-sea rounded-full px-3 py-1"
+            className="text-sea text-body font-display font-semibold border border-sea rounded-full px-3 py-1"
           >
             {selecting ? t('gallery.cancel') : t('gallery.select')}
           </button>
@@ -126,7 +126,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
         )}
       </header>
 
-      {visible.length === 0 && <p className="text-center text-[13px] text-ink-3 py-10">{t('filter.none')}</p>}
+      {visible.length === 0 && <p className="text-center text-body text-ink-3 py-10">{t('filter.none')}</p>}
 
       {/* grid */}
       <div className="grid grid-cols-2 gap-grid p-grid pb-4">
@@ -146,10 +146,10 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
       {selecting && (
         <div className="fixed bottom-[var(--nav-h)] left-0 right-0 z-40 bg-surface border-t-2 border-sea-tint px-4 py-3 flex items-center justify-between shadow-lg">
           <div>
-            <p className="font-display font-bold text-[13px] text-ink">
+            <p className="font-display font-bold text-body text-ink">
               {selected.size === 0 ? t('select.tap') : t(selected.size === 1 ? 'select.one' : 'select.many', { n: selected.size })}
             </p>
-            <p className="text-[10px] text-ink-3 mt-0.5">{t('select.min')}</p>
+            <p className="text-caption text-ink-3 mt-0.5">{t('select.min')}</p>
           </div>
           <button
             onClick={buildTour}

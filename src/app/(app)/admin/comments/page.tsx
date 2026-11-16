@@ -9,8 +9,8 @@ export default async function AdminComments() {
   const rows = (data ?? []) as unknown as Row[]
   return (
     <div className="space-y-3">
-      <h1 className="font-display font-bold text-[18px]">Comments ({rows.length})</h1>
-      {rows.length === 0 && <p className="text-[13px] text-ink-3">No comments yet.</p>}
+      <h1 className="font-display font-bold text-card">Comments ({rows.length})</h1>
+      {rows.length === 0 && <p className="text-body text-ink-3">No comments yet.</p>}
       {rows.map(r => <CommentRow key={r.id} row={r} />)}
     </div>
   )

@@ -24,7 +24,7 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
           {dir === 'prev' ? t('pager.previous') : t('pager.next')}
           {dir === 'next' && <Icon size={11} />}
         </p>
-        <p className="text-[13px] font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
+        <p className="text-body font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
       </div>
     </Link>
   )

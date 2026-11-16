@@ -33,7 +33,7 @@ export function AddressLocator({ address, onPick }: { address: string; onPick: (
             <li key={i} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2 text-small text-ink-2">
               <span className="flex-1 min-w-0">
                 <span className="block truncate">{c.label}</span>
-                <span className="text-[10px] text-ink-3">{c.coords.lat.toFixed(5)}, {c.coords.lng.toFixed(5)} · approximate ({c.precision})</span>
+                <span className="text-caption text-ink-3">{c.coords.lat.toFixed(5)}, {c.coords.lng.toFixed(5)} · approximate ({c.precision})</span>
               </span>
               <a href={`https://www.google.com/maps/search/?api=1&query=${c.coords.lat},${c.coords.lng}`} target="_blank" rel="noopener noreferrer" aria-label="Check on Google Maps" className="text-sea"><ExternalLink size={13} /></a>
               <button type="button" className={primaryBtn} onClick={() => { onPick(c.coords, c.precision); setResults(null) }}>Use</button>
@@ -41,7 +41,7 @@ export function AddressLocator({ address, onPick }: { address: string; onPick: (
           ))}
         </ul>
       )}
-      <p className="text-[10px] text-ink-3">Addresses give an approximate pin (the status stays unverified until someone confirms it on the spot).</p>
+      <p className="text-caption text-ink-3">Addresses give an approximate pin (the status stays unverified until someone confirms it on the spot).</p>
     </div>
   )
 }

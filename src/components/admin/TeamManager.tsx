@@ -58,7 +58,7 @@ export function TeamManager({ members, myEmail, myRole }: { members: Member[]; m
               {m.role === 'owner' ? <Crown size={14} /> : <span className="text-small font-bold">{m.email[0]?.toUpperCase()}</span>}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] truncate">{m.email}{m.email.toLowerCase() === myEmail.toLowerCase() ? ' (you)' : ''}</p>
+              <p className="text-body truncate">{m.email}{m.email.toLowerCase() === myEmail.toLowerCase() ? ' (you)' : ''}</p>
               <p className="text-caption text-ink-3 capitalize">{m.role}</p>
             </div>
             {m.role !== 'owner' && (
@@ -76,7 +76,7 @@ export function TeamManager({ members, myEmail, myRole }: { members: Member[]; m
           <input className={adminField} type="email" inputMode="email" autoComplete="off" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@example.com" />
           <button className={primaryBtn} disabled={busy || !email.includes('@')} onClick={add}><UserPlus size={12} className="inline -mt-0.5" /> Add</button>
         </div>
-        <p className="text-[10px] text-ink-3">They sign in at /signin with a magic link sent to this exact email, and get access right away. Signed in as {myRole}.</p>
+        <p className="text-caption text-ink-3">They sign in at /signin with a magic link sent to this exact email, and get access right away. Signed in as {myRole}.</p>
       </div>
       {msg && <p className={`text-small ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="alert">{msg.text}</p>}
     </div>

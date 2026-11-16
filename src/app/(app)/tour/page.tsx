@@ -79,7 +79,7 @@ export default function TourPage() {
         <div className="py-3 flex items-start gap-3">
           <MenuButton />
           <div className="flex-1">
-            <h1 className="font-display font-bold text-[17px]">{t('tour.title')}</h1>
+            <h1 className="font-display font-bold text-card">{t('tour.title')}</h1>
             <div className="flex items-center gap-1.5 mt-1 text-small text-ink-3">
               <Clock size={12} />
               <span>{canNavigate ? `${t('tour.walkMin', { n: walkMins })} · ` : ''}{t(stops.length === 1 ? 'tour.stops.one' : 'tour.stops.many', { n: stops.length })}</span>
@@ -98,7 +98,7 @@ export default function TourPage() {
           <div key={stop.id}>
             <div className="bg-surface rounded-xl overflow-hidden flex items-center gap-0 shadow-sm">
               {/* number */}
-              <div className="w-9 text-center font-display font-bold text-[13px] text-ink-3 shrink-0">{i + 1}</div>
+              <div className="w-9 text-center font-display font-bold text-body text-ink-3 shrink-0">{i + 1}</div>
               {/* thumb */}
               <div className="w-14 h-14 shrink-0 overflow-hidden">
                 {stop.cover_photo
@@ -108,7 +108,7 @@ export default function TourPage() {
               </div>
               {/* info */}
               <div className="flex-1 px-3 min-w-0">
-                <p className="text-[13px] font-medium text-ink truncate">{stop.title}</p>
+                <p className="text-body font-medium text-ink truncate">{stop.title}</p>
                 {stop.coordinates
                   ? <p className="text-caption text-ink-3 truncate mt-0.5">{stop.artist ?? stop.location_description}</p>
                   : <p className="text-caption text-guessing truncate mt-0.5">{t('tour.noPin')}</p>}
@@ -140,7 +140,7 @@ export default function TourPage() {
         <Link href="/gallery"
           className="mt-2 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-groove rounded-xl">
           <Plus size={15} className="text-ink-3" />
-          <span className="text-[13px] text-ink-3 font-display font-semibold">{t('tour.add')}</span>
+          <span className="text-body text-ink-3 font-display font-semibold">{t('tour.add')}</span>
         </Link>
       </div>
 
@@ -149,18 +149,18 @@ export default function TourPage() {
         {/* stats */}
         <div className="flex items-center mb-4">
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">{canNavigate ? usedStops.length : stops.length}</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.murals')}</p>
+            <p className="font-display font-bold text-card">{canNavigate ? usedStops.length : stops.length}</p>
+            <p className="text-caption text-ink-3 mt-0.5">{t('tour.murals')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">{canNavigate ? `~${walkMins}m` : '—'}</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.walkTime')}</p>
+            <p className="font-display font-bold text-card">{canNavigate ? `~${walkMins}m` : '—'}</p>
+            <p className="text-caption text-ink-3 mt-0.5">{t('tour.walkTime')}</p>
           </div>
           <div className="w-px h-8 bg-groove" />
           <div className="flex-1 text-center">
-            <p className="font-display font-bold text-[17px]">{canNavigate ? `${totalKm.toFixed(1)} km` : '—'}</p>
-            <p className="text-[10px] text-ink-3 mt-0.5">{t('tour.distance')}</p>
+            <p className="font-display font-bold text-card">{canNavigate ? `${totalKm.toFixed(1)} km` : '—'}</p>
+            <p className="text-caption text-ink-3 mt-0.5">{t('tour.distance')}</p>
           </div>
         </div>
         {routable.length < stops.length && (

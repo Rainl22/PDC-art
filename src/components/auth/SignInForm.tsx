@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { createImplicitClient } from '@/lib/supabase/implicit'
 import { useT } from '@/lib/i18n/client'
 
-const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 function GoogleMark() {
   return (
@@ -82,7 +82,7 @@ export function SignInForm({ next }: { next?: string }) {
         <div>
           <MailCheck className="mx-auto text-certain" size={36} />
           <p className="font-display font-semibold mt-3">{t('auth.checkTitle')}</p>
-          <p className="text-[13px] text-ink-2 mt-1">{t('auth.checkBody', { email: sentTo })}</p>
+          <p className="text-body text-ink-2 mt-1">{t('auth.checkBody', { email: sentTo })}</p>
         </div>
       </div>
     )

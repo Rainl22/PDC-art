@@ -165,9 +165,9 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
           <p className="font-display font-semibold text-body truncate">{s.title || 'Untitled'}</p>
           <p className="text-caption text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
           <div className="flex flex-wrap gap-1 mt-1">
-            {s.auto_verified && <span className="text-[10px] font-display font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
+            {s.auto_verified && <span className="text-caption font-display font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
             {!s.auto_verified && s.coordinates && (s.photo_paths?.length ?? 0) > 0 && (s.location_source === 'device' || s.location_source === 'photo') && (
-              <span className="text-[10px] font-display font-semibold px-2 py-0.5 rounded-full bg-sea-tint text-sea">GPS + photo ({s.location_source})</span>
+              <span className="text-caption font-display font-semibold px-2 py-0.5 rounded-full bg-sea-tint text-sea">GPS + photo ({s.location_source})</span>
             )}
           </div>
         </div>

@@ -203,7 +203,7 @@ export default function MapPage() {
       {/* no-coords notice */}
       {withCoords === 0 && (
         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-xl px-5 py-3 shadow-md text-center w-72">
-          <p className="text-[13px] font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
+          <p className="text-body font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
           <p className="text-caption text-ink-2 leading-relaxed">
             {t('map.soonBody')}
           </p>
@@ -237,7 +237,7 @@ export default function MapPage() {
             </div>
             {/* info */}
             <div className="px-4 py-4">
-              <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
+              <p className="font-display font-bold text-card mb-0.5">{active.title}</p>
               {(active.artist || active.artists?.length) && <p className="text-sea text-small font-medium mb-1"><ArtistLinks mural={active} /></p>}
               <p className="text-ink-3 text-caption mb-2">{active.location_description}</p>
               {me && active.coordinates && (

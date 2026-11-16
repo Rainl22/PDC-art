@@ -40,7 +40,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
         placeholder={t('comment.name')}
         value={name}
         onChange={e => setName(e.target.value)}
-        className="w-full text-[13px] bg-bg rounded-md px-3 py-2 outline-none border border-transparent focus:border-sea placeholder:text-ink-3"
+        className="w-full text-body bg-bg rounded-md px-3 py-2 outline-none border border-transparent focus:border-sea placeholder:text-ink-3"
       />
       <div className="flex items-center gap-2 bg-bg rounded-full pl-4 pr-1.5 py-1.5">
         <input
@@ -50,7 +50,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && submit()}
-          className="flex-1 text-[13px] bg-transparent outline-none placeholder:text-ink-3"
+          className="flex-1 text-body bg-transparent outline-none placeholder:text-ink-3"
         />
         <button
           onClick={submit}

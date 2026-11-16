@@ -9,7 +9,7 @@ export function SignOutButton() {
   const { t } = useT()
   return (
     <button onClick={async () => { await createClient().auth.signOut(); router.push('/gallery'); router.refresh() }}
-      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-groove text-ink-2 py-3 text-[13px] font-display font-semibold">
+      className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-groove text-ink-2 py-3 text-body font-display font-semibold">
       <LogOut size={15} /> {t('menu.signout')}
     </button>
   )

@@ -14,7 +14,7 @@ import type { Coordinates } from '@/types/mural'
 const MAX_PHOTOS = 4
 const MAX_BYTES = 25 * 1024 * 1024 // originals are resized before upload
 const TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 export function SubmitForm({ existing, mode }: { existing?: { slug: string; title: string } | null; mode?: 'photos' | 'verify' | 'update' }) {
   const photosMode = mode === 'photos'
@@ -124,10 +124,10 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       <div className="bg-surface rounded-md p-6 text-center">
         <CheckCircle2 className="mx-auto text-certain" size={36} />
         <p className="font-display font-semibold mt-3">{t('submit.thanks')}</p>
-        <p className="text-[13px] text-ink-2 mt-1">{t('submit.pending')}</p>
+        <p className="text-body text-ink-2 mt-1">{t('submit.pending')}</p>
         <div className="mt-5 flex flex-col items-center gap-2">
           <button type="button" onClick={goBack}
-            className="inline-flex items-center gap-1 rounded-full bg-sea text-white px-5 py-2.5 text-[13px] font-display font-semibold">
+            className="inline-flex items-center gap-1 rounded-full bg-sea text-white px-5 py-2.5 text-body font-display font-semibold">
             <ChevronLeft size={15} />
             {existing ? t('submit.backTo', { title: existing.title }) : t('submit.goBack')}
           </button>
@@ -154,7 +154,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
         <fieldset className="space-y-2">
           <legend className="text-small font-medium text-ink-2 mb-1">{t('submit.photoKindQ')}</legend>
           {(['photos_same', 'photos_repainted'] as const).map(k => (
-            <label key={k} className={`flex items-center gap-2 rounded-md px-3 py-2.5 text-[13px] border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
+            <label key={k} className={`flex items-center gap-2 rounded-md px-3 py-2.5 text-body border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
               <input type="radio" name="photoKind" checked={photoKind === k} onChange={() => setPhotoKind(k)} className="accent-sea" />
               {k === 'photos_same' ? t('submit.photoSame') : t('submit.photoRepainted')}
             </label>

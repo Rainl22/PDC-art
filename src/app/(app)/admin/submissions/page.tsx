@@ -22,8 +22,8 @@ export default async function SubmissionsPage() {
           <li>“GPS + photo” (blue tag) means the person shared GPS and a photo; a good sign, but new murals are never published automatically.</li>
         </ul>
       </details>
-      <h1 className="font-display font-bold text-[18px]">Pending ({pending.length})</h1>
-      {pending.length === 0 && <p className="text-[13px] text-ink-3">Nothing to review.</p>}
+      <h1 className="font-display font-bold text-card">Pending ({pending.length})</h1>
+      {pending.length === 0 && <p className="text-body text-ink-3">Nothing to review.</p>}
       {pending.map(s => <SubmissionCard key={s.id} submission={s} />)}
       {done.length > 0 && (
         <>

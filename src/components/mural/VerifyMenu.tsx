@@ -21,7 +21,7 @@ export function VerifyMenu({ slug, title }: { slug: string; title: string }) {
   return (
     <div ref={ref} className="relative inline-block">
       <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu"
-        className="inline-flex items-center gap-1 rounded-full border border-sea text-sea px-2.5 py-0.5 text-[10px] font-display font-semibold uppercase tracking-wide">
+        className="inline-flex items-center gap-1 rounded-full border border-sea text-sea px-2.5 py-0.5 text-caption font-display font-semibold uppercase tracking-wide">
         <BadgeCheck size={11} />{t('detail.verify')}
       </button>
       {open && (

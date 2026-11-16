@@ -26,11 +26,11 @@ export default async function ProfilePage() {
       <div className="bg-surface rounded-xl p-4 space-y-3">
         <div>
           <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('profile.email')}</p>
-          <p className="text-[13px] text-ink break-all">{user.email}</p>
+          <p className="text-body text-ink break-all">{user.email}</p>
         </div>
         <div>
           <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('profile.role')}</p>
-          <p className="text-[13px] text-ink">{isAdmin === true ? t('profile.roleAdmin') : t('profile.roleUser')}</p>
+          <p className="text-body text-ink">{isAdmin === true ? t('profile.roleAdmin') : t('profile.roleUser')}</p>
         </div>
       </div>
 
@@ -38,7 +38,7 @@ export default async function ProfilePage() {
         <div className="bg-sea-tint rounded-xl p-4">
           <p className="flex items-center gap-2 font-display font-semibold text-sea text-body"><ShieldCheck size={16} />{t('profile.adminArea')}</p>
           <p className="text-small text-ink-2 mt-1 mb-3">{t('profile.adminBody')}</p>
-          <Link href="/admin" className="inline-flex rounded-full bg-sea text-white px-4 py-2 text-[13px] font-display font-semibold">
+          <Link href="/admin" className="inline-flex rounded-full bg-sea text-white px-4 py-2 text-body font-display font-semibold">
             {t('profile.openAdmin')}
           </Link>
         </div>

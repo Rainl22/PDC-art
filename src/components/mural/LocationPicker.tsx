@@ -15,7 +15,7 @@ interface Props {
 
 const SOURCE_KEY = { link: 'locpick.fromLink', device: 'locpick.fromDevice', photo: 'locpick.fromPhoto' } as const
 const btn = 'flex-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-sea text-sea px-3 py-2 text-small font-display font-semibold disabled:opacity-40'
-const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-body bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 export function LocationPicker({ coords, source, onChange }: Props) {
   const { t } = useT()
