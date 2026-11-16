@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { X, LogIn, LogOut, UserRound, ShieldCheck, FileText, Lock, Languages } from 'lucide-react'
+import { X, LogIn, LogOut, UserRound, ShieldCheck, FileText, Lock, Languages, Download } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { useT } from '@/lib/i18n/client'
 import { LOCALES, type Locale } from '@/lib/i18n/dict'
@@ -23,6 +23,22 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { t, locale, setLocale } = useT()
   const { user, isAdmin, loading } = useAuth()
+
+  // "Install the app": opens full screen without the browser bar. Chrome/Android gives us an install prompt;
+  // iPhone only has Share → Add to Home Screen; other browsers have it in their own menu.
+  type InstallEvent = Event & { prompt: () => Promise<void> }
+  const [installEvent, setInstallEvent] = useState<InstallEvent | null>(null)
+  const [installed, setInstalled] = useState(true)   // hide until we know
+  const [ios, setIos] = useState(false)
+  useEffect(() => {
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true
+    setInstalled(standalone)
+    setIos(/iphone|ipad|ipod/i.test(navigator.userAgent))
+    const onPrompt = (e: Event) => { e.preventDefault(); setInstallEvent(e as InstallEvent) }
+    const onInstalled = () => { setInstalled(true); setInstallEvent(null) }
+    window.addEventListener('beforeinstallprompt', onPrompt); window.addEventListener('appinstalled', onInstalled)
+    return () => { window.removeEventListener('beforeinstallprompt', onPrompt); window.removeEventListener('appinstalled', onInstalled) }
+  }, [])
 
   useEffect(() => { setOpen(false) }, [path])
   useEffect(() => {
@@ -75,6 +91,22 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
             </div>
+
+            {!installed && (
+              <>
+                <div className="h-px bg-groove mx-5 my-2" />
+                <div className="px-5 py-3">
+                  {installEvent ? (
+                    <button onClick={() => installEvent.prompt()} className="w-full flex items-center gap-3 rounded-full bg-sea-tint text-sea px-4 py-2.5 text-[13px] font-display font-semibold">
+                      <Download size={16} />{t('menu.install')}
+                    </button>
+                  ) : (
+                    <p className="flex items-center gap-2 text-[13px] font-display font-semibold text-ink"><Download size={16} className="text-sea" />{t('menu.install')}</p>
+                  )}
+                  <p className="text-[11px] text-ink-3 leading-snug mt-1.5">{installEvent ? t('menu.installHint') : ios ? t('menu.installIos') : t('menu.installMenu')}</p>
+                </div>
+              </>
+            )}
 
             <div className="h-px bg-groove mx-5 my-2" />
 
