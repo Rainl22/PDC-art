@@ -174,7 +174,7 @@ export default async function MuralDetailPage({ params }: Props) {
         {/* status voting */}
         <div>
           <p className="text-[10px] font-display font-bold uppercase tracking-wider text-ink-3 mb-3">{t('detail.stillThere')}</p>
-          <StatusVoting muralId={m.id} />
+          <StatusVoting muralId={m.id} slug={m.slug} title={m.title} />
         </div>
 
         {/* comments */}

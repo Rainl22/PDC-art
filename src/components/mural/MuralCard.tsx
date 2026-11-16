@@ -13,9 +13,10 @@ interface Props {
   selectable?: boolean
   selected?: boolean
   onSelect?: (id: string) => void
+  distance?: string   // e.g. "350 m" when sorting by nearest
 }
 
-export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
+export function MuralCard({ mural, selectable, selected, onSelect, distance }: Props) {
   const { t } = useT()
   const gradient = getMuralGradient(mural.slug)
   const cover    = mural.cover_photo ?? null
@@ -59,6 +60,7 @@ export function MuralCard({ mural, selectable, selected, onSelect }: Props) {
           {mural.artist || t('card.artistUnknown')}
         </p>
         <p className="text-[10px] text-ink-3 mt-0.5 truncate">
+          {distance && <span className="text-sea font-semibold">{distance} · </span>}
           {isLocationUnknown(mural) || !mural.location_description?.trim()
             ? t('loc.unknown')
             : mural.location_description}
