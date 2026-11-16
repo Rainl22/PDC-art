@@ -111,7 +111,9 @@ tailwind.config.ts
 - Not built: AI same-vs-new check (admin decides from the user's choice + photos).
 
 ## To do (owner)
-- [ ] Run `supabase/migrations/008_walls.sql` in the Supabase SQL editor, from `create or replace function recompute_walls` to the end (the table/column part is already applied). The MCP SQL tool times out on its confirmation prompt for this script. Then ask Claude to verify the groups (school wall pair; Maria Felix + Mayan Woman) and the `changes_often` tags.
-- [ ] Apply `supabase/migrations/009_verify_submissions.sql` (only needed if a `verify_location` kind is ever used; the Verify-location flow currently uses kind `location`).
-- [ ] "Only with proof" auto-verify trigger (photo + device/EXIF GPS within ~50 m of the pin): not built yet; needs a new migration.
-- [ ] Decide on new-mural submissions with GPS + photo (Frida, Viva Playa del Carmen, Gober restaurant are pending in /admin).
+- [x] Walls migration applied (school wall pair; Maria Felix + Mayan Woman); `changes_often` set on dia-de-muertos-2025 and dia-de-muertos-school. New/moved murals regroup automatically (20 m, chained).
+- [x] Auto-verify (011), artist directory (010), push alerts (012 + `notify-submission` Edge Function) are live.
+- [ ] Turn on alerts: open /admin on the live site on each device and press Enable alerts (iPhone: add to Home Screen first).
+- [ ] Review the 3 pending new-mural submissions in /admin (Frida, Viva Playa del Carmen, Gober restaurant).
+- [ ] Decide how walls and the `changes_often` tag should look in the UI (data only so far).
+- [ ] `009_verify_submissions.sql` is optional (only needed if a `verify_location` kind is ever used).
