@@ -62,12 +62,12 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
 
       {n > 1 && (
         <>
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+          <div className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
             {photos.map((_, i) => (
               <span key={i} className={`h-1.5 rounded-full transition-all ${i === index ? 'w-4 bg-white' : 'w-1.5 bg-white/60'}`} />
             ))}
           </div>
-          <span className="absolute bottom-3 right-4 text-[11px] font-display font-semibold text-white bg-black/50 rounded-full px-2 py-0.5 pointer-events-none">
+          <span className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] right-4 text-caption font-display font-semibold text-white bg-black/50 rounded-full px-2 py-0.5 pointer-events-none">
             {index + 1} / {n}
           </span>
           <button type="button" aria-label={t('photo.prev')} onClick={() => goTo(Math.max(index - 1, 0))}

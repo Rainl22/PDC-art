@@ -27,6 +27,29 @@
   --r-xl:   32px;
   --r-full: 9999px;
 
+  /* radius roles (use these in components instead of raw values) */
+  --r-panel: var(--r-md);   /* cards inside a card: info panel, inputs */
+  --r-card:  var(--r-lg);   /* gallery card, overlay card */
+  --r-sheet: var(--r-xl);   /* white sheet on the mural page */
+
+  /* spacing roles (4px grid; Tailwind's default scale is the same grid) */
+  --space-gutter:       1rem;     /* screen edge */
+  --space-grid:         0.75rem;  /* between gallery cards */
+  --space-card-inset:   0.625rem; /* gap between the overlay card and the bottom of the image */
+  --space-sheet-overlap: 1.5rem;  /* how far the white sheet rides over the hero image */
+  --inset-top-controls: max(env(safe-area-inset-top, 0px), 1.5rem); /* back button, menu button, search bar */
+  --control-h:          2.75rem;  /* round control buttons, search bar */
+  --gap-control:        0.75rem;  /* between stacked controls */
+
+  /* type scale */
+  --fs-tag-sm:  0.5rem;     /*  8px  tags on gallery cards */
+  --fs-tag:     0.5625rem;  /*  9px  tags on the mural page */
+  --fs-caption: 0.6875rem;  /* 11px  secondary lines, control labels */
+  --fs-small:   0.75rem;    /* 12px  body small, buttons */
+  --fs-body:    0.875rem;   /* 14px  body */
+  --fs-card:    0.9375rem;  /* 15px  card title */
+  --fs-title:   1.375rem;   /* 22px  page title */
+
   --fd: 'Syne', system-ui, sans-serif;
   --fb: 'DM Sans', system-ui, sans-serif;
 

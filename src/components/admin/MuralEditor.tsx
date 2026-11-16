@@ -8,6 +8,7 @@ import { prepareImage } from '@/lib/image'
 import { slugify } from '@/lib/slug'
 import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
 import { useKnownArtists } from '@/lib/useKnownArtists'
+import { PLACE_TYPES } from '@/lib/places'
 import { LocationPicker, type LocationSource } from '@/components/mural/LocationPicker'
 import { AddressLocator } from './AddressLocator'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
@@ -39,6 +40,8 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
   const [credit, setCredit] = useState(mural?.photo_credit ?? '')
   const [creditUrl, setCreditUrl] = useState(mural?.photo_credit_url ?? '')
   const [photos, setPhotos] = useState<string[]>(mural?.photos ?? [])
+  const [placeType, setPlaceType] = useState<string>(mural?.place_type ?? '')
+  const [changesOften, setChangesOften] = useState(mural?.changes_often ?? false)
   const [artwork, setArtwork] = useState<'original' | 'changed'>(mural?.artwork_status ?? 'original')
   const [busy, setBusy] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -84,6 +87,8 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         photo_credit: credit.trim() || null, photo_credit_url: creditUrl.trim() || null,
         photos, cover_photo: coverFor(photos[0]),
         artwork_status: artwork,
+        place_type: placeType || null,
+        changes_often: changesOften,
         // First time it's tagged Changed: keep the photos that were replaced as history.
         ...(artwork === 'changed' && mural?.artwork_status !== 'changed' ? {
           artwork_changed_at: new Date().toISOString(),
@@ -130,6 +135,12 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
           <div><label className={adminLabel}>Precision</label>
             <select className={adminField} value={precision} onChange={e => setPrecision(e.target.value as PrecisionLabel | '')}>
               <option value="">(none — shows as location unknown)</option>{PRECISION.map(p => <option key={p}>{p}</option>)}</select></div>
+          <div><label className={adminLabel}>Place (tag)</label>
+            <select className={adminField} value={placeType} onChange={e => setPlaceType(e.target.value)}>
+              <option value="">(none)</option>{PLACE_TYPES.map(p => <option key={p} value={p}>{p.replace('_', ' ')}</option>)}</select></div>
+          <div className="flex items-end"><label className="flex items-center gap-2 text-[13px] text-ink-2 pb-2.5">
+            <input type="checkbox" checked={changesOften} onChange={e => setChangesOften(e.target.checked)} className="accent-sea" />
+            Rotating wall (changes often)</label></div>
           <div className="col-span-2"><label className={adminLabel}>Artwork (the painting itself)</label>
             <select className={adminField} value={artwork} onChange={e => setArtwork(e.target.value as 'original' | 'changed')}>
               <option value="original">original</option><option value="changed">changed — repainted at the same spot</option></select>

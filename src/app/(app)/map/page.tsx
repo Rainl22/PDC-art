@@ -172,32 +172,32 @@ export default function MapPage() {
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
       {/* search bar */}
-      <div className="absolute top-safe-or-12 left-3 right-3 z-10 flex items-center gap-2">
+      <div className="absolute top-controls left-gutter right-gutter z-10 flex items-center gap-2">
         <MenuButton className="shadow-md" />
-        <div className="flex-1 bg-white rounded-full shadow-md px-4 py-2.5 flex items-center gap-2">
+        <div className="flex-1 h-control bg-white rounded-full shadow-md px-4 flex items-center gap-2">
           <Search size={14} className="text-ink-3 shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('map.search')}
-            className="flex-1 text-[13px] outline-none placeholder:text-ink-3"
+            className="flex-1 text-body outline-none placeholder:text-ink-3"
           />
         </div>
       </div>
 
       {/* my location */}
-      <div className="absolute top-[4.75rem] right-3 z-10 flex flex-col items-end gap-1.5">
+      <div className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+var(--gap-control))] right-gutter z-10 flex flex-col items-end gap-1.5">
         <button onClick={() => { setHint(null); locate() }} aria-label={t('map.locate')}
-          className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center ${me ? 'bg-white text-[#2F6FEB]' : 'bg-white text-ink-2'}`}>
+          className={`w-control h-control rounded-full shadow-md flex items-center justify-center ${me ? 'bg-white text-[#2F6FEB]' : 'bg-white text-ink-2'}`}>
           {locating ? <Loader2 size={17} className="animate-spin" /> : <LocateFixed size={17} />}
         </button>
         {hint && !me && (
-          <div role="status" className="bg-ink text-surface rounded-xl shadow-lg px-3 py-2 text-[11px] leading-snug max-w-[220px] flex items-start gap-2">
+          <div role="status" className="bg-ink text-surface rounded-panel shadow-lg px-3 py-2 text-caption max-w-[220px] flex items-start gap-2">
             <span className="flex-1">{hint === 'tap' ? t('map.hintTap') : t('map.hintBlocked')}</span>
             <button onClick={() => setHint(null)} aria-label={t('map.close')} className="opacity-70 hover:opacity-100"><X size={12} /></button>
           </div>
         )}
-        {locError && <p className="bg-white/95 rounded-lg shadow-md px-3 py-1.5 text-[11px] text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
+        {locError && <p className="bg-white/95 rounded-panel shadow-md px-3 py-1.5 text-caption text-guessing max-w-[200px] text-right">{t('map.locError')}</p>}
       </div>
 
       {/* no-coords notice */}

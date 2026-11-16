@@ -32,6 +32,8 @@ export interface Mural {
   medium: string | null
   notes: string | null
   photos: string[]          // Supabase storage URLs
+  place_type?: string | null          // restaurant | bar | school | dive_shop | hotel | gym (see lib/places.ts)
+  changes_often?: boolean             // wall whose painting is replaced regularly
   artwork_status?: ArtworkStatus      // 'changed' = same wall, repainted
   artwork_changed_at?: string | null
   previous_photos?: string[]

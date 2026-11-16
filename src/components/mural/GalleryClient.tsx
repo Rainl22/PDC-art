@@ -37,7 +37,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const router = useRouter()
   const { t } = useT()
   const [filter, setFilter]       = useState<Filter>('all')
-  const [sort, setSort]           = useState<Sort>('name')
+  const [sort, setSort]           = useState<Sort>('updated')
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating]   = useState(false)
   const [locError, setLocError]   = useState(false)
@@ -106,37 +106,32 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
             {selecting ? t('gallery.cancel') : t('gallery.select')}
           </button>
         </div>
-        {/* filter chips */}
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
-          {FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-display font-semibold tracking-wide transition-colors
-                ${filter === f.value
-                  ? 'bg-ink text-surface'
-                  : 'bg-groove text-ink-2 hover:bg-groove/80'}`}
-            >
-              {t(f.label)}
-            </button>
-          ))}
+        {/* show (filter) on the left, sort on the right */}
+        <div className="flex items-center gap-gap-control px-gutter pb-3">
+          <label className="flex items-center gap-1.5 shrink-0">
+            <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('filter.label')}</span>
+            <select value={filter} onChange={e => setFilter(e.target.value as Filter)}
+              className="w-[6.5rem] text-small font-display font-semibold bg-groove text-ink rounded-full pl-2.5 pr-1 py-1 outline-none">
+              {FILTERS.map(f => <option key={f.value} value={f.value}>{t(f.label)}</option>)}
+            </select>
+          </label>
+          <label className="flex items-center gap-1.5 flex-1 min-w-0">
+            <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('sort.label')}</span>
+            <select id="sort" value={sort} disabled={locating} onChange={e => chooseSort(e.target.value as Sort)}
+              className="flex-1 min-w-0 text-small font-display font-semibold bg-groove text-ink rounded-full pl-2.5 pr-1 py-1 outline-none">
+              {SORTS.map(o => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
+            </select>
+          </label>
         </div>
-        {/* sort */}
-        <div className="flex items-center gap-2 px-4 pb-3">
-          <label htmlFor="sort" className="text-[11px] text-ink-3 font-display font-semibold uppercase tracking-wide">{t('sort.label')}</label>
-          <select id="sort" value={sort} disabled={locating} onChange={e => chooseSort(e.target.value as Sort)}
-            className="text-[12px] font-display font-semibold bg-groove text-ink rounded-full px-3 py-1 outline-none">
-            {SORTS.map(s => <option key={s.value} value={s.value}>{t(s.label)}</option>)}
-          </select>
-          {locating && <span className="text-[11px] text-ink-3">{t('sort.locating')}</span>}
-          {locError && <span className="text-[11px] text-guessing">{t('sort.locError')}</span>}
-        </div>
+        {(locating || locError) && (
+          <p className={`px-gutter pb-2 text-caption ${locError ? 'text-guessing' : 'text-ink-3'}`}>{locating ? t('sort.locating') : t('sort.locError')}</p>
+        )}
       </header>
 
       {visible.length === 0 && <p className="text-center text-[13px] text-ink-3 py-10">{t('filter.none')}</p>}
 
       {/* grid */}
-      <div className="grid grid-cols-2 gap-2.5 p-3 pb-4">
+      <div className="grid grid-cols-2 gap-grid p-grid pb-4">
         {visible.map(m => (
           <MuralCard
             key={m.id}

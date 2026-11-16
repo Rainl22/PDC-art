@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
+import { PlaceTags } from '@/components/ui/PlaceTags'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
 import { LocationPill } from '@/components/ui/LocationPill'
@@ -64,38 +65,33 @@ export default async function MuralDetailPage({ params }: Props) {
         photos={m.photos?.length ? m.photos : m.cover_photo ? [m.cover_photo] : []}
         title={m.title}
         gradient={gradient}
-        overlay={<>
-          <Link href="/gallery"
-            className="absolute top-safe-or-12 left-4 w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
+        overlay={
+          <Link href="/gallery" aria-label={t('detail.back')}
+            className="absolute top-controls left-gutter w-control h-control rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
             <ChevronLeft size={18} />
           </Link>
-          <div className="absolute top-safe-or-12 right-4 flex flex-col items-end gap-1">
-            <ConfidenceBadge level={m.confidence} />
-            <ArtworkBadge mural={m} />
-          </div>
-        </>}
+        }
       />
 
-      <PhotoCredit mural={m} />
-
-      {/* content */}
-      <div className="px-5 py-5 space-y-5">
+      {/* white sheet riding over the photo */}
+      <div className="relative -mt-sheet-overlap rounded-t-sheet bg-surface px-gutter pt-5 pb-5 space-y-5">
+        <PhotoCredit mural={m} />
 
         {/* title row */}
         <div>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="font-display font-bold text-[22px] leading-tight tracking-tight flex-1">{m.title?.trim() || t('card.untitled')}</h1>
+            <h1 className="font-display font-bold text-title leading-tight tracking-tight flex-1">{m.title?.trim() || t('card.untitled')}</h1>
           </div>
-          <p className="text-sea text-[13px] font-medium mt-1"><ArtistLinks mural={m} /></p>
+          <p className="text-sea text-body font-medium mt-1"><ArtistLinks mural={m} /></p>
         </div>
 
         {/* meta card */}
-        <div className="bg-bg rounded-xl p-4 space-y-3">
+        <div className="bg-bg rounded-card p-4 space-y-3">
           <div className="flex gap-3">
             <MapPin size={14} className="text-ink-3 mt-0.5 shrink-0" />
             <div>
-              <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.location')}</p>
-              <p className="text-[12px] text-ink-2 leading-relaxed">{m.location_description}</p>
+              <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.location')}</p>
+              <p className="text-small text-ink-2 leading-relaxed">{m.location_description}</p>
               {(isLocationUnknown(m) || m.precision === 'lead') && <div className="mt-1.5"><LocationPill mural={m} /></div>}
               {!isLocationUnknown(m) && (m.confidence === 'unverified' || m.confidence === 'likely') && (
                 <div className="mt-2"><VerifyMenu slug={m.slug} title={m.title} /></div>
@@ -106,33 +102,39 @@ export default async function MuralDetailPage({ params }: Props) {
             <div className="flex gap-3">
               <Crosshair size={14} className="text-ink-3 mt-0.5 shrink-0" />
               <div>
-                <p className="text-[9px] font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.precision')}</p>
-                <p className="text-[12px] text-ink-2">{t(`prec.${m.precision}` as 'prec.lead')}</p>
+                <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('detail.precision')}</p>
+                <p className="text-small text-ink-2">{t(`prec.${m.precision}` as 'prec.lead')}</p>
               </div>
             </div>
           )}
+          {/* tags: status, changed, where it is, rotating wall */}
+          <div className="flex flex-wrap gap-1.5 pt-0.5">
+            <ConfidenceBadge level={m.confidence} />
+            <ArtworkBadge mural={m} />
+            <PlaceTags mural={m} />
+          </div>
         </div>
 
         {/* google maps link — disabled until a location is known */}
         {isLocationUnknown(m) ? (
           <div className="space-y-2">
-            <div aria-disabled="true" className="flex items-center justify-between bg-groove text-ink-3 rounded-xl px-4 py-3 cursor-not-allowed">
-              <div className="flex items-center gap-2 text-[13px] font-medium">
+            <div aria-disabled="true" className="flex items-center justify-between bg-groove text-ink-3 rounded-card px-4 py-3 cursor-not-allowed">
+              <div className="flex items-center gap-2 text-body font-medium">
                 <MapPin size={15} />
                 {t('detail.openMaps')}
               </div>
-              <span className="text-[11px] font-display font-semibold uppercase tracking-wide">{t('detail.noLocationYet')}</span>
+              <span className="text-caption font-display font-semibold uppercase tracking-wide">{t('detail.noLocationYet')}</span>
             </div>
             <Link href={`/submit?mural=${encodeURIComponent(m.slug)}&title=${encodeURIComponent(m.title)}`}
-              className="flex items-center justify-center gap-2 border border-sea text-sea rounded-xl px-4 py-3 text-[13px] font-display font-semibold">
+              className="flex items-center justify-center gap-2 border border-sea text-sea rounded-card px-4 py-3 text-body font-display font-semibold">
               <Plus size={15} />
               {t('detail.addLocation')}
             </Link>
           </div>
         ) : (
           <a href={gmapsUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-between bg-sea-tint text-sea rounded-xl px-4 py-3">
-            <div className="flex items-center gap-2 text-[13px] font-medium">
+            className="flex items-center justify-between bg-sea-tint text-sea rounded-card px-4 py-3">
+            <div className="flex items-center gap-2 text-body font-medium">
               <MapPin size={15} />
               {t('detail.openMaps')}
             </div>
@@ -141,54 +143,54 @@ export default async function MuralDetailPage({ params }: Props) {
         )}
 
         {m.artwork_status === 'changed' && (
-          <p className="text-[12px] text-ink-2 bg-likely-bg rounded-xl px-4 py-3 leading-relaxed">
+          <p className="text-small text-ink-2 bg-likely-bg rounded-card px-4 py-3 leading-relaxed">
             {t('detail.changedNote')}{m.artwork_changed_at ? ` (${new Date(m.artwork_changed_at).toLocaleDateString(locale, { month: 'short', year: 'numeric' })})` : ''}
           </p>
         )}
 
         <Link href={`/submit?mural=${encodeURIComponent(m.slug)}&title=${encodeURIComponent(m.title)}&mode=photos`}
-          className="flex items-center justify-center gap-2 border border-sea text-sea rounded-xl px-4 py-3 text-[13px] font-display font-semibold">
+          className="flex items-center justify-center gap-2 border border-sea text-sea rounded-card px-4 py-3 text-body font-display font-semibold">
           <Camera size={15} />
           {t('detail.addPhotos')}
         </Link>
 
         {m.notes && (
           <div>
-            <p className="text-[10px] font-display font-bold uppercase tracking-wider text-ink-3 mb-2">{t('detail.notes')}</p>
-            <p className="text-[12px] text-ink-2 leading-relaxed whitespace-pre-line">{m.notes}</p>
+            <p className="text-caption font-display font-bold uppercase tracking-wider text-ink-3 mb-2">{t('detail.notes')}</p>
+            <p className="text-small text-ink-2 leading-relaxed whitespace-pre-line">{m.notes}</p>
           </div>
         )}
 
         {/* status voting */}
         <div>
-          <p className="text-[10px] font-display font-bold uppercase tracking-wider text-ink-3 mb-3">{t('detail.stillThere')}</p>
+          <p className="text-caption font-display font-bold uppercase tracking-wider text-ink-3 mb-3">{t('detail.stillThere')}</p>
           <StatusVoting muralId={m.id} slug={m.slug} title={m.title} />
         </div>
 
         {/* comments */}
         <div>
-          <p className="text-[10px] font-display font-bold uppercase tracking-wider text-ink-3 mb-4">
+          <p className="text-caption font-display font-bold uppercase tracking-wider text-ink-3 mb-4">
             {t(c.length === 1 ? 'detail.communityCount.one' : 'detail.communityCount.many', { n: c.length })}
           </p>
           <div className="space-y-4 mb-4">
             {c.length === 0 && (
-              <p className="text-[13px] text-ink-3">{t('detail.noComments')}</p>
+              <p className="text-body text-ink-3">{t('detail.noComments')}</p>
             )}
             {c.map(comment => (
               <div key={comment.id} className="flex gap-3">
-                <div className="w-7 h-7 rounded-full bg-groove flex items-center justify-center font-display font-bold text-[11px] text-ink-2 shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-full bg-groove flex items-center justify-center font-display font-bold text-caption text-ink-2 shrink-0 mt-0.5">
                   {(comment.author_name ?? 'A')[0].toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[12px] font-semibold text-ink">{comment.author_name ?? t('detail.anonymous')}</span>
-                    <span className="text-[11px] text-ink-3">
+                    <span className="text-small font-semibold text-ink">{comment.author_name ?? t('detail.anonymous')}</span>
+                    <span className="text-caption text-ink-3">
                       {new Date(comment.created_at).toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
                     </span>
                   </div>
-                  {comment.body && <p className="text-[12px] text-ink-2 leading-relaxed">{comment.body}</p>}
+                  {comment.body && <p className="text-small text-ink-2 leading-relaxed">{comment.body}</p>}
                   {comment.status_vote && (
-                    <span className="inline-flex items-center gap-1 mt-1.5 text-[11px] font-display font-semibold px-2.5 py-0.5 rounded-full bg-certain-bg text-certain">
+                    <span className="inline-flex items-center gap-1 mt-1.5 text-caption font-display font-semibold px-2.5 py-0.5 rounded-full bg-certain-bg text-certain">
                       <span className="w-1.5 h-1.5 rounded-full bg-current" />
                       {comment.status_vote === 'still_here' ? t('vote.stillHereShort') : comment.status_vote === 'removed' ? t('vote.removedShort') : t('vote.unsureShort')}
                     </span>

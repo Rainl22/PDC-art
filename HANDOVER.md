@@ -123,3 +123,8 @@ tailwind.config.ts
 - `admins.role`: `owner` (first admin; can't be removed by anyone) / `moderator` (everything else, can add/remove other moderators). Managed on /admin/team through `list_team`, `add_team_member`, `remove_team_member`, `my_role` (migration 013).
 - Repainted photo updates can carry a new name. `murals.artwork_history` keeps `{title, photos, replaced_at}` for each earlier version (written by the auto-verify trigger and the admin approve button). No UI for history yet.
 - Note: `supabase/functions/` is excluded from `tsconfig.json` (Deno code); including it breaks the Next.js build.
+
+## Design tokens (src/styles/tokens.css + tailwind.config.ts)
+- Radius roles: `rounded-panel` (16), `rounded-card` (24), `rounded-sheet` (32). Spacing roles: `gutter`, `grid`, `card-inset`, `sheet-overlap`, `control`, `gap-control`, inset `controls` (top offset for back/menu/search). Type scale: `text-tag-sm` 8, `text-tag` 9, `text-caption` 11, `text-small` 12, `text-body` 14, `text-card` 15, `text-title` 22.
+- Every pill is `components/ui/Tag.tsx` (ConfidenceBadge, ArtworkBadge, PlaceTags wrap it). Place types live in `lib/places.ts` (+ DB check constraint on `murals.place_type`); the rotating-wall tag reads `murals.changes_often`.
+- Converted so far: gallery (card + controls), mural page, map header. Still hard-coded px/colours elsewhere: submit form, admin, tour, profile, side menu.
