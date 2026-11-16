@@ -6,7 +6,16 @@ export default async function SubmissionsPage() {
   const { supabase } = await requireAdmin()
   const { data } = await supabase.from('submissions').select('*').order('created_at', { ascending: false }).limit(100)
   const all = (data ?? []) as Submission[]
-  const pending = all.filter(s => s.status === 'pending')
+  // "Still here" taps on the same mural collapse into one card (newest shown) that resolves all of them together.
+  const tap = (s: Submission) => s.status === 'pending' && !!s.mural_slug && !!s.notes?.includes('Sent from a "Still here" tap')
+  const extra = new Map<string, string[]>()
+  const pending = all.filter(s => s.status === 'pending').filter(s => {
+    if (!tap(s)) return true
+    const seen = extra.get(s.mural_slug!)
+    if (seen) { seen.push(s.id); return false }
+    extra.set(s.mural_slug!, [])
+    return true
+  })
   const done = all.filter(s => s.status !== 'pending')
   return (
     <div className="space-y-4">
@@ -24,7 +33,7 @@ export default async function SubmissionsPage() {
       </details>
       <h1 className="font-display font-bold text-card">Pending ({pending.length})</h1>
       {pending.length === 0 && <p className="text-body text-ink-3">Nothing to review.</p>}
-      {pending.map(s => <SubmissionCard key={s.id} submission={s} />)}
+      {pending.map(s => <SubmissionCard key={s.id} submission={s} alsoIds={tap(s) ? extra.get(s.mural_slug!) : undefined} />)}
       {done.length > 0 && (
         <>
           <h2 className="font-display font-bold text-body text-ink-2 pt-4">Reviewed ({done.length})</h2>

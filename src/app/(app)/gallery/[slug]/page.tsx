@@ -164,7 +164,7 @@ export default async function MuralDetailPage({ params }: Props) {
         {/* status voting */}
         <div>
           <p className="text-caption font-display font-bold uppercase tracking-wider text-ink-3 mb-3">{t('detail.stillThere')}</p>
-          <StatusVoting muralId={m.id} slug={m.slug} title={m.title} />
+          <StatusVoting muralId={m.id} slug={m.slug} title={m.title} unverified={m.confidence === 'unverified' || m.confidence === 'likely'} />
         </div>
 
         {/* comments */}

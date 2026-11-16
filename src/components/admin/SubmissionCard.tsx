@@ -17,7 +17,7 @@ import type { Submission, ConfidenceLevel, PrecisionLabel } from '@/types/mural'
 const EXISTING = /Location suggestion for existing mural:\s*([a-z0-9-]+)/i
 const VERIFY = /Location verification for existing mural:\s*([a-z0-9-]+)/i
 
-export function SubmissionCard({ submission: s }: { submission: Submission }) {
+export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Submission; alsoIds?: string[] }) {
   const router = useRouter()
   const sb = createClient()
   const existingSlug = s.notes?.match(EXISTING)?.[1] ?? null
@@ -81,6 +81,11 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
     if (status === 'approved' && picked.length) patch.photo_paths = (s.photo_paths ?? []).filter((_, i) => picked.includes(allPhotos[i]))
     const { error: e } = await sb.from('submissions').update(patch).eq('id', s.id)
     if (e) throw e
+    // other "Still here" taps on the same mural are settled together (status only)
+    if (alsoIds.length) {
+      const { error: e2 } = await sb.from('submissions').update({ status }).in('id', alsoIds)
+      if (e2) throw e2
+    }
     router.refresh()
   }
   const run = async (fn: () => Promise<void>) => {
@@ -168,6 +173,7 @@ export function SubmissionCard({ submission: s }: { submission: Submission }) {
         <div className="min-w-0">
           <p className="font-display font-semibold text-body truncate">{s.title || 'Untitled'}</p>
           <p className="text-caption text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
+          {alsoIds.length > 0 && <p className="text-caption font-display font-semibold text-sea">{alsoIds.length + 1} people tapped “Still here” — one decision settles all of them</p>}
           <div className="flex flex-wrap gap-1 mt-1">
             {s.auto_verified && <span className="text-caption font-display font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
             {!s.auto_verified && s.coordinates && (s.photo_paths?.length ?? 0) > 0 && (s.location_source === 'device' || s.location_source === 'photo') && (
