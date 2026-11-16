@@ -93,10 +93,10 @@ export function SignInForm({ next }: { next?: string }) {
       {google && (
         <>
           <button type="button" onClick={withGoogle} disabled={busy}
-            className="w-full rounded-full border border-groove bg-surface text-ink font-display font-medium py-3 text-[14px] inline-flex items-center justify-center gap-2.5 disabled:opacity-40">
+            className="w-full rounded-full border border-groove bg-surface text-ink font-display font-medium py-3 text-body inline-flex items-center justify-center gap-2.5 disabled:opacity-40">
             <GoogleMark />{t('auth.google')}
           </button>
-          <div className="flex items-center gap-3 text-[11px] text-ink-3 uppercase tracking-wide">
+          <div className="flex items-center gap-3 text-caption text-ink-3 uppercase tracking-wide">
             <span className="flex-1 h-px bg-groove" />{t('auth.or')}<span className="flex-1 h-px bg-groove" />
           </div>
         </>
@@ -104,9 +104,9 @@ export function SignInForm({ next }: { next?: string }) {
       <form onSubmit={submit} className="space-y-3">
         <input className={field} type="email" required autoComplete="email" inputMode="email"
           placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} />
-        {error && <p className="text-[12px] text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : 'auth.error')}</p>}
+        {error && <p className="text-small text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : 'auth.error')}</p>}
         <button type="submit" disabled={!email.trim() || busy}
-          className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40 inline-flex items-center justify-center gap-2">
+          className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-body disabled:opacity-40 inline-flex items-center justify-center gap-2">
           {busy && <Loader2 size={15} className="animate-spin" />}
           {busy ? t('auth.sending') : t('auth.send')}
         </button>

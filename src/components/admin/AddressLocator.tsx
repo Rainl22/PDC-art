@@ -26,11 +26,11 @@ export function AddressLocator({ address, onPick }: { address: string; onPick: (
       <button type="button" className={ghostBtn} disabled={busy || looksUnknown(address)} onClick={find}>
         {busy ? <Loader2 size={12} className="inline animate-spin -mt-0.5" /> : <MapPin size={12} className="inline -mt-0.5" />} Find on map from address
       </button>
-      {error && <p className="text-[11px] text-guessing">{error}</p>}
+      {error && <p className="text-caption text-guessing">{error}</p>}
       {results && results.length > 0 && (
         <ul className="space-y-1.5">
           {results.map((c, i) => (
-            <li key={i} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2 text-[12px] text-ink-2">
+            <li key={i} className="flex items-center gap-2 bg-bg rounded-lg px-3 py-2 text-small text-ink-2">
               <span className="flex-1 min-w-0">
                 <span className="block truncate">{c.label}</span>
                 <span className="text-[10px] text-ink-3">{c.coords.lat.toFixed(5)}, {c.coords.lng.toFixed(5)} · approximate ({c.precision})</span>

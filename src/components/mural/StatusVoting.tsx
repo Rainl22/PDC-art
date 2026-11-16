@@ -35,12 +35,12 @@ export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: 
     }
   }
 
-  const btn = 'flex-1 py-2 rounded-md text-[12px] font-display font-semibold border text-center transition-colors'
+  const btn = 'flex-1 py-2 rounded-md text-small font-display font-semibold border text-center transition-colors'
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
         {voted ? (
-          <p className="flex-1 text-[12px] text-certain font-medium py-2">{t('vote.thanks')}</p>
+          <p className="flex-1 text-small text-certain font-medium py-2">{t('vote.thanks')}</p>
         ) : VOTES.map(({ value, label }) => (
           <button key={value} onClick={() => vote(value)} disabled={loading}
             className={`${btn} border-groove text-ink-2 hover:border-sea hover:text-sea disabled:opacity-50`}>
@@ -58,7 +58,7 @@ export function StatusVoting({ muralId, slug, title }: { muralId: string; slug: 
           </Link>
         )}
       </div>
-      {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
+      {error && <p className="text-small text-guessing" role="alert">{error}</p>}
     </div>
   )
 }

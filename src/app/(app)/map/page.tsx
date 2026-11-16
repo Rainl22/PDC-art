@@ -204,7 +204,7 @@ export default function MapPage() {
       {withCoords === 0 && (
         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-xl px-5 py-3 shadow-md text-center w-72">
           <p className="text-[13px] font-display font-semibold text-ink mb-1">{t('map.soon')}</p>
-          <p className="text-[11px] text-ink-2 leading-relaxed">
+          <p className="text-caption text-ink-2 leading-relaxed">
             {t('map.soonBody')}
           </p>
         </div>
@@ -238,10 +238,10 @@ export default function MapPage() {
             {/* info */}
             <div className="px-4 py-4">
               <p className="font-display font-bold text-[16px] mb-0.5">{active.title}</p>
-              {(active.artist || active.artists?.length) && <p className="text-sea text-[12px] font-medium mb-1"><ArtistLinks mural={active} /></p>}
-              <p className="text-ink-3 text-[11px] mb-2">{active.location_description}</p>
+              {(active.artist || active.artists?.length) && <p className="text-sea text-small font-medium mb-1"><ArtistLinks mural={active} /></p>}
+              <p className="text-ink-3 text-caption mb-2">{active.location_description}</p>
               {me && active.coordinates && (
-                <p className="text-[12px] font-display font-semibold text-sea mb-2">{t('map.away', { d: formatDistance(metresBetween(me, active.coordinates)) })}</p>
+                <p className="text-small font-display font-semibold text-sea mb-2">{t('map.away', { d: formatDistance(metresBetween(me, active.coordinates)) })}</p>
               )}
               {active.precision === 'lead' && <div className="mb-3"><LocationPill mural={active} sm /></div>}
               <div className="flex gap-3">
@@ -249,13 +249,13 @@ export default function MapPage() {
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${active.coordinates.lat},${active.coordinates.lng}&travelmode=walking`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 bg-sea text-white rounded-full py-2.5 flex items-center justify-center gap-2 text-[12px] font-display font-semibold"
+                    className="flex-1 bg-sea text-white rounded-full py-2.5 flex items-center justify-center gap-2 text-small font-display font-semibold"
                   >
                     <Navigation size={13} /> {t('map.takeMe')}
                   </a>
                 )}
                 <Link href={`/gallery/${active.slug}`}
-                  className="flex-1 bg-bg text-ink rounded-full py-2.5 flex items-center justify-center gap-1 text-[12px] font-display font-semibold">
+                  className="flex-1 bg-bg text-ink rounded-full py-2.5 flex items-center justify-center gap-1 text-small font-display font-semibold">
                   {t('map.details')} <ChevronRight size={13} />
                 </Link>
               </div>

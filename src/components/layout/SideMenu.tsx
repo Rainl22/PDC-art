@@ -13,7 +13,7 @@ const MenuCtx = createContext<{ open: () => void }>({ open: () => {} })
 export const useMenu = () => useContext(MenuCtx)
 
 const LANG_LABEL: Record<Locale, string> = { en: 'English', es: 'Español' }
-const row = 'flex items-center gap-3 px-5 py-3 text-[14px] text-ink hover:bg-bg transition-colors'
+const row = 'flex items-center gap-3 px-5 py-3 text-body text-ink hover:bg-bg transition-colors'
 
 export function MenuProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setOpen] = useState(false)
@@ -68,7 +68,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             <Logo size={40} />
             <div className="flex-1 min-w-0">
               <p className="font-display font-bold text-[16px] leading-tight">Murales PDC</p>
-              <p className="text-[11px] text-ink-3">{t('menu.tagline')}</p>
+              <p className="text-caption text-ink-3">{t('menu.tagline')}</p>
             </div>
             <button onClick={close} aria-label={t('menu.close')} className="w-9 h-9 -mr-2 rounded-full flex items-center justify-center text-ink-2 hover:bg-bg">
               <X size={18} />
@@ -103,7 +103,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                   ) : (
                     <p className="flex items-center gap-2 text-[13px] font-display font-semibold text-ink"><Download size={16} className="text-sea" />{t('menu.install')}</p>
                   )}
-                  <p className="text-[11px] text-ink-3 leading-snug mt-1.5">{installEvent ? t('menu.installHint') : ios ? t('menu.installIos') : t('menu.installMenu')}</p>
+                  <p className="text-caption text-ink-3 leading-snug mt-1.5">{installEvent ? t('menu.installHint') : ios ? t('menu.installIos') : t('menu.installMenu')}</p>
                 </div>
               </>
             )}
@@ -115,7 +115,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
               <p className="px-5 pt-2 pb-1 text-[10px] font-display font-bold uppercase tracking-wider text-ink-3">{t('menu.account')}</p>
               {!loading && user ? (
                 <>
-                  <p className="px-5 pb-1 text-[11px] text-ink-3 truncate">{t('menu.signedInAs')} {user.email}</p>
+                  <p className="px-5 pb-1 text-caption text-ink-3 truncate">{t('menu.signedInAs')} {user.email}</p>
                   <Link href="/profile" className={row}><UserRound size={16} className="text-ink-3" />{t('menu.profile')}</Link>
                   {isAdmin && <Link href="/admin" className={row}><ShieldCheck size={16} className="text-sea" />{t('menu.admin')}</Link>}
                   <button onClick={signOut} className={`${row} w-full text-left`}><LogOut size={16} className="text-ink-3" />{t('menu.signout')}</button>
@@ -123,7 +123,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
               ) : (
                 <>
                   <Link href="/signin" className={row}><LogIn size={16} className="text-ink-3" />{t('menu.signin')}</Link>
-                  <p className="px-5 text-[11px] text-ink-3 leading-snug">{t('menu.signinHint')}</p>
+                  <p className="px-5 text-caption text-ink-3 leading-snug">{t('menu.signinHint')}</p>
                 </>
               )}
             </div>

@@ -62,11 +62,11 @@ export default function TourPage() {
         <Navigation size={28} className="text-sea" />
       </div>
       <h1 className="font-display font-bold text-xl">{t('tour.emptyTitle')}</h1>
-      <p className="text-ink-2 text-[14px] leading-relaxed">
+      <p className="text-ink-2 text-body leading-relaxed">
         {t('tour.emptyBody')}
       </p>
       <Link href="/gallery"
-        className="mt-2 bg-sea text-white rounded-full px-6 py-3 font-display font-semibold text-[14px]">
+        className="mt-2 bg-sea text-white rounded-full px-6 py-3 font-display font-semibold text-body">
         {t('tour.browse')}
       </Link>
     </div>
@@ -80,13 +80,13 @@ export default function TourPage() {
           <MenuButton />
           <div className="flex-1">
             <h1 className="font-display font-bold text-[17px]">{t('tour.title')}</h1>
-            <div className="flex items-center gap-1.5 mt-1 text-[12px] text-ink-3">
+            <div className="flex items-center gap-1.5 mt-1 text-small text-ink-3">
               <Clock size={12} />
               <span>{canNavigate ? `${t('tour.walkMin', { n: walkMins })} · ` : ''}{t(stops.length === 1 ? 'tour.stops.one' : 'tour.stops.many', { n: stops.length })}</span>
             </div>
           </div>
           <button onClick={() => { clearTour(); setStops([]) }}
-            className="text-[12px] text-ink-3 font-medium mt-1">
+            className="text-small text-ink-3 font-medium mt-1">
             {t('tour.clear')}
           </button>
         </div>
@@ -110,8 +110,8 @@ export default function TourPage() {
               <div className="flex-1 px-3 min-w-0">
                 <p className="text-[13px] font-medium text-ink truncate">{stop.title}</p>
                 {stop.coordinates
-                  ? <p className="text-[11px] text-ink-3 truncate mt-0.5">{stop.artist ?? stop.location_description}</p>
-                  : <p className="text-[11px] text-guessing truncate mt-0.5">{t('tour.noPin')}</p>}
+                  ? <p className="text-caption text-ink-3 truncate mt-0.5">{stop.artist ?? stop.location_description}</p>
+                  : <p className="text-caption text-guessing truncate mt-0.5">{t('tour.noPin')}</p>}
               </div>
               {/* actions */}
               <div className="flex items-center pr-2 gap-1">
@@ -129,7 +129,7 @@ export default function TourPage() {
                 <div className="w-0.5 h-5 bg-groove rounded-full" />
                 {(() => {
                   const km = legKm(stop, stops[i + 1])
-                  return km !== null && <span className="text-[11px] text-ink-3">{t('tour.walkMin', { n: legMins(km) })}</span>
+                  return km !== null && <span className="text-caption text-ink-3">{t('tour.walkMin', { n: legMins(km) })}</span>
                 })()}
               </div>
             )}
@@ -164,15 +164,15 @@ export default function TourPage() {
           </div>
         </div>
         {routable.length < stops.length && (
-          <p className="text-[11px] text-guessing text-center mb-3">{t('tour.partial', { n: routable.length, m: stops.length })}</p>
+          <p className="text-caption text-guessing text-center mb-3">{t('tour.partial', { n: routable.length, m: stops.length })}</p>
         )}
         {routable.length > MAX_ROUTE_STOPS && (
-          <p className="text-[11px] text-ink-3 text-center mb-3">{t('tour.cap', { n: MAX_ROUTE_STOPS })}</p>
+          <p className="text-caption text-ink-3 text-center mb-3">{t('tour.cap', { n: MAX_ROUTE_STOPS })}</p>
         )}
         <button
           onClick={startTour}
           disabled={!canNavigate}
-          className="w-full bg-sea text-white rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-[14px] disabled:opacity-50"
+          className="w-full bg-sea text-white rounded-full py-3 flex items-center justify-center gap-2 font-display font-semibold text-body disabled:opacity-50"
         >
           <Navigation size={15} />
           {canNavigate ? (routable.length < stops.length ? t('tour.startPartial', { n: usedStops.length }) : t('tour.start')) : t('tour.pending')}

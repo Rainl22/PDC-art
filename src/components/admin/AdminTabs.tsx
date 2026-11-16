@@ -18,7 +18,7 @@ export function AdminTabs({ pending = 0 }: { pending?: number }) {
         const active = t.exact ? path === t.href : path.startsWith(t.href)
         return (
           <Link key={t.href} href={t.href}
-            className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-display font-semibold tracking-wide transition-colors
+            className={`shrink-0 px-3 py-1 rounded-full text-caption font-display font-semibold tracking-wide transition-colors
               ${active ? 'bg-ink text-surface' : 'bg-groove text-ink-2'}`}>
             {t.label}
             {t.href === '/admin/submissions' && pending > 0 && (

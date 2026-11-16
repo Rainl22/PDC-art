@@ -16,11 +16,11 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
         </Link>
       </header>
       <article className="px-5 py-5 max-w-prose mx-auto">
-        <p className="text-[11px] text-ink-3">{t('legal.updated')}: {doc.updated}</p>
+        <p className="text-caption text-ink-3">{t('legal.updated')}: {doc.updated}</p>
         <p className="text-[13px] text-ink-2 leading-relaxed mt-3">{doc.intro}</p>
         {doc.sections.map(s => (
           <section key={s.h} className="mt-6">
-            <h2 className="font-display font-bold text-[14px] text-ink">{s.h}</h2>
+            <h2 className="font-display font-bold text-body text-ink">{s.h}</h2>
             {s.p.map((para, i) => (
               <p key={i} className="text-[13px] text-ink-2 leading-relaxed mt-2">{para}</p>
             ))}

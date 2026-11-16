@@ -23,7 +23,7 @@ export default async function AdminHome() {
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${hot ? 'bg-likely-bg text-likely' : 'bg-sea-tint text-sea'}`}><Icon size={18} /></div>
           <div className="flex-1">
             <p className="font-display font-bold text-[20px] leading-none">{n}</p>
-            <p className="text-[12px] text-ink-2 mt-1">{label}</p>
+            <p className="text-small text-ink-2 mt-1">{label}</p>
           </div>
           <ChevronRight size={16} className="text-ink-3" />
         </Link>
