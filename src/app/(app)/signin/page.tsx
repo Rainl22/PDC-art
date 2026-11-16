@@ -14,7 +14,7 @@ export default function SignInPage({ searchParams }: { searchParams: { next?: st
       </div>
       <p className="text-[13px] text-ink-2 mt-3 mb-5">{t('auth.intro')}</p>
       {searchParams.error === 'callback' && (
-        <p className="text-[12px] text-guessing mb-3" role="alert">{t('auth.callbackError')}</p>
+        <p className="text-small text-guessing mb-3" role="alert">{t('auth.callbackError')}</p>
       )}
       <SignInForm next={searchParams.next} />
     </main>

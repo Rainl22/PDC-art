@@ -19,7 +19,7 @@ export function CommentRow({ row }: { row: Row }) {
   return (
     <div className="bg-surface rounded-xl p-3 flex items-start gap-3">
       <div className="flex-1 min-w-0">
-        <p className="text-[11px] text-ink-3">
+        <p className="text-caption text-ink-3">
           {row.author_name ?? 'Anonymous'} · {new Date(row.created_at).toLocaleDateString()}
           {row.murals && <> · <Link href={`/gallery/${row.murals.slug}`} className="text-sea underline underline-offset-2">{row.murals.title}</Link></>}
         </p>

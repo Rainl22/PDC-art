@@ -188,7 +188,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         <div><label className={adminLabel}>Notes</label><textarea className={adminField} rows={4} value={notes} onChange={e => setNotes(e.target.value)} /></div>
       </div>
 
-      {msg && <p className={`text-[12px] ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="status">{msg.text}</p>}
+      {msg && <p className={`text-small ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="status">{msg.text}</p>}
       <div className="flex flex-wrap gap-2">
         <button className={primaryBtn} onClick={save} disabled={busy || uploading}>{busy ? 'Saving…' : mural ? 'Save changes' : 'Create mural'}</button>
         {mural && <Link href={`/gallery/${mural.slug}`} className={ghostBtn}>View</Link>}

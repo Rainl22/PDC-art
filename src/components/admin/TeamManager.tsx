@@ -46,7 +46,7 @@ export function TeamManager({ members, myEmail, myRole }: { members: Member[]; m
 
   return (
     <div className="space-y-4">
-      <div className="bg-surface rounded-xl p-4 text-[12px] text-ink-2 leading-relaxed space-y-1">
+      <div className="bg-surface rounded-xl p-4 text-small text-ink-2 leading-relaxed space-y-1">
         <p><b>Owner</b> — the main account. Can’t be removed by anyone.</p>
         <p><b>Moderator</b> — can review and publish submissions, edit murals, moderate comments, and add or remove other moderators. Can’t remove the owner.</p>
       </div>
@@ -55,11 +55,11 @@ export function TeamManager({ members, myEmail, myRole }: { members: Member[]; m
         {members.map(m => (
           <li key={m.email} className="bg-surface rounded-xl p-3 flex items-center gap-3">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'owner' ? 'bg-likely-bg text-likely' : 'bg-sea-tint text-sea'}`}>
-              {m.role === 'owner' ? <Crown size={14} /> : <span className="text-[12px] font-bold">{m.email[0]?.toUpperCase()}</span>}
+              {m.role === 'owner' ? <Crown size={14} /> : <span className="text-small font-bold">{m.email[0]?.toUpperCase()}</span>}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] truncate">{m.email}{m.email.toLowerCase() === myEmail.toLowerCase() ? ' (you)' : ''}</p>
-              <p className="text-[11px] text-ink-3 capitalize">{m.role}</p>
+              <p className="text-caption text-ink-3 capitalize">{m.role}</p>
             </div>
             {m.role !== 'owner' && (
               <button className={ghostBtn} disabled={busy} onClick={() => remove(m)} aria-label={`Remove ${m.email}`}>
@@ -78,7 +78,7 @@ export function TeamManager({ members, myEmail, myRole }: { members: Member[]; m
         </div>
         <p className="text-[10px] text-ink-3">They sign in at /signin with a magic link sent to this exact email, and get access right away. Signed in as {myRole}.</p>
       </div>
-      {msg && <p className={`text-[12px] ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="alert">{msg.text}</p>}
+      {msg && <p className={`text-small ${msg.ok ? 'text-certain' : 'text-guessing'}`} role="alert">{msg.text}</p>}
     </div>
   )
 }

@@ -154,7 +154,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
           <button
             onClick={buildTour}
             disabled={selected.size < 2}
-            className="bg-sea text-white rounded-full px-4 py-2 text-[12px] font-display font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-sea text-white rounded-full px-4 py-2 text-small font-display font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {t('select.build')}
           </button>

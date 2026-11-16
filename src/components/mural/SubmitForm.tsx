@@ -132,7 +132,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
             {existing ? t('submit.backTo', { title: existing.title }) : t('submit.goBack')}
           </button>
           <button type="button" onClick={another}
-            className="inline-flex items-center gap-1 rounded-full border border-groove text-ink-2 px-4 py-2 text-[12px] font-display font-semibold">
+            className="inline-flex items-center gap-1 rounded-full border border-groove text-ink-2 px-4 py-2 text-small font-display font-semibold">
             <Plus size={13} />
             {t('submit.another')}
           </button>
@@ -152,7 +152,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist>
       {photosMode ? (
         <fieldset className="space-y-2">
-          <legend className="text-[12px] font-medium text-ink-2 mb-1">{t('submit.photoKindQ')}</legend>
+          <legend className="text-small font-medium text-ink-2 mb-1">{t('submit.photoKindQ')}</legend>
           {(['photos_same', 'photos_repainted'] as const).map(k => (
             <label key={k} className={`flex items-center gap-2 rounded-md px-3 py-2.5 text-[13px] border cursor-pointer ${photoKind === k ? 'border-sea bg-sea-tint text-sea' : 'border-groove bg-surface'}`}>
               <input type="radio" name="photoKind" checked={photoKind === k} onChange={() => setPhotoKind(k)} className="accent-sea" />
@@ -162,7 +162,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
           {photoKind === 'photos_repainted' && (
             <div>
               <input className={field} maxLength={120} value={newName} onChange={e => setNewName(e.target.value)} placeholder={`${t('submit.newName')} — ${existing!.title}`} />
-              <p className="text-[11px] text-ink-3 mt-1">{t('submit.newNameHint')}</p>
+              <p className="text-caption text-ink-3 mt-1">{t('submit.newNameHint')}</p>
             </div>
           )}
           <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
@@ -171,7 +171,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
         <>
           <div>
             <input className={field} maxLength={120} value={newName} onChange={e => setNewName(e.target.value)} placeholder={`${t('submit.newName')} — ${existing!.title}`} />
-            <p className="text-[11px] text-ink-3 mt-1">{t('submit.newNameHint')}</p>
+            <p className="text-caption text-ink-3 mt-1">{t('submit.newNameHint')}</p>
           </div>
           <input className={field} list="known-artists" autoComplete="off" placeholder={t('submit.artistPhNew')} value={artist} onChange={e => setArtist(e.target.value)} />
           <LocationPicker coords={coords} source={source} onChange={(c, src) => { setCoords(c); setSource(src) }} />
@@ -208,21 +208,21 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
             </label>
           )}
         </div>
-        <p className="text-[11px] text-ink-3 mt-1.5">{existing && !photosMode && !updateMode ? '' : '* '}{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
+        <p className="text-caption text-ink-3 mt-1.5">{existing && !photosMode && !updateMode ? '' : '* '}{t('submit.photoHint', { n: MAX_PHOTOS })}</p>
       </div>
 
-      <p className="text-[11px] text-ink-3 leading-snug">
+      <p className="text-caption text-ink-3 leading-snug">
         {t('submit.rights')}{' '}
         <Link href="/terms" className="underline underline-offset-2">{t('submit.rightsLink')}</Link>.
       </p>
 
-      {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
+      {error && <p className="text-small text-guessing" role="alert">{error}</p>}
       <button type="submit" disabled={(!photosMode && !verifyMode && !updateMode && !location.trim() && !coords) || loading}
-        className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
+        className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-body disabled:opacity-40">
         {loading ? t('submit.submitting') : t('submit.submit')}
       </button>
       <button type="button" onClick={cancel} disabled={loading}
-        className="w-full rounded-full border border-groove text-ink-2 font-display font-medium py-3 text-[14px] disabled:opacity-40">
+        className="w-full rounded-full border border-groove text-ink-2 font-display font-medium py-3 text-body disabled:opacity-40">
         {t('submit.cancel')}
       </button>
     </form>

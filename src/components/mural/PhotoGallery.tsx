@@ -107,7 +107,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center">
                 <ChevronRight size={22} />
               </button>
-              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[12px] text-white/90 font-display">{open + 1} / {n}</span>
+              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-white/90 font-display">{open + 1} / {n}</span>
             </>
           )}
         </div>

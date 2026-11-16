@@ -17,7 +17,7 @@ export function VerifyMenu({ slug, title }: { slug: string; title: string }) {
     return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', esc) }
   }, [open])
   const q = `mural=${encodeURIComponent(slug)}&title=${encodeURIComponent(title)}`
-  const item = 'flex items-center gap-2 px-3 py-2.5 text-[12px] font-display font-semibold text-ink hover:bg-bg'
+  const item = 'flex items-center gap-2 px-3 py-2.5 text-small font-display font-semibold text-ink hover:bg-bg'
   return (
     <div ref={ref} className="relative inline-block">
       <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu"

@@ -60,7 +60,7 @@ export function CommentForm({ muralId }: { muralId: string }) {
           <Send size={13} />
         </button>
       </div>
-      {error && <p className="text-[12px] text-guessing" role="alert">{error}</p>}
+      {error && <p className="text-small text-guessing" role="alert">{error}</p>}
     </div>
   )
 }

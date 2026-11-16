@@ -10,7 +10,7 @@ export default async function SubmissionsPage() {
   const done = all.filter(s => s.status !== 'pending')
   return (
     <div className="space-y-4">
-      <details className="bg-surface rounded-xl p-4 text-[12px] text-ink-2 leading-relaxed">
+      <details className="bg-surface rounded-xl p-4 text-small text-ink-2 leading-relaxed">
         <summary className="cursor-pointer font-display font-semibold text-ink">How reviewing works</summary>
         <ul className="list-disc pl-4 mt-2 space-y-1.5">
           <li><b>Auto-verified</b> (green tag): a photo plus GPS within 50 m of the mural’s pin was applied automatically. Nothing to do; check the photo if you like.</li>
@@ -27,7 +27,7 @@ export default async function SubmissionsPage() {
       {pending.map(s => <SubmissionCard key={s.id} submission={s} />)}
       {done.length > 0 && (
         <>
-          <h2 className="font-display font-bold text-[14px] text-ink-2 pt-4">Reviewed ({done.length})</h2>
+          <h2 className="font-display font-bold text-body text-ink-2 pt-4">Reviewed ({done.length})</h2>
           {done.map(s => <SubmissionCard key={s.id} submission={s} />)}
         </>
       )}
