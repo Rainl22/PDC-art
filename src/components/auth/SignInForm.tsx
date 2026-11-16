@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, MailCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { createImplicitClient } from '@/lib/supabase/implicit'
 import { useT } from '@/lib/i18n/client'
 
 const field = 'w-full text-[13px] bg-surface rounded-md px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
@@ -25,8 +26,6 @@ export function SignInForm({ next }: { next?: string }) {
   const [sentTo, setSentTo] = useState<string | null>(null)
   const [error, setError] = useState<'send' | 'rate' | null>(null)
   const [google, setGoogle] = useState(false)
-  const [code, setCode] = useState('')
-  const [codeError, setCodeError] = useState(false)
 
   // Show "Continue with Google" only once the provider is switched on in Supabase (no redeploy needed).
   useEffect(() => {
@@ -39,9 +38,9 @@ export function SignInForm({ next }: { next?: string }) {
     const address = email.trim()
     if (!address || busy) return
     setBusy(true); setError(null)
-    const { error: err } = await createClient().auth.signInWithOtp({
+    const { error: err } = await createImplicitClient().auth.signInWithOtp({
       email: address,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/finish?next=${encodeURIComponent(safeNext)}` },
     })
     setBusy(false)
     // too many emails requested in a short time (the hourly limit of the email service), not a problem with the address
@@ -58,33 +57,14 @@ export function SignInForm({ next }: { next?: string }) {
     if (err) { setBusy(false); setError('send') }
   }
 
-  async function verifyCode(e: React.FormEvent) {
-    e.preventDefault()
-    if (!sentTo || busy) return
-    setBusy(true); setCodeError(false)
-    const { error: err } = await createClient().auth.verifyOtp({ email: sentTo, token: code.trim(), type: 'email' })
-    if (err) { setBusy(false); setCodeError(true); return }
-    window.location.assign(safeNext)   // full load so the server sees the new session
-  }
-
   if (sentTo) {
     return (
-      <div className="bg-surface rounded-md p-6 text-center space-y-4">
+      <div className="bg-surface rounded-md p-6 text-center">
         <div>
           <MailCheck className="mx-auto text-certain" size={36} />
           <p className="font-display font-semibold mt-3">{t('auth.checkTitle')}</p>
           <p className="text-[13px] text-ink-2 mt-1">{t('auth.checkBody', { email: sentTo })}</p>
         </div>
-        <form onSubmit={verifyCode} className="space-y-2 text-left border-t border-groove pt-4">
-          <label className="block text-[12px] text-ink-2">{t('auth.codeLabel')}</label>
-          <input className={`${field} tracking-[0.3em] text-center`} inputMode="numeric" autoComplete="one-time-code" maxLength={8}
-            value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" />
-          {codeError && <p className="text-[12px] text-guessing" role="alert">{t('auth.errCode')}</p>}
-          <button type="submit" disabled={code.length < 6 || busy}
-            className="w-full rounded-full border border-sea text-sea font-display font-medium py-2.5 text-[13px] disabled:opacity-40">
-            {busy ? t('auth.sending') : t('auth.codeBtn')}
-          </button>
-        </form>
       </div>
     )
   }
