@@ -67,6 +67,13 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
     else router.push(existing ? `/gallery/${existing.slug}` : '/gallery')
   }
 
+  /** Close the form: back to where the person came from, asking first if they've already filled something in. */
+  function cancel() {
+    const dirty = !!((title.trim() && title.trim() !== (existing?.title ?? '')) || artist.trim() || location.trim() || notes.trim() || newName.trim() || files.length || coords)
+    if (dirty && !window.confirm(t('submit.discard'))) return
+    goBack()
+  }
+
   function another() {
     setTitle(existing?.title ?? ''); setArtist(''); setLocation(''); setNotes(''); setFiles([])
     setCoords(null); setSource(null); setError(null); setPhotoKind('photos_same'); setNewName(''); setDone(false)
@@ -136,6 +143,10 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
 
   return (
     <form onSubmit={submit} className="space-y-3">
+      <button type="button" onClick={cancel} aria-label={t('submit.close')}
+        className="absolute right-4 top-safe-or-12 w-9 h-9 rounded-full bg-groove text-ink-2 flex items-center justify-center">
+        <X size={16} />
+      </button>
       <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
         className="absolute left-[-9999px] w-px h-px opacity-0" />
       <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist>
@@ -209,6 +220,10 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       <button type="submit" disabled={(!photosMode && !verifyMode && !updateMode && !location.trim() && !coords) || loading}
         className="w-full rounded-full bg-sea text-white font-display font-medium py-3 text-[14px] disabled:opacity-40">
         {loading ? t('submit.submitting') : t('submit.submit')}
+      </button>
+      <button type="button" onClick={cancel} disabled={loading}
+        className="w-full rounded-full border border-groove text-ink-2 font-display font-medium py-3 text-[14px] disabled:opacity-40">
+        {t('submit.cancel')}
       </button>
     </form>
   )
