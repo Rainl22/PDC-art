@@ -111,8 +111,11 @@ tailwind.config.ts
 - Not built: AI same-vs-new check (admin decides from the user's choice + photos).
 
 ## To do (owner)
-- [ ] **Decide on `006_spam_protection.sql`: it was never applied to the database** (no rate limits on comments/submissions, vote function not the fixed version). Applying it adds limits (5 submissions/hour/IP, comments 5/10 min) that also affect your own testing.
-- [ ] Supabase Auth → URL Configuration: Site URL = https://pdc-art.vercel.app and Redirect URLs include https://pdc-art.vercel.app/** (sign-in emails currently send people to localhost).
+- [x] `006_spam_protection.sql` applied (adapted: `create or replace trigger`). Limits per connection: 5 submissions/hour, 5 comments/10 min, 4 photos, 1 vote/mural/day; your own testing counts too.
+- [ ] Supabase Auth → URL Configuration (new domain): Site URL = https://www.murles-pdc.art; Redirect URLs: https://www.murles-pdc.art/**, https://murles-pdc.art/**, https://pdc-art.vercel.app/**, http://localhost:3000/** (sign-in emails currently send people to localhost).
+- [ ] Vercel → Domains: optionally redirect pdc-art.vercel.app to www.murles-pdc.art. Re-enable admin alerts on the new domain (push subscriptions are per site) and sign in again there.
+- [ ] Set `NEXT_PUBLIC_CONTACT_EMAIL` in Vercel (a contact address for privacy requests / takedowns) and redeploy; the privacy notice falls back to the Submit form without it.
+- [ ] Before adding a tip jar: check Vercel's Hobby-plan Fair Use rules, and add a line to the Terms that tips are voluntary and non-refundable.
 - [x] Walls migration applied (school wall pair; Maria Felix + Mayan Woman); `changes_often` set on dia-de-muertos-2025 and dia-de-muertos-school. New/moved murals regroup automatically (20 m, chained).
 - [x] Auto-verify (011), artist directory (010), push alerts (012 + `notify-submission` Edge Function) are live.
 - [ ] Run the `remove_team_member` function from `supabase/migrations/013_team_roles.sql` in the Supabase SQL editor (the rest of 013 is applied; Remove on the Team page fails until this runs).

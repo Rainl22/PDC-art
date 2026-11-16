@@ -15,15 +15,15 @@ const contact = (l: Locale) =>
 export function privacy(l: Locale): LegalDoc {
   if (l === 'es') return {
     title: 'Aviso de privacidad',
-    updated: '15 de noviembre de 2026',
+    updated: '16 de noviembre de 2026',
     intro: 'Murales PDC es un mapa comunitario del arte urbano de Playa del Carmen, Quintana Roo, México. Este aviso explica qué datos tratamos, para qué y cuáles son tus derechos conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.',
     sections: [
       { h: '1. Responsable', p: ['El responsable del tratamiento de tus datos personales es la persona u organización que opera Murales PDC (“nosotros”).', contact('es')] },
       { h: '2. Qué datos recopilamos', p: [
         'Envíos: las fotos que subes, la ubicación (dirección escrita, punto en el mapa, tu ubicación si decides compartirla o los datos de GPS de la foto) y, si quieres, título, artista y notas.',
-        'Comentarios y votos “sigue aquí”: el texto y, de forma opcional, un nombre que elijas mostrar.',
-        'Cuenta (opcional): tu correo electrónico, solo si decides iniciar sesión.',
-        'En tu dispositivo: tu lista de recorrido (almacenamiento local), tu idioma (cookie) y, si inicias sesión, cookies de sesión.',
+        'Comentarios, votos y “me gusta”: el texto y, de forma opcional, un nombre que elijas mostrar. Para frenar el spam y contar un solo voto o “me gusta” por persona, guardamos un resumen cifrado e irreversible de tu dirección IP (no la IP en sí) y, para los “me gusta”, un identificador aleatorio que se guarda en tu dispositivo.',
+        'Cuenta (opcional): tu correo electrónico, solo si decides iniciar sesión. Si formas parte del equipo de moderación y activas las alertas, también guardamos la dirección de notificaciones de tu navegador.',
+        'En tu dispositivo: tu lista de recorrido, tus “me gusta”, un identificador aleatorio del dispositivo y si ya permitiste la ubicación (almacenamiento local), tu idioma (cookie) y, si inicias sesión, cookies de sesión.',
         'Datos técnicos: dirección IP y registros básicos que procesan nuestros proveedores de alojamiento.',
         'No usamos publicidad ni rastreadores de terceros, y no vendemos tus datos.',
       ] },
@@ -52,15 +52,15 @@ export function privacy(l: Locale): LegalDoc {
   }
   return {
     title: 'Privacy Notice',
-    updated: 'November 15, 2026',
+    updated: 'November 16, 2026',
     intro: 'Murales PDC is a community map of street art in Playa del Carmen, Quintana Roo, Mexico. This notice explains what data we handle, why, and your rights under Mexico’s Federal Law on the Protection of Personal Data Held by Private Parties.',
     sections: [
       { h: '1. Who is responsible', p: ['The party responsible for your personal data is the person or organisation that operates Murales PDC (“we”).', contact('en')] },
       { h: '2. What we collect', p: [
         'Submissions: the photos you upload, the location (typed address, map pin, your device location if you choose to share it, or GPS data in the photo) and, optionally, a title, artist and notes.',
-        'Comments and “still here” votes: the text and, optionally, a name you choose to display.',
-        'Account (optional): your email address, only if you choose to sign in.',
-        'On your device: your tour list (local storage), your language (cookie) and, if you sign in, session cookies.',
+        'Comments, votes and likes: the text and, optionally, a name you choose to display. To limit spam and count one vote or like per person, we store a one-way hash of your IP address (not the address itself) and, for likes, a random ID kept on your device.',
+        'Account (optional): your email address, only if you choose to sign in. If you are on the moderation team and turn on alerts, we also store your browser’s notification address.',
+        'On your device: your tour list, your likes, a random device ID and whether you already allowed location (local storage), your language (cookie) and, if you sign in, session cookies.',
         'Technical data: IP address and basic logs processed by our hosting providers.',
         'We don’t use advertising or third-party trackers, and we don’t sell your data.',
       ] },
