@@ -46,6 +46,7 @@ const config: Config = {
         gutter:          'var(--space-gutter)',
         grid:            'var(--space-grid)',
         'card-inset':    'var(--space-card-inset)',
+        'card-inset-x':  'var(--space-card-inset-x)',
         'sheet-overlap': 'var(--space-sheet-overlap)',
         control:         'var(--control-h)',
         'gap-control':   'var(--gap-control)',

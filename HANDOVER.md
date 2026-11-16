@@ -111,6 +111,7 @@ tailwind.config.ts
 - Not built: AI same-vs-new check (admin decides from the user's choice + photos).
 
 ## To do (owner)
+- [ ] Sign-in robustness (Supabase dashboard): (1) Authentication → Email Templates → **Magic Link** and **Confirm signup**: add the 6-digit code `{{ .Token }}` next to the link so people can type it in the app; (2) Authentication → Providers → **Google**: create an OAuth client in Google Cloud (redirect URI `https://vnezefzguhjhlmbuktlm.supabase.co/auth/v1/callback`, origin `https://www.murles-pdc.art`), paste Client ID/Secret, enable. The "Continue with Google" button shows up on its own once Google is enabled; (3) optional: custom SMTP (e.g. Resend) to lift the hourly email limit.
 - [x] `006_spam_protection.sql` applied (adapted: `create or replace trigger`). Limits per connection: 5 submissions/hour, 5 comments/10 min, 4 photos, 1 vote/mural/day; your own testing counts too.
 - [ ] Supabase Auth → URL Configuration (new domain): Site URL = https://www.murles-pdc.art; Redirect URLs: https://www.murles-pdc.art/**, https://murles-pdc.art/**, https://pdc-art.vercel.app/**, http://localhost:3000/** (sign-in emails currently send people to localhost).
 - [ ] Vercel → Domains: optionally redirect pdc-art.vercel.app to www.murles-pdc.art. Re-enable admin alerts on the new domain (push subscriptions are per site) and sign in again there.

@@ -34,6 +34,9 @@ export function MuralCard({ mural, selectable, selected, onSelect, distance }: P
         ? <img src={cover} alt={mural.title} className="absolute inset-0 w-full h-full object-cover" />
         : <div className="absolute inset-0" style={{ background: gradient }} />
       }
+      {/* warm soft-light tint so photos taken in different light feel like one set */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-soft-light"
+        style={{ background: 'var(--image-tint)', opacity: 'var(--image-tint-opacity)' }} />
 
       {mural.photos?.length > 1 && (
         <span className="absolute top-2 left-2 flex items-center gap-1 text-caption font-display font-semibold text-white bg-black/50 rounded-full px-1.5 py-0.5">
@@ -48,7 +51,7 @@ export function MuralCard({ mural, selectable, selected, onSelect, distance }: P
       )}
 
       {/* overlay card: floats over the lower part of the photo; every line is one line so all cards are the same height */}
-      <div className="absolute inset-x-card-inset bottom-card-inset rounded-card bg-surface px-3 pt-2.5 pb-2.5">
+      <div className="absolute inset-x-card-inset-x bottom-card-inset rounded-card bg-surface px-3 pt-2.5 pb-2.5">
         <p className="text-card font-medium text-ink truncate">
           {mural.title?.trim() || t('card.untitled')}
         </p>
