@@ -27,6 +27,10 @@
   --r-xl:   32px;
   --r-full: 9999px;
 
+  /* photo tint on gallery cards: a warm colour blended in with soft-light so contrast and highlights survive */
+  --image-tint:         #C9A57B;
+  --image-tint-opacity: 0.5;
+
   /* radius roles (use these in components instead of raw values) */
   --r-panel: var(--r-md);   /* cards inside a card: info panel, inputs */
   --r-card:  var(--r-lg);   /* gallery card, overlay card */
@@ -35,7 +39,8 @@
   /* spacing roles (4px grid; Tailwind's default scale is the same grid) */
   --space-gutter:       1rem;     /* screen edge */
   --space-grid:         0.75rem;  /* between gallery cards */
-  --space-card-inset:   0.625rem; /* gap between the overlay card and the bottom of the image */
+  --space-card-inset:   0.625rem; /* gap between the overlay card and the bottom of the photo */
+  --space-card-inset-x: 0.25rem;  /* gap between the overlay card and the left/right edges of the photo (much narrower than the bottom) */
   --space-sheet-overlap: 1.5rem;  /* how far the white sheet rides over the hero image */
   --inset-top-controls: max(env(safe-area-inset-top, 0px), 1.5rem); /* back button, menu button, search bar */
   --control-h:          2.75rem;  /* round control buttons, search bar */
