@@ -144,7 +144,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
   return (
     <form onSubmit={submit} className="space-y-3">
       <button type="button" onClick={cancel} aria-label={t('submit.close')}
-        className="absolute right-4 top-safe-or-12 w-9 h-9 rounded-full bg-groove text-ink-2 flex items-center justify-center">
+        className="absolute right-gutter top-controls w-control h-control rounded-full bg-groove text-ink-2 flex items-center justify-center">
         <X size={16} />
       </button>
       <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"

@@ -47,9 +47,9 @@ export function MuralCard({ mural, selectable, selected, onSelect, distance }: P
         </div>
       )}
 
-      {/* overlay card: edge to edge, lifted off the bottom of the photo */}
-      <div className="absolute inset-x-0 bottom-card-inset rounded-card bg-surface px-3 pt-2.5 pb-2.5">
-        <p className="text-card font-medium text-ink line-clamp-2">
+      {/* overlay card: floats over the lower part of the photo; every line is one line so all cards are the same height */}
+      <div className="absolute inset-x-card-inset bottom-card-inset rounded-card bg-surface px-3 pt-2.5 pb-2.5">
+        <p className="text-card font-medium text-ink truncate">
           {mural.title?.trim() || t('card.untitled')}
         </p>
         <p className={`text-caption mt-0.5 truncate ${mural.artist ? 'text-sea' : 'text-ink-3'}`}>
@@ -59,7 +59,7 @@ export function MuralCard({ mural, selectable, selected, onSelect, distance }: P
           {distance && <span className="text-sea font-semibold">{distance} · </span>}
           {locationText}
         </p>
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-2 flex gap-1 h-[1.125rem] overflow-hidden">  {/* at most 2 tags: status, then Changed */}
           <ConfidenceBadge level={mural.confidence} sm />
           <ArtworkBadge mural={mural} sm />
         </div>

@@ -39,6 +39,7 @@ export interface Mural {
   previous_photos?: string[]
   artwork_history?: { title: string; photos: string[]; replaced_at: string }[]  // earlier versions: old name + old photos
   cover_photo: string | null
+  like_count?: number
   still_here_count: number
   removed_count: number
   unsure_count: number

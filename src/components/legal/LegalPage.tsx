@@ -8,7 +8,7 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
   const { t } = getT()
   return (
     <main className="bg-surface min-h-dvh">
-      <header className="sticky top-0 z-10 bg-surface border-b border-groove px-4 pt-safe py-3 flex items-center gap-3">
+      <header className="sticky top-0 z-10 bg-surface border-b border-groove px-gutter pt-controls pb-3 flex items-center gap-3 min-h-control box-content">
         <MenuButton />
         <h1 className="flex-1 font-display font-bold text-[17px] tracking-tight">{doc.title}</h1>
         <Link href="/gallery" aria-label={t('legal.back')} className="w-9 h-9 rounded-full flex items-center justify-center text-ink-2 hover:bg-bg">

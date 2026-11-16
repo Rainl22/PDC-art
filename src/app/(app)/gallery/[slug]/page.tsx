@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ConfidenceBadge } from '@/components/ui/ConfidenceBadge'
 import { ArtworkBadge } from '@/components/ui/ArtworkBadge'
 import { PlaceTags } from '@/components/ui/PlaceTags'
+import { LikeButton } from '@/components/mural/LikeButton'
 import { StatusVoting } from '@/components/mural/StatusVoting'
 import { CommentForm } from '@/components/mural/CommentForm'
 import { LocationPill } from '@/components/ui/LocationPill'
@@ -81,6 +82,7 @@ export default async function MuralDetailPage({ params }: Props) {
         <div>
           <div className="flex items-start justify-between gap-3">
             <h1 className="font-display font-bold text-title leading-tight tracking-tight flex-1">{m.title?.trim() || t('card.untitled')}</h1>
+            <LikeButton muralId={m.id} count={m.like_count ?? 0} />
           </div>
           <p className="text-sea text-body font-medium mt-1"><ArtistLinks mural={m} /></p>
         </div>

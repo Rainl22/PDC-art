@@ -50,14 +50,14 @@ export default function TourPage() {
 
   if (loading) return (
     <div className="relative flex items-center justify-center h-[calc(100dvh-var(--nav-h))]">
-      <MenuButton className="absolute top-safe-or-12 left-4" />
+      <MenuButton className="absolute top-controls left-gutter" />
       <div className="w-8 h-8 border-2 border-sea border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   if (stops.length === 0) return (
     <div className="relative flex flex-col items-center justify-center h-[calc(100dvh-var(--nav-h))] gap-4 px-8 text-center">
-      <MenuButton className="absolute top-safe-or-12 left-4" />
+      <MenuButton className="absolute top-controls left-gutter" />
       <div className="w-16 h-16 rounded-2xl bg-sea-tint flex items-center justify-center">
         <Navigation size={28} className="text-sea" />
       </div>
@@ -75,7 +75,7 @@ export default function TourPage() {
   return (
     <div className="flex flex-col min-h-[calc(100dvh-var(--nav-h))] bg-bg">
       {/* header */}
-      <header className="bg-surface border-b border-groove sticky top-0 z-10 px-4 pt-safe pb-0">
+      <header className="bg-surface border-b border-groove sticky top-0 z-10 px-gutter pt-controls pb-0">
         <div className="py-3 flex items-start gap-3">
           <MenuButton />
           <div className="flex-1">

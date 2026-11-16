@@ -12,6 +12,7 @@ const CFG: Record<ConfidenceLevel, { tone: TagTone; dot: TagDot }> = {
 
 export function ConfidenceBadge({ level, sm }: { level: ConfidenceLevel; sm?: boolean }) {
   const { t } = useT()
-  const { tone, dot } = CFG[level]
-  return <Tag tone={tone} dot={dot} size={sm ? 'sm' : 'md'}>{t(`conf.${level}`)}</Tag>
+  const shown: ConfidenceLevel = level === 'likely' ? 'unverified' : level   // "likely" was merged into "unverified"
+  const { tone, dot } = CFG[shown]
+  return <Tag tone={tone} dot={dot} size={sm ? 'sm' : 'md'}>{t(`conf.${shown}`)}</Tag>
 }
