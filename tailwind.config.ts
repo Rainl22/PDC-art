@@ -49,6 +49,7 @@ const config: Config = {
         'sheet-overlap': 'var(--space-sheet-overlap)',
         control:         'var(--control-h)',
         'gap-control':   'var(--gap-control)',
+        controls:        'var(--inset-top-controls)',
       },
       padding: {
         'safe':       'env(safe-area-inset-bottom, 0px)',
@@ -57,7 +58,6 @@ const config: Config = {
       },
       inset: {
         'safe-or-12': 'max(env(safe-area-inset-top, 0px), 3rem)',
-        controls:     'var(--inset-top-controls)',
       },
     },
   },

@@ -10,8 +10,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { count } = await supabase.from('submissions').select('id', { count: 'exact', head: true }).eq('status', 'pending')
   return (
     <div className="bg-bg min-h-dvh">
-      <header className="bg-surface border-b border-groove sticky top-0 z-10 pt-safe">
-        <div className="px-4 py-3 flex items-center gap-3">
+      <header className="bg-surface border-b border-groove sticky top-0 z-10 pt-controls">
+        <div className="px-gutter h-control mb-3 flex items-center gap-3">
           <MenuButton />
           <Link href="/admin" className="flex-1 font-display font-bold text-[17px] tracking-tight">Admin</Link>
           <Link href="/profile" className="text-[12px] text-ink-3 font-medium">Profile</Link>

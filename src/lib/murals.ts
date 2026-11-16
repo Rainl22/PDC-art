@@ -1,4 +1,5 @@
 import { createClient } from './supabase/client'
+import { getDeviceId } from './device'
 import type { Mural, Comment, Submission, StatusVote } from '@/types/mural'
 
 export async function getMurals(): Promise<Mural[]> {
@@ -64,4 +65,12 @@ export async function submitMural(submission: Omit<Submission, 'id' | 'status' |
     status: 'pending',
   })
   if (error) throw error
+}
+
+/** Like / unlike (one per device); returns the new total. */
+export async function setLike(muralId: string, liked: boolean): Promise<number> {
+  const supabase = createClient()
+  const { data, error } = await supabase.rpc('set_like', { p_mural: muralId, p_device: getDeviceId(), p_liked: liked })
+  if (error) throw error
+  return Number(data ?? 0)
 }

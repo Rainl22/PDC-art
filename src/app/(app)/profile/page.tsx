@@ -17,8 +17,8 @@ export default async function ProfilePage() {
   const { data: isAdmin } = await supabase.rpc('is_admin')
 
   return (
-    <main className="px-4 pt-safe-or-12 pb-6 max-w-lg mx-auto space-y-5">
-      <div className="flex items-center gap-3">
+    <main className="px-gutter pt-controls pb-6 max-w-lg mx-auto space-y-5">
+      <div className="flex items-center gap-3 min-h-control">
         <MenuButton />
         <h1 className="font-display text-2xl font-bold text-ink">{t('profile.title')}</h1>
       </div>

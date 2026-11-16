@@ -111,6 +111,8 @@ tailwind.config.ts
 - Not built: AI same-vs-new check (admin decides from the user's choice + photos).
 
 ## To do (owner)
+- [ ] **Decide on `006_spam_protection.sql`: it was never applied to the database** (no rate limits on comments/submissions, vote function not the fixed version). Applying it adds limits (5 submissions/hour/IP, comments 5/10 min) that also affect your own testing.
+- [ ] Supabase Auth → URL Configuration: Site URL = https://pdc-art.vercel.app and Redirect URLs include https://pdc-art.vercel.app/** (sign-in emails currently send people to localhost).
 - [x] Walls migration applied (school wall pair; Maria Felix + Mayan Woman); `changes_often` set on dia-de-muertos-2025 and dia-de-muertos-school. New/moved murals regroup automatically (20 m, chained).
 - [x] Auto-verify (011), artist directory (010), push alerts (012 + `notify-submission` Edge Function) are live.
 - [ ] Run the `remove_team_member` function from `supabase/migrations/013_team_roles.sql` in the Supabase SQL editor (the rest of 013 is applied; Remove on the Team page fails until this runs).

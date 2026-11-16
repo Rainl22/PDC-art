@@ -4,18 +4,18 @@ import { useRouter } from 'next/navigation'
 import { MuralCard } from './MuralCard'
 import { saveTourIds } from '@/lib/tour'
 import { MenuButton } from '@/components/layout/SideMenu'
+import { Select } from '@/components/ui/Select'
 import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
 type Filter = ConfidenceLevel | 'all' | 'changed'
-type Sort = 'name' | 'artist' | 'updated' | 'nearest'
+type Sort = 'name' | 'artist' | 'updated' | 'nearest' | 'liked'
 
 const FILTERS: { label: Key; value: Filter }[] = [
   { label: 'filter.all',        value: 'all'        },
   { label: 'filter.verified',   value: 'verified'   },
-  { label: 'filter.likely',     value: 'likely'     },
   { label: 'filter.unverified', value: 'unverified' },
   { label: 'filter.changed',    value: 'changed'    },
 ]
@@ -24,6 +24,7 @@ const SORTS: { value: Sort; label: Key }[] = [
   { value: 'name',    label: 'sort.name'    },
   { value: 'artist',  label: 'sort.artist'  },
   { value: 'updated', label: 'sort.updated' },
+  { value: 'liked',   label: 'sort.liked'   },
   { value: 'nearest', label: 'sort.nearest' },
 ]
 
@@ -60,7 +61,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const distanceOf = (m: Mural) => (me && m.coordinates ? metresBetween(me, m.coordinates) : null)
 
   const visible = useMemo(() => {
-    const list = murals.filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : m.confidence === filter)
+    const list = murals.filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : filter === 'unverified' ? m.confidence === 'unverified' || m.confidence === 'likely' : m.confidence === filter)
     const by: Record<Sort, (a: Mural, b: Mural) => number> = {
       name: (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
       // unknown artists go last; ties fall back to the title
@@ -70,6 +71,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
         return x.localeCompare(y) || (a.title ?? '').localeCompare(b.title ?? '')
       },
       updated: (a, b) => lastChanged(b) - lastChanged(a),
+      liked: (a, b) => (b.like_count ?? 0) - (a.like_count ?? 0) || (a.title ?? '').localeCompare(b.title ?? ''),
       // murals without a pin go last
       nearest: (a, b) => (distanceOf(a) ?? Infinity) - (distanceOf(b) ?? Infinity),
     }
@@ -93,8 +95,8 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   return (
     <div className="flex flex-col min-h-dvh bg-bg">
       {/* header */}
-      <header className="bg-surface border-b border-groove sticky top-0 z-10 pt-safe">
-        <div className="px-4 py-3 flex items-center gap-3">
+      <header className="bg-surface border-b border-groove sticky top-0 z-20 pt-controls">
+        <div className="px-gutter h-control mb-3 flex items-center gap-3">
           <MenuButton />
           <h1 className="flex-1 font-display font-bold text-[17px] tracking-tight">
             {selecting ? t('gallery.selectMurals') : t('gallery.title')}
@@ -108,20 +110,16 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
         </div>
         {/* show (filter) on the left, sort on the right */}
         <div className="flex items-center gap-gap-control px-gutter pb-3">
-          <label className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('filter.label')}</span>
-            <select value={filter} onChange={e => setFilter(e.target.value as Filter)}
-              className="w-[6.5rem] text-small font-display font-semibold bg-groove text-ink rounded-full pl-2.5 pr-1 py-1 outline-none">
-              {FILTERS.map(f => <option key={f.value} value={f.value}>{t(f.label)}</option>)}
-            </select>
-          </label>
-          <label className="flex items-center gap-1.5 flex-1 min-w-0">
+            <Select className="w-[6.75rem]" label={t('filter.label')} value={filter} onChange={setFilter}
+              options={FILTERS.map(f => ({ value: f.value, label: t(f.label) }))} />
+          </div>
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
             <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('sort.label')}</span>
-            <select id="sort" value={sort} disabled={locating} onChange={e => chooseSort(e.target.value as Sort)}
-              className="flex-1 min-w-0 text-small font-display font-semibold bg-groove text-ink rounded-full pl-2.5 pr-1 py-1 outline-none">
-              {SORTS.map(o => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
-            </select>
-          </label>
+            <Select className="flex-1" align="right" label={t('sort.label')} value={sort} onChange={chooseSort} disabled={locating}
+              options={SORTS.map(o => ({ value: o.value, label: t(o.label) }))} />
+          </div>
         </div>
         {(locating || locError) && (
           <p className={`px-gutter pb-2 text-caption ${locError ? 'text-guessing' : 'text-ink-3'}`}>{locating ? t('sort.locating') : t('sort.locError')}</p>

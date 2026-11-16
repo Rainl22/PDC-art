@@ -9,8 +9,8 @@ export default function SubmitPage({ searchParams }: { searchParams: { mural?: s
   const existing = searchParams.mural ? { slug: searchParams.mural, title: searchParams.title ?? searchParams.mural } : null
   const mode = existing && (searchParams.mode === 'photos' || searchParams.mode === 'verify' || searchParams.mode === 'update') ? searchParams.mode : undefined
   return (
-    <main className="relative px-4 pt-safe-or-12 pb-6 max-w-lg mx-auto">
-      <div className="flex items-center gap-3">
+    <main className="relative px-gutter pt-controls pb-6 max-w-lg mx-auto">
+      <div className="flex items-center gap-3 min-h-control">
         <MenuButton />
         <h1 className="font-display text-2xl font-bold text-ink pr-12">{mode === 'update' ? t('submit.updateTitle') : mode === 'photos' ? t('submit.addPhotosTitle') : mode === 'verify' ? t('submit.verifyTitle') : existing ? t('submit.addLocationTitle') : t('submit.title')}</h1>
       </div>
