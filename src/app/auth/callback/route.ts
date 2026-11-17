@@ -16,7 +16,12 @@ export async function GET(request: Request) {
   } else if (!user) {
     return NextResponse.redirect(`${origin}/signin?error=callback`)
   }
-  if (explicit) return NextResponse.redirect(`${origin}${explicit}`)
   const { data: admin } = await supabase.rpc('is_admin')
-  return NextResponse.redirect(`${origin}${admin === true ? '/admin' : '/profile'}`)
+  // sign-in is for the team only (for now): anyone else who got in through Google is signed straight back out
+  if (admin !== true) {
+    await supabase.auth.signOut()
+    return NextResponse.redirect(`${origin}/signin?error=notadmin`)
+  }
+  if (explicit) return NextResponse.redirect(`${origin}${explicit}`)
+  return NextResponse.redirect(`${origin}/admin`)
 }

@@ -98,7 +98,7 @@ const en = {
   'locpick.errDenied': 'Location permission is off. Allow it in your browser settings, or paste a map link instead.',
   'locpick.errFail': 'Couldn’t get your location. Try again outside, or paste a map link.',
   // auth + profile
-  'auth.title': 'Sign in', 'auth.intro': 'Signing in is optional. It’s only needed for the admin area.',
+  'auth.title': 'Sign in', 'auth.intro': 'Sign-in is only for the Murales PDC team for now. You don’t need an account to browse, like or submit murals.', 'auth.adminOnly': 'Sign-in is just for admins at the moment. You can keep using the app without an account.',
   'auth.email': 'Email address', 'auth.send': 'Send me a sign-in link', 'auth.sending': 'Sending…',
   'auth.checkTitle': 'Check your email', 'auth.checkBody': 'We sent a sign-in link to {email}. Open it on this device.',
   'auth.error': 'Couldn’t send the link. Check the address and try again.', 'auth.callbackError': 'That sign-in link didn’t work or has expired. Request a new link (each one works once and only the newest one is valid).',
@@ -198,7 +198,7 @@ const es: Record<Key, string> = {
   'locpick.errNoGeo': 'Este navegador no puede compartir tu ubicación.',
   'locpick.errDenied': 'El permiso de ubicación está desactivado. Actívalo en los ajustes del navegador o pega un enlace de mapa.',
   'locpick.errFail': 'No pudimos obtener tu ubicación. Inténtalo al aire libre o pega un enlace de mapa.',
-  'auth.title': 'Iniciar sesión', 'auth.intro': 'Iniciar sesión es opcional. Solo se necesita para el área de administración.',
+  'auth.title': 'Iniciar sesión', 'auth.intro': 'Por ahora el acceso es solo para el equipo de Murales PDC. No necesitas cuenta para explorar, dar me gusta o enviar murales.', 'auth.adminOnly': 'Por ahora iniciar sesión es solo para administradores. Puedes seguir usando la app sin cuenta.',
   'auth.email': 'Correo electrónico', 'auth.send': 'Enviarme un enlace de acceso', 'auth.sending': 'Enviando…',
   'auth.checkTitle': 'Revisa tu correo', 'auth.checkBody': 'Enviamos un enlace de acceso a {email}. Ábrelo en este dispositivo.',
   'auth.error': 'No se pudo enviar el enlace. Revisa el correo e inténtalo de nuevo.', 'auth.callbackError': 'Ese enlace no funcionó o ya venció. Solicita uno nuevo (cada enlace funciona una sola vez y solo el más reciente es válido).',

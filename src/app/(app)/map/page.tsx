@@ -19,14 +19,8 @@ import type { Mural } from '@/types/mural'
 // The bundled MapLibre worker can't resolve its own URL under Next.js — serve it from /public.
 maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
 
-// confidence → pin colour
-// (design tokens, so pins always match the status badges)
-const PIN_COLOR: Record<string, string> = {
-  verified:   'var(--certain)',
-  likely:     'var(--likely)',
-  unverified: 'var(--guessing)',
-  removed:    'var(--removed)',
-}
+// pin colour: green = verified, red = not verified (design tokens, same as the status badges)
+const pinColor = (confidence: string) => (confidence === 'verified' ? 'var(--certain)' : 'var(--guessing)')
 
 // Playa del Carmen centre
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]
@@ -92,7 +86,7 @@ export default function MapPage() {
   // fetch murals
   useEffect(() => {
     const sb = createClient()
-    sb.from('murals').select('*').then(({ data }) => setMurals((data ?? []) as Mural[]))
+    sb.from('murals').select('*').then(({ data }) => setMurals(((data ?? []) as Mural[]).filter(m => m.confidence !== 'removed')))
   }, [])
 
   // init map
@@ -121,12 +115,11 @@ export default function MapPage() {
       .filter(m => m.coordinates)
       .forEach(mural => {
         const el = document.createElement('div')
-        const lead = mural.precision === 'lead'
-        const color = PIN_COLOR[mural.confidence] ?? 'var(--sea)'
+        const color = pinColor(mural.confidence)
         el.style.cssText = `
           width:20px;height:20px;border-radius:50%;
-          background:${lead ? 'var(--surface)' : color};
-          border:3px ${lead ? `dashed ${color}` : 'solid var(--on-dark)'};
+          background:${color};
+          border:3px solid var(--on-dark);
           box-shadow:0 2px 8px rgba(0,0,0,.28);
           cursor:pointer;
         `
