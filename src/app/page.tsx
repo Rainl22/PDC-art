@@ -44,7 +44,7 @@ export default function Landing() {
 
 <div className="wrap">
   <div className="strip" aria-hidden="true">
-    <figure><img src="/site/dia-de-muertos-2025.jpg" alt="" loading="lazy" /></figure>
+      <figure><img src="/site/dia-de-muertos-new.jpg" alt="Día de Muertos mural with a sculpted catrina among marigold-colored candles" width="900" height="979" loading="lazy" /><figcaption>Día de Muertos 2025<span>Pinta o Muere</span></figcaption></figure>
     <figure><img src="/site/giant-sea-turtles.jpg" alt="" loading="lazy" /></figure>
     <figure><img src="/site/old-mayan-woman.jpg" alt="" loading="lazy" /></figure>
     <figure><img src="/site/la-chica.jpg" alt="" loading="lazy" /></figure>
@@ -108,6 +108,10 @@ export default function Landing() {
       <figure><img src="/site/mayan-woman.jpg" alt="Woman with ram horns mural" loading="lazy" /><figcaption>Mayan Woman<span>@peokmancilla</span></figcaption></figure>
       <figure><img src="/site/giant-sea-turtles.jpg" alt="Giant sea turtle on a teal wall" loading="lazy" /><figcaption>Giant Sea Turtles<span>Senkoe</span></figcaption></figure>
       <figure><img src="/site/gober-restaurant.jpg" alt="Mural on a beachside restaurant" loading="lazy" /><figcaption>Gober restaurant<span>Theanunaki</span></figcaption></figure>
+      <figure><img src="/site/crocodile-lilies.jpg" alt="Crocodile rising out of the water beside lily pads" width="900" height="1200" loading="lazy" /><figcaption>Crocodile and lilies<span>@imer_hu</span></figcaption></figure>
+      <figure><img src="/site/skull-warrior.jpg" alt="Skeletal warrior in a jade headdress with feathers" width="900" height="1200" loading="lazy" /><figcaption>Jade skull warrior<span>Artist unknown</span></figcaption></figure>
+      <figure><img src="/site/catrina-altar.jpg" alt="Catrina lighting a candle at an altar" width="900" height="1200" loading="lazy" /><figcaption>Catrina at the altar<span>Hoacko</span></figcaption></figure>
+      <figure><img src="/site/sea-turtle-blue.jpg" alt="Colorful sea turtle on a blue wall" width="813" height="1100" loading="lazy" /><figcaption>Sea turtle on blue<span>Artist unknown</span></figcaption></figure>
     </div>
   </section>
 
