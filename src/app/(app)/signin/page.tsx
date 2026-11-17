@@ -16,6 +16,9 @@ export default function SignInPage({ searchParams }: { searchParams: { next?: st
       {searchParams.error === 'callback' && (
         <p className="text-small text-guessing mb-3" role="alert">{t('auth.callbackError')}</p>
       )}
+      {searchParams.error === 'notadmin' && (
+        <p className="text-small text-guessing mb-3" role="alert">{t('auth.adminOnly')}</p>
+      )}
       <SignInForm next={searchParams.next} />
     </main>
   )

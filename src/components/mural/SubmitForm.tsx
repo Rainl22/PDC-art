@@ -8,6 +8,10 @@ import { submitMural, spamCode } from '@/lib/murals'
 import { prepareImage } from '@/lib/image'
 import { useT } from '@/lib/i18n/client'
 import { useKnownArtists } from '@/lib/useKnownArtists'
+import { useAuth } from '@/lib/auth/useAuth'
+import { slugify } from '@/lib/slug'
+import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
+import { errMsg } from '@/lib/errors'
 import { LocationPicker, type LocationSource } from './LocationPicker'
 import type { Coordinates } from '@/types/mural'
 
@@ -21,6 +25,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
   const verifyMode = mode === 'verify'
   const updateMode = mode === 'update' // a new mural at the same spot: new name, maybe a new artist, new photos
   const knownArtists = useKnownArtists()
+  const { isAdmin } = useAuth()
   const { t } = useT()
   const router = useRouter()
   const [title, setTitle] = useState(existing?.title ?? '')
@@ -98,6 +103,31 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
         if (upErr) throw upErr
         paths.push(path)
       }
+      // A new mural submitted by a signed-in admin is published straight away (no review queue).
+      if (isAdmin && !existing) {
+        const base = slugify(title || location) || 'mural'
+        let slug = base
+        for (let i = 2; i < 20; i++) {
+          const { data } = await supabase.from('murals').select('id').eq('slug', slug).maybeSingle()
+          if (!data) break
+          slug = `${base}-${i}`
+        }
+        const names = artist.split(',').map(n => n.trim()).filter(Boolean).map(n => parseArtistLine(n)!)
+        const artists = names.length ? await enrichAndSaveArtists(names) : []
+        const urls = paths.map(p => supabase.storage.from('submissions').getPublicUrl(p).data.publicUrl)
+        const gps = !!coords && (source === 'device' || source === 'photo')   // GPS from the device or the photo = proof of location
+        const { error: insErr } = await supabase.from('murals').insert({
+          slug, title: title.trim() || 'Untitled',
+          artist: artists.length ? artists.map(a => a.name).join(', ') : null,
+          artists: artists.length ? artists : null, artist_verified: artists.length > 0,
+          location_description: location.trim() || (coords ? `Pinned location (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : 'Unknown'),
+          coordinates: coords, confidence: gps ? 'verified' : 'unverified', precision: coords ? 'landmark' : null,
+          photos: urls, cover_photo: urls[0] ?? null, notes: notes.trim() || null,
+        })
+        if (insErr) throw insErr
+        router.push(`/gallery/${slug}`)
+        return
+      }
       await submitMural({
         kind: updateMode ? 'photos_repainted' : photosMode ? photoKind : existing ? 'location' : 'new',
         mural_slug: existing?.slug ?? null,
@@ -113,6 +143,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       setDone(true)
     } catch (e) {
       const code = spamCode(e)
+      if (isAdmin && !existing) { setError(errMsg(e)); return }
       setError(code === 'rate_limited' ? t('spam.rate') : code === 'too_long' ? t('spam.long') : t('submit.errGeneric'))
     } finally {
       setLoading(false)

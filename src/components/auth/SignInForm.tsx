@@ -25,7 +25,7 @@ export function SignInForm({ next }: { next?: string }) {
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState<string | null>(null)
-  const [error, setError] = useState<'send' | 'rate' | null>(null)
+  const [error, setError] = useState<'send' | 'rate' | 'admin' | null>(null)
   const [google, setGoogle] = useState(false)
 
   // Show "Continue with Google" only once the provider is switched on in Supabase (no redeploy needed).
@@ -57,7 +57,11 @@ export function SignInForm({ next }: { next?: string }) {
     const address = email.trim()
     if (!address || busy) return
     setBusy(true); setError(null)
-    const { error: err } = await createImplicitClient().auth.signInWithOtp({
+    // sign-in is for the team only (for now): tell anyone else before sending an email
+    const implicit = createImplicitClient()
+    const { data: allowed } = await implicit.rpc('is_admin_email', { p_email: address })
+    if (allowed !== true) { setBusy(false); setError('admin'); return }
+    const { error: err } = await implicit.auth.signInWithOtp({
       email: address,
       options: { emailRedirectTo: `${window.location.origin}/auth/finish${nextQuery}` },
     })
@@ -104,7 +108,7 @@ export function SignInForm({ next }: { next?: string }) {
       <form onSubmit={submit} className="space-y-3">
         <input className={field} type="email" required autoComplete="email" inputMode="email"
           placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} />
-        {error && <p className="text-small text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : 'auth.error')}</p>}
+        {error && <p className="text-small text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : error === 'admin' ? 'auth.adminOnly' : 'auth.error')}</p>}
         <button type="submit" disabled={!email.trim() || busy}
           className="w-full rounded-full bg-sea text-on-dark font-display font-medium py-3 text-body disabled:opacity-40 inline-flex items-center justify-center gap-2">
           {busy && <Loader2 size={15} className="animate-spin" />}
