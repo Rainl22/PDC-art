@@ -37,20 +37,12 @@ export default function Landing() {
       <div className="p p2"><img src="/site/indian-woman.jpg" alt="Mural of a woman in a feathered headdress" width="675" height="900" style={{ objectPosition: '50% 30%' }} /><span className="credit">Senkoe</span></div>
       <div className="p p3"><img src="/site/frida-khalo.jpg" alt="Mural of Frida Kahlo with red flowers in her hair" width="675" height="900" /><span className="credit">Theanunaki</span></div>
       <div className="pin a"><i></i>Verified location</div>
-      <div className="pin red b"><i></i>Help us verify</div>
+      <div className="pin blue b"><i></i>Add new murals</div>
     </div>
   </header>
 </div>
 
 <div className="wrap">
-  <div className="strip" aria-hidden="true">
-      <figure><img src="/site/dia-de-muertos-new.jpg" alt="Día de Muertos mural with a sculpted catrina among marigold-colored candles" width="900" height="979" loading="lazy" /><figcaption>Día de Muertos 2025<span>Pinta o Muere</span></figcaption></figure>
-    <figure><img src="/site/giant-sea-turtles.jpg" alt="" loading="lazy" /></figure>
-    <figure><img src="/site/old-mayan-woman.jpg" alt="" loading="lazy" /></figure>
-    <figure><img src="/site/la-chica.jpg" alt="" loading="lazy" /></figure>
-    <figure><img src="/site/calle-80.jpg" alt="" loading="lazy" /></figure>
-    <figure><img src="/site/frida-khalo.jpg" alt="" loading="lazy" /></figure>
-  </div>
 
   <section id="features">
     <div className="head">
