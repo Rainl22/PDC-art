@@ -76,15 +76,19 @@
 .lp footer .cols{display:flex;gap:24px;flex-wrap:wrap}
 .lp footer a{text-decoration:none}
 .lp footer a:hover{color:var(--ink);text-decoration:underline}
+@media(max-width:900px){
 .lp .hero{grid-template-columns:1fr}
 .lp .collage{min-height:480px;max-width:520px;width:100%;margin:0 auto}
 .lp .features{grid-template-columns:repeat(2,1fr)}
 .lp .contribute{grid-template-columns:1fr}
+}
+@media(max-width:620px){
 .lp .nav-links a:not(.btn){display:none}
 .lp .features{grid-template-columns:1fr}
 .lp .collage{min-height:400px}
 .lp .btn{width:100%;justify-content:center}
 .lp .nav-links .btn{width:auto}
+}
 @media(prefers-reduced-motion:reduce){
 .lp *{transition:none!important;scroll-behavior:auto!important}
 }
