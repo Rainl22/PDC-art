@@ -25,7 +25,7 @@ export default function Landing() {
     <div>
       <span className="eyebrow">Street art of Playa del Carmen</span>
       <h1>Walk the <em>murals</em> of PDC.</h1>
-      <p className="lede">A free app to find the city&apos;s street art, meet the artists, build your own mural tour, and add the walls you discover.</p>
+      <p className="lede">Explore Playa del Carmen&apos;s street art. Create a tour around your favourite murals and add new ones you find.</p>
       <div className="cta-row">
         <a className="btn" href="/gallery">Open the app</a>
         <a className="btn ghost" href="#features">See how it works</a>
@@ -65,8 +65,8 @@ export default function Landing() {
       </article>
       <article className="feat">
         <div className="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div>
-        <h3>Meet the artists</h3>
-        <p>See who painted each wall and follow them on Instagram. Every mural credits its artist.</p>
+        <h3>Learn about the artists</h3>
+        <p>See who painted the mural and follow them on Instagram.</p>
       </article>
       <article className="feat">
         <div className="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/></svg></div>
@@ -78,6 +78,27 @@ export default function Landing() {
         <h3>Add what you find</h3>
         <p>Spot a mural that isn&apos;t listed? Send a photo and a location. Update ones that were repainted or removed.</p>
       </article>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div className="head">
+      <span className="eyebrow">See it in the app</span>
+      <h2>Your pocket guide to the walls.</h2>
+    </div>
+    <div className="phones">
+      <figure className="phone-fig">
+        <div className="phone"><img src="/site/app-map.jpg" alt="Map of Playa del Carmen with green verified and red unverified mural pins" width="574" height="1276" loading="lazy" /></div>
+        <figcaption><b>Find</b>Pins show every mural. Green means the location is verified.</figcaption>
+      </figure>
+      <figure className="phone-fig">
+        <div className="phone"><img src="/site/app-mural.jpg" alt="Mural card on the map with photos, artist name, distance and a Take me there button" width="584" height="1282" loading="lazy" /></div>
+        <figcaption><b>Meet</b>Tap a pin to see the photos, the artist and how far it is.</figcaption>
+      </figure>
+      <figure className="phone-fig">
+        <div className="phone"><img src="/site/app-tour.jpg" alt="My Tour screen with four stops, walking times and a Start Tour in Google Maps button" width="571" height="1274" loading="lazy" /></div>
+        <figcaption><b>Walk</b>Stops in order, with walking time and distance. Start it in Google Maps.</figcaption>
+      </figure>
     </div>
   </section>
 
