@@ -51,8 +51,12 @@ For the website: lead with cream + sea blue; let the mural photos supply the col
 - Style: rounded white cards over cream, photo-first, soft shadows, pill-shaped tags.
 
 ## Imagery
-- Selected photos: `brand/photos/` (12 murals, about 1536px wide). The full set is in `public/murals/<slug>/`.
-- Photos are placeholders from the bundled set; some have a photo credit. Credit the artist and photographer when the credit is known.
+- Photos: `brand/photos/` — 12 real photos uploaded by the community to the app (Supabase storage bucket `submissions`). Every mural's full photo list is in the `murals.photos` column.
+- Bundled placeholder photos (`public/murals/<slug>/`) are NOT used here.
+- Artists (credit them next to each photo):
+  - calle-80: unknown · dia-de-muertos-2025: Pinta o Muere · frida-khalo: Theanunaki · giant-sea-turtles: Senkoe
+  - gober-restaurant: Theanunaki · indian-woman: Senkoe · la-chica: Senkoe · mayan-woman: @peokmancilla
+  - old-mayan-woman: Pinta o Muere · the-gym-mural: Senkoe · viva-playa-del-carmen: Kin kab pinturas · white-skull-marigolds: unknown
 - Use only photos you have permission to use.
 
 ## Web-app screens worth showing (take screenshots from the live app)
