@@ -8,6 +8,8 @@ import { Select } from '@/components/ui/Select'
 import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
 import { metresBetween, formatDistance } from '@/lib/geo'
+import { matchMural } from '@/lib/search'
+import { Search, X } from 'lucide-react'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
 type Filter = ConfidenceLevel | 'all' | 'changed'
@@ -42,6 +44,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating]   = useState(false)
   const [locError, setLocError]   = useState(false)
+  const [query, setQuery]     = useState('')
   const [selecting, setSelecting] = useState(false)
   const [selected, setSelected]   = useState<Set<string>>(new Set())
 
@@ -61,7 +64,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const distanceOf = (m: Mural) => (me && m.coordinates ? metresBetween(me, m.coordinates) : null)
 
   const visible = useMemo(() => {
-    const list = murals.filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : filter === 'unverified' ? m.confidence === 'unverified' || m.confidence === 'likely' : m.confidence === filter)
+    const list = murals.filter(m => matchMural(m, query)).filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : filter === 'unverified' ? m.confidence === 'unverified' || m.confidence === 'likely' : m.confidence === filter)
     const by: Record<Sort, (a: Mural, b: Mural) => number> = {
       name: (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
       // unknown artists go last; ties fall back to the title
@@ -77,7 +80,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
     }
     return [...list].sort(by[sort])
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [murals, filter, sort, me])
+  }, [murals, filter, sort, me, query])
 
   function toggleSelect(id: string) {
     setSelected(prev => {
@@ -107,6 +110,17 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
           >
             {selecting ? t('gallery.cancel') : t('gallery.select')}
           </button>
+        </div>
+        {/* search: mural name, artist name or handle, location */}
+        <div className="px-gutter pb-3">
+          <div className="h-control bg-bg rounded-full px-4 flex items-center gap-2">
+            <Search size={14} className="text-ink-3 shrink-0" />
+            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder={t('gallery.search')}
+              enterKeyHint="search" autoComplete="off" className="flex-1 min-w-0 bg-transparent text-body outline-none placeholder:text-ink-3" />
+            {query && (
+              <button type="button" aria-label={t('gallery.clearSearch')} onClick={() => setQuery('')} className="text-ink-3 shrink-0"><X size={15} /></button>
+            )}
+          </div>
         </div>
         {/* show (filter) on the left, sort on the right */}
         <div className="flex items-center gap-gap-control px-gutter pb-3">

@@ -14,6 +14,7 @@ import { Search, Navigation, ChevronRight, X, LocateFixed, Loader2 } from 'lucid
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { metresBetween, formatDistance } from '@/lib/geo'
+import { matchMural } from '@/lib/search'
 import type { Mural } from '@/types/mural'
 
 // The bundled MapLibre worker can't resolve its own URL under Next.js — serve it from /public.
@@ -187,6 +188,13 @@ export default function MapPage() {
   }, [])
 
   const withCoords = murals.filter(m => m.coordinates).length
+  const results = search.trim() ? murals.filter(m => matchMural(m, search)).slice(0, 12) : []
+  function pickResult(m: Mural) {
+    setSearch('')
+    if (!m.coordinates || !mapRef.current) { router.push(`/gallery/${m.slug}`); return }
+    mapRef.current.easeTo({ center: [m.coordinates.lng, m.coordinates.lat], zoom: Math.max(mapRef.current.getZoom(), 17) })
+    setActive(m)
+  }
 
   return (
     <div className="fixed inset-x-0 top-0 bottom-[var(--nav-h)] bg-bg overflow-hidden overscroll-none">
@@ -202,10 +210,31 @@ export default function MapPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('map.search')}
-            className="flex-1 text-body outline-none placeholder:text-ink-3"
+            enterKeyHint="search" autoComplete="off"
+            className="flex-1 min-w-0 text-body outline-none placeholder:text-ink-3"
           />
+          {search && <button type="button" aria-label={t('map.close')} onClick={() => setSearch('')} className="text-ink-3 shrink-0"><X size={15} /></button>}
         </div>
       </div>
+
+      {/* search results: mural name, artist name or handle, location */}
+      {search.trim() && (
+        <div className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+var(--gap-control))] left-gutter right-gutter z-20 bg-surface rounded-panel shadow-xl max-h-[50vh] overflow-y-auto">
+          {results.length === 0
+            ? <p className="px-4 py-3 text-body text-ink-3">{t('map.noResults')}</p>
+            : results.map(m => (
+              <button key={m.id} type="button" onClick={() => pickResult(m)}
+                className="w-full text-left px-4 py-2.5 border-b border-groove last:border-0 flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {m.cover_photo ? <img src={m.cover_photo} alt="" className="w-10 h-10 rounded-inset object-cover shrink-0" /> : <div className="w-10 h-10 rounded-inset bg-groove shrink-0" />}
+                <div className="min-w-0">
+                  <p className="text-body font-medium truncate">{m.title}</p>
+                  <p className="text-caption text-ink-3 truncate">{m.artist ?? ''}{m.coordinates ? '' : ` · ${t('map.noPin')}`}</p>
+                </div>
+              </button>
+            ))}
+        </div>
+      )}
 
       {/* my location */}
       <div className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+var(--gap-control))] right-gutter z-10 flex flex-col items-end gap-1.5">

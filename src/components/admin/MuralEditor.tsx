@@ -7,29 +7,27 @@ import { createClient } from '@/lib/supabase/client'
 import { prepareImage } from '@/lib/image'
 import { slugify } from '@/lib/slug'
 import { errMsg } from '@/lib/errors'
-import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
-import { useKnownArtists } from '@/lib/useKnownArtists'
+import { enrichAndSaveArtists } from '@/lib/artistDirectory'
+import { ArtistPicker } from './ArtistPicker'
 import { PLACE_TYPES } from '@/lib/places'
 import { LocationPicker, type LocationSource } from '@/components/mural/LocationPicker'
 import { AddressLocator } from './AddressLocator'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
 import type { Mural, Coordinates, ConfidenceLevel, PrecisionLabel, Artist } from '@/types/mural'
 
-const toArtistLines = (a?: Artist[] | null, fallback?: string | null) =>
-  a?.length ? a.map(x => { const h = x.instagram || x.url; return h ? `${x.name} | ${h}` : x.name }).join('\n') : fallback ?? ''
-const parseArtists = (text: string): Artist[] =>
-  text.split('\n').map(l => l.trim()).filter(Boolean).map(parseArtistLine).filter((a): a is Artist => !!a)
+const initialArtists = (a?: Artist[] | null, fallback?: string | null): Artist[] =>
+  a?.length ? a.map(x => ({ name: x.name, instagram: x.instagram ?? null, url: x.url ?? null }))
+    : (fallback ?? '').split(',').map(n => n.trim()).filter(Boolean).map(name => ({ name, instagram: null, url: null }))
 const coverFor = (url?: string) => (url ? url.replace(/(\/murals\/[^/]+\/\d+)\.jpg$/, '$1-t.jpg') : null)
 
 export function MuralEditor({ mural }: { mural?: Mural }) {
   const router = useRouter()
   const sb = createClient()
   const fileInput = useRef<HTMLInputElement>(null)
-  const knownArtists = useKnownArtists()
 
   const [title, setTitle] = useState(mural?.title ?? '')
   const [slug, setSlug] = useState(mural?.slug ?? '')
-  const [artists, setArtists] = useState(toArtistLines(mural?.artists, mural?.artist))
+  const [artists, setArtists] = useState<Artist[]>(initialArtists(mural?.artists, mural?.artist))
   const [location, setLocation] = useState(mural?.location_description ?? '')
   const [coords, setCoords] = useState<Coordinates | null>(mural?.coordinates ?? null)
   const [source, setSource] = useState<LocationSource | null>(null)
@@ -76,7 +74,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
     setBusy(true); setMsg(null)
     try {
       // fill in links we already know for these artists, and remember any new ones
-      const list = await enrichAndSaveArtists(parseArtists(artists))
+      const list = await enrichAndSaveArtists(artists)
       const row = {
         title: title.trim(), slug: (slug || slugify(title)).trim(),
         artist: list.length ? list.map(a => a.name).join(', ') : null,
@@ -126,10 +124,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         <div><label className={adminLabel}>Slug (URL)</label>
           <input className={adminField} value={slug} placeholder={slugify(title)} onChange={e => setSlug(e.target.value)} disabled={!!mural} />
           {mural && <p className="text-caption text-ink-3 mt-1">Slug can’t change after creation (it’s in the URL and photo paths).</p>}</div>
-        <div><label className={adminLabel}>Artists — one per line, “Name | instagram handle or link”</label>
-          <textarea className={adminField} rows={3} value={artists} onChange={e => setArtists(e.target.value)} placeholder={'Senkoe | senkoeone'} />
-          <p className="text-caption text-ink-3 mt-1">Known artists are filled in automatically: type just the name and their link is added on save. Handles are saved to the artist directory. Any non-Instagram link (TikTok, website…) works too.</p>
-          {knownArtists.length > 0 && <p className="text-caption text-ink-3 mt-1">Known: {knownArtists.slice(0, 12).join(', ')}{knownArtists.length > 12 ? '…' : ''}</p>}</div>
+        <ArtistPicker value={artists} onChange={setArtists} />
         <div className="grid grid-cols-2 gap-2">
           <div><label className={adminLabel}>Status</label>
             <select className={adminField} value={confidence} onChange={e => setConfidence(e.target.value as ConfidenceLevel)}>{CONFIDENCE.map(c => <option key={c}>{c}</option>)}</select></div>

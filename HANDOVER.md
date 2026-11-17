@@ -1,6 +1,6 @@
 # Murales PDC — Handover
 
-Last updated: 2026-11-16 (admin photo picker, sign-in link fixes, token conversion). Read this first, then `README.md` if you need the basics.
+Last updated: 2026-11-17 (admin photo picker, sign-in fixes, tokens, search, share, artist picker). Read this first, then `README.md` if you need the basics.
 
 ## 1. What this is
 A mobile-first PWA that maps the street murals of Playa del Carmen (Quintana Roo, Mexico). Visitors browse a gallery and a map, build walking tours, like murals, and submit new murals, photos, location confirmations and "this spot has a new mural" updates. A small team (one **Owner**, optional **Moderators**) reviews submissions in `/admin`. It's a free hobby project: no ads, no payments, optional sign-in (only needed for the admin area).
@@ -41,7 +41,7 @@ Local dev: `.env.local` with the two `NEXT_PUBLIC_SUPABASE_*` values (anon key i
 
 ### Admin (`/admin`, owner + moderators)
 - **Submissions**: guide box at the top, each card shows the submission, auto-verified / "GPS + photo" tags, the target mural's artist (with inline "Save artist" and "Edit mural" link), distance to the pin for verifications, rename/new-artist previews. Actions: Create mural… (title, artist(s) with Instagram auto-fill, location, status, precision, "Find on map from address"), Apply location…, Add photos to mural / Replace photos & tag Changed, Confirm location, Reject. **New-mural submissions from visitors are never published automatically; a new mural submitted through `/submit` by a signed-in admin is published immediately (verified if the location came from device/photo GPS).**
-- **Murals**: full editor (title, artists "Name | handle or link", status, precision, **place**, **rotating wall**, artwork original/changed, location + pin tools incl. address lookup, year/medium/notes, photo credit, photos upload/reorder). **Comments**: moderation. **Team** (`/admin/team`): add moderators by email; Owner can't be removed by anyone; moderators can add/remove other moderators.
+- **Murals**: full editor (title, artists via a searchable picker over the artist directory with "Create new" and a required-looking link field per artist, admin and admin/murals show a warning listing artists with no social link, status, precision, **place**, **rotating wall**, artwork original/changed, location + pin tools incl. address lookup, year/medium/notes, photo credit, photos upload/reorder). **Comments**: moderation. **Team** (`/admin/team`): add moderators by email; Owner can't be removed by anyone; moderators can add/remove other moderators.
 - **Alerts**: "Enable alerts" card on `/admin` (per device/browser, iPhone needs the app on the Home Screen). A badge on the Submissions tab shows the pending count.
 
 ## 5. Data model (Supabase `public`)
