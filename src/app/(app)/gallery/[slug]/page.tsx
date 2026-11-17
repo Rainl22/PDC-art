@@ -17,6 +17,7 @@ import { VerifyMenu } from '@/components/mural/VerifyMenu'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
 import { BackButton } from '@/components/ui/BackButton'
+import { ShareButton } from '@/components/mural/ShareButton'
 import { MapPin, Crosshair, ExternalLink, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
 
@@ -68,7 +69,10 @@ export default async function MuralDetailPage({ params }: Props) {
         title={m.title}
         gradient={gradient}
         overlay={
-          <BackButton fallback="/gallery" label={t('detail.back')} />
+          <>
+            <BackButton fallback="/gallery" label={t('detail.back')} />
+            <ShareButton title={m.title} />
+          </>
         }
       />
 
