@@ -12,6 +12,7 @@ import { LocationPill } from '@/components/ui/LocationPill'
 import { getMuralGradient } from '@/lib/gradients'
 import { Search, Navigation, ChevronRight, X, LocateFixed, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import type { Mural } from '@/types/mural'
 
@@ -30,6 +31,32 @@ const PIN_COLOR: Record<string, string> = {
 // Playa del Carmen centre
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]
 
+/** Swipeable photos on the map card; tapping a photo (or the card text) opens the mural page. */
+function CardPhotos({ photos, title, slug, onOpen }: { photos: string[]; title: string; slug: string; onOpen: () => void }) {
+  const [i, setI] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => { setI(0); ref.current?.scrollTo({ left: 0 }) }, [slug])
+  if (photos.length === 0) return <button type="button" onClick={onOpen} aria-label={title} className="block w-full h-full" style={{ background: getMuralGradient(slug) }} />
+  return (
+    <>
+      <div ref={ref} onScroll={() => { const el = ref.current; if (el) setI(Math.round(el.scrollLeft / el.clientWidth)) }}
+        className="flex h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {photos.map((src, k) => (
+          <button key={src} type="button" onClick={onOpen} aria-label={title} className="shrink-0 w-full h-full snap-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={`${title} — ${k + 1}`} loading={k === 0 ? 'eager' : 'lazy'} className="w-full h-full object-cover" draggable={false} />
+          </button>
+        ))}
+      </div>
+      {photos.length > 1 && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+          {photos.map((_, k) => <span key={k} className={`h-1.5 rounded-full transition-all ${k === i ? 'w-4 bg-on-dark' : 'w-1.5 bg-glass-dim'}`} />)}
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function MapPage() {
   const { t } = useT()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -37,6 +64,7 @@ export default function MapPage() {
   const markersRef   = useRef<maplibregl.Marker[]>([])
 
   const [murals, setMurals]       = useState<Mural[]>([])
+  const router = useRouter()
   const [active, setActive]       = useState<Mural | null>(null)
   const [search, setSearch]       = useState('')
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
@@ -217,15 +245,13 @@ export default function MapPage() {
           <div className="bg-surface rounded-t-panel shadow-xl overflow-hidden">
             {/* mural image */}
             <div className="relative h-36">
-              {active.cover_photo
-                ? <img src={active.cover_photo} alt={active.title} className="w-full h-full object-cover" />
-                : <div className="w-full h-full" style={{ background: getMuralGradient(active.slug) }} />
-              }
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
+              <CardPhotos photos={active.photos?.length ? active.photos : active.cover_photo ? [active.cover_photo] : []} title={active.title} slug={active.slug}
+                onOpen={() => router.push(`/gallery/${active.slug}`)} />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-black/40" />
               {/* drag handle */}
-              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-glass-dim rounded-full" />
+              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-9 h-1 bg-glass-dim rounded-full pointer-events-none" />
               {/* badge */}
-              <div className="absolute top-4 left-3 flex gap-1">
+              <div className="absolute top-4 left-3 flex gap-1 pointer-events-none">
                 <ConfidenceBadge level={active.confidence} sm />
                 <ArtworkBadge mural={active} sm />
               </div>
@@ -237,7 +263,8 @@ export default function MapPage() {
               </button>
             </div>
             {/* info */}
-            <div className="px-4 py-4">
+            <div className="px-4 py-4 cursor-pointer"
+              onClick={e => { if (!(e.target as HTMLElement).closest('a,button')) router.push(`/gallery/${active.slug}`) }}>
               <p className="font-display font-bold text-card mb-0.5">{active.title}</p>
               {(active.artist || active.artists?.length) && <p className="text-sea text-small font-medium mb-1"><ArtistLinks mural={active} /></p>}
               <p className="text-ink-3 text-caption mb-2">{active.location_description}</p>
