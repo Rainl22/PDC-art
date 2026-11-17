@@ -58,12 +58,6 @@
 .lp .feat .ic{width:48px;height:48px;border-radius:var(--r-md);background:var(--sea-tint);color:var(--sea);display:grid;place-items:center}
 .lp .feat h3{font-size:1.35rem}
 .lp .feat p{color:var(--ink-2);font-size:15px}
-.lp .route{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink)}
-.lp .step{padding:28px 28px 8px 0;min-width:0}
-.lp .step+.step{padding-left:28px;border-left:1px solid var(--groove)}
-.lp .step b{font:800 14px var(--fd);color:var(--sea);letter-spacing:.1em;text-transform:uppercase}
-.lp .step h3{font-size:1.8rem;margin:10px 0}
-.lp .step p{color:var(--ink-2)}
 .lp .wall{columns:4 200px;column-gap:12px}
 .lp .wall figure{margin:0 0 12px;break-inside:avoid;border-radius:var(--r-md);overflow:hidden;position:relative;background:var(--groove)}
 .lp .wall img{width:100%;height:auto}
@@ -88,8 +82,6 @@
 .lp .contribute{grid-template-columns:1fr}
 .lp .nav-links a:not(.btn){display:none}
 .lp .features{grid-template-columns:1fr}
-.lp .route{grid-template-columns:1fr;border-top:0}
-.lp .step,.lp .step+.step{padding:22px 0;border-left:0;border-top:2px solid var(--ink)}
 .lp .collage{min-height:400px}
 .lp .btn{width:100%;justify-content:center}
 .lp .nav-links .btn{width:auto}

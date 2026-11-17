@@ -84,7 +84,7 @@ export default function Landing() {
   <section id="screens">
     <div className="head">
       <span className="eyebrow">See it in the app</span>
-      <h2>Your pocket guide to the walls.</h2>
+      <h2>Your pocket guide to the Playa&apos;s murals.</h2>
     </div>
     <div className="phones">
       <figure className="phone-fig">
@@ -93,24 +93,12 @@ export default function Landing() {
       </figure>
       <figure className="phone-fig">
         <div className="phone"><img src="/site/app-mural.jpg" alt="Mural card on the map with photos, artist name, distance and a Take me there button" width="584" height="1282" loading="lazy" /></div>
-        <figcaption><b>Meet</b>Tap a pin to see the photos, the artist and how far it is.</figcaption>
+        <figcaption><b>Explore</b>Tap a pin to see the photos, the artist and how far it is.</figcaption>
       </figure>
       <figure className="phone-fig">
         <div className="phone"><img src="/site/app-tour.jpg" alt="My Tour screen with four stops, walking times and a Start Tour in Google Maps button" width="571" height="1274" loading="lazy" /></div>
-        <figcaption><b>Walk</b>Stops in order, with walking time and distance. Start it in Google Maps.</figcaption>
+        <figcaption><b>Wander</b>Stops in order, with walking time and distance. Start it in Google Maps.</figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section>
-    <div className="head">
-      <span className="eyebrow">How a walk goes</span>
-      <h2>From the couch to the sidewalk in three steps.</h2>
-    </div>
-    <div className="route">
-      <div className="step"><b>Find</b><h3>Pick your murals</h3><p>Scroll the gallery or open the map. Tap a pin to see the photo, the artist and where it is.</p></div>
-      <div className="step"><b>Walk</b><h3>Follow the route</h3><p>Add stops to a tour. The app orders them and opens walking directions in Google Maps.</p></div>
-      <div className="step"><b>Share</b><h3>Fill in the map</h3><p>Like your favorites, confirm a location with your own photo, or add a wall nobody has listed yet.</p></div>
     </div>
   </section>
 
