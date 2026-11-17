@@ -93,6 +93,15 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
     try { await fn() } catch (e) { setError(errMsg(e)) } finally { setBusy(false) }
   }
 
+  /** Submitted photos → mural: bundled placeholders are replaced by the first real photos, otherwise they're appended. */
+  const mergePhotos = (m: { photos?: string[] | null; cover_photo?: string | null }): Record<string, unknown> => {
+    if (photos.length === 0) return {}
+    const cur = m.photos ?? []
+    return cur.every(u => u.startsWith('/murals/'))
+      ? { photos, cover_photo: photos[0] }
+      : { photos: [...cur, ...photos.filter(u => !cur.includes(u))], cover_photo: m.cover_photo ?? photos[0] }
+  }
+
   /** Photo update for an existing mural: repainted → old photos move to history, mural is tagged Changed. */
   const addPhotos = () => run(async () => {
     const { data: m, error: e1 } = await sb.from('murals').select('id,title,artist,photos,cover_photo,previous_photos,artwork_history,confidence,precision').eq('slug', s.mural_slug!).maybeSingle()
@@ -123,12 +132,13 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
 
   /** Someone stood at the mural and confirmed it: mark the location verified. */
   const confirmLocation = () => run(async () => {
-    const { data: m, error: e1 } = await sb.from('murals').select('id,precision,confidence,coordinates').eq('slug', verifySlug!).maybeSingle()
+    const { data: m, error: e1 } = await sb.from('murals').select('id,precision,confidence,coordinates,photos,cover_photo').eq('slug', verifySlug!).maybeSingle()
     if (e1) throw e1
     if (!m) throw new Error(`Mural "${verifySlug}" not found`)
     const patch: Record<string, unknown> = { confidence: m.confidence === 'removed' ? 'removed' : 'verified' }
     if (!m.precision || m.precision === 'lead') patch.precision = 'landmark'
     if (!m.coordinates && s.coordinates) patch.coordinates = s.coordinates
+    Object.assign(patch, mergePhotos(m))
     const { error: e2 } = await sb.from('murals').update(patch).eq('id', m.id)
     if (e2) throw e2
     await finish('approved')
@@ -162,6 +172,8 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
       // a pinned location that you approve counts as confirmed (unless the mural is marked removed)
       if (mural?.confidence !== 'removed') patch.confidence = 'verified'
     }
+    const { data: cur } = await sb.from('murals').select('photos,cover_photo').eq('slug', existingSlug!).maybeSingle()
+    Object.assign(patch, mergePhotos(cur ?? {}))
     const { error: e } = await sb.from('murals').update(patch).eq('slug', existingSlug!)
     if (e) throw e
     await finish('approved')
