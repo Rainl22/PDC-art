@@ -2,7 +2,7 @@
   "name": "Murales PDC",
   "short_name": "MuralesPDC",
   "description": "Discover the street art of Playa del Carmen",
-  "start_url": "/",
+  "start_url": "/gallery",
   "display": "standalone",
   "background_color": "#F3F1EC",
   "theme_color": "#326A82",
