@@ -11,8 +11,8 @@ export function PlaceTags({ mural }: { mural: Pick<Mural, 'place_type' | 'change
   const place = mural.place_type && PLACE_LABEL[mural.place_type as PlaceType]
   return (
     <>
-      {place && <Tag tone="sea" icon={<Building2 size={9} className="shrink-0" />}>{t(place)}</Tag>}
-      {mural.changes_often && <Tag tone="neutral" icon={<RefreshCw size={9} className="shrink-0" />}>{t('tag.rotating')}</Tag>}
+      {place && <Tag tone="sea" icon={<Building2 size={11} className="shrink-0" />}>{t(place)}</Tag>}
+      {mural.changes_often && <Tag tone="neutral" icon={<RefreshCw size={11} className="shrink-0" />}>{t('tag.rotating')}</Tag>}
     </>
   )
 }

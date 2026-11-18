@@ -42,7 +42,7 @@ export default function AuthFinish() {
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center gap-3 px-gutter text-center text-ink-2">
       {!failed && <Loader2 className="animate-spin text-sea" size={28} />}
-      <p className="text-body">{t('auth.finishing')}</p>
+      <p className="text-14">{t('auth.finishing')}</p>
     </main>
   )
 }

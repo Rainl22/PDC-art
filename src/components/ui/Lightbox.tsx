@@ -38,7 +38,7 @@ export function Lightbox({ photos, start, onClose }: { photos: string[]; start: 
         <>
           <button type="button" aria-label="Previous photo" onClick={() => step(-1)} className={`${btn} left-3 top-1/2 -translate-y-1/2`}><ChevronLeft size={22} /></button>
           <button type="button" aria-label="Next photo" onClick={() => step(1)} className={`${btn} right-3 top-1/2 -translate-y-1/2`}><ChevronRight size={22} /></button>
-          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-on-dark font-display">{i + 1} / {n}</span>
+          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-13 text-on-dark ">{i + 1} / {n}</span>
         </>
       )}
     </div>
