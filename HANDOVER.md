@@ -66,12 +66,22 @@ Source of truth for the redesign: the design critique spec (see `docs/REDESIGN_P
 - **Radius** (roles): `rounded-inset` 8 (thumbs, small chips) · `rounded-panel` 16 (gallery card photo, inputs, panels) · `rounded-card` 24 (sheets, tour list, pin card) · `rounded-sheet` 32 (mural page sheet) · `rounded-full`. **Shadow**: `shadow-1` surfaces, `shadow-2` floating (pins, sheets, tray).
 - **Sizing**: `control` 44px (min tap target, round buttons) · `field` 48px (primary buttons, inputs, search) · nav bar 64px + safe area. Spacing roles unchanged (`gutter`, `grid`, `controls`, ...).
 - **Components**: `ui/Tag` (one pill: DM Sans 600 12px; ConfidenceBadge, ArtworkBadge, LocationPill, PlaceTags wrap it; no `sm` size anymore) · `ui/TourButton` (Add to tour / In tour, no select mode) · `layout/TourTray` (shows on /gallery pages when the tour has stops) · `layout/BottomNav` (64px, active pill, marigold count badge on Tour) · `layout/SideMenu` `MenuButton` (visible 44px hamburger, top-right of every header; logo on the left is static) · `mural/LikeButton` (`HeartIcon` on cards/pin card, `LikeButton` on the mural page: count only from 3 hearts) · `mural/MuralCard` (4:5 photo, text below, never shows coordinates).
+- **Desktop (>=1024px)**: `layout/TopBar` replaces the bottom bar; Explore is two panes (cards + `mural/ExploreMap`); pins come from `lib/useMuralPins.ts` (used by the Map page and Explore); mural page is photo (60%) + info panel (40%).
 - **Helpers**: `lib/format.ts` (`displayTitle` title-cases all-lowercase titles, `displayArtist` strips @ and de-duplicates, `displayPlace` hides "Pinned location (lat, lng)", `walkMinutes` = 80 m/min) · `lib/likes.ts` (`useLikes`: hearts on this device = "Saved") · `lib/tour.ts` (`useTour`, `shortestOrder`, `buildGoogleMapsUrl(stops, fromMyLocation)`).
 - **Map pins**: 40px photo circles in 44px buttons (aria-label "title, artist"), solid ring green = verified / amber = unconfirmed, selected 60px with a sea ring, pins closer than 48px are grouped into a dark count circle (tap zooms in), map pans so the selected pin stays above the pin card. No legend, no chips (owner decision).
 - **Tour**: Edit mode holds reorder (up/down) and delete; "My location" chip starts the Google Maps route from where you are; "Shortest order" = nearest-neighbour; share link `/tour?stops=slug1,slug2` rebuilds the tour (replaces the saved one).
 - i18n: every public string is in `lib/i18n/dict.ts` (EN + ES, typed keys); locale in the `locale` cookie. Naming: Explore (route still `/gallery`), Map, Tour, Add mural, "Send for review", "Unconfirmed" (was Unverified), "Directions".
 
 ## 7. Owner to-do (needs the owner's accounts)
+When the owner asks "what do I need to do?", read this list back (open items only), grouped as: right now, soon, whenever.
+
+**From the redesign (2026-11-18)**
+- [ ] **Right now:** after the deploy, paste a mural link and the home page link into WhatsApp and check the large image card shows.
+- [ ] **Right now:** fix the typo "Frida khalo" → "Frida Kahlo" in `/admin/murals` (data, not code).
+- [ ] **Soon:** send fresh 390px screenshots of the live app (map, pin card, tour) so they replace `public/site/app-*.jpg` on the landing page (they show the old design).
+- [ ] **Soon:** tell Claude whether the new gallery, map pins and tour feel right on a real phone outdoors (sun, one hand); anything too small or too light?
+
+**Carried over**
 - [ ] **Merge** the last pushed commit (Ko-fi link + Terms tips line + "Team sign-in" menu label) if the owner hasn't already; check Vercel turns READY.
 - [ ] **Forwarding email `hello@murles-pdc.art`** (spelled **murles**, no "a"): DNS is done in Vercel (ImprovMX MX + SPF; Resend DKIM/CNAME/DMARC also there). The owner must finish in ImprovMX (alias `hello` → their inbox, domain shows green) and send a test; first test did not arrive (probably sent to the misspelled `murales-pdc.art`, or the alias was missing). Then: set `NEXT_PUBLIC_CONTACT_EMAIL=hello@murles-pdc.art` in Vercel (shown in the privacy notice) and redeploy, and add a **Report a problem** link (mailto) in the menu.
 - [ ] **Resend → Supabase SMTP**: domain records are in Vercel; owner verifies the domain in Resend, creates a sending key and pastes it only into Supabase (Authentication → Emails → SMTP: `smtp.resend.com`, 465, user `resend`, sender `no-reply@murles-pdc.art`), then raises the hourly email limit (~30).

@@ -4,6 +4,7 @@ import { useT } from '@/lib/i18n/client'
 import { getMuralGradient } from '@/lib/gradients'
 import { Tag } from '@/components/ui/Tag'
 import { HeartIcon } from './LikeButton'
+import { TourButton } from '@/components/ui/TourButton'
 import { displayTitle, displayArtist, displayPlace } from '@/lib/format'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
@@ -12,10 +13,12 @@ interface Props {
   mural: Mural
   distance?: string   // e.g. "350 m", only when we know where the person is
   priority?: boolean  // first cards load eagerly, the rest lazily
+  active?: boolean    // selected from the desktop map: 3px sea outline
+  onHover?: (id: string | null) => void
 }
 
 /** Photo-first card: 4:5 photo on top (badges in the corners only), text underneath. Never shows coordinates. */
-export function MuralCard({ mural, distance, priority }: Props) {
+export function MuralCard({ mural, distance, priority, active, onHover }: Props) {
   const { t } = useT()
   const gradient = getMuralGradient(mural.slug)
   const cover    = mural.cover_photo ?? null
@@ -26,9 +29,9 @@ export function MuralCard({ mural, distance, priority }: Props) {
   const photoCount = mural.photos?.length ?? 0
 
   return (
-    <div className="relative">
+    <div id={`card-${mural.id}`} className="group relative" onMouseEnter={() => onHover?.(mural.id)} onMouseLeave={() => onHover?.(null)}>
       <Link href={`/gallery/${mural.slug}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-panel bg-groove">
+        <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
           {cover
             // eslint-disable-next-line @next/next/no-img-element
             ? <img src={cover} alt={mural.title} loading={priority ? 'eager' : 'lazy'} decoding="async" className={`absolute inset-0 w-full h-full object-cover ${removed ? 'saturate-[.6]' : ''}`} />
@@ -58,6 +61,10 @@ export function MuralCard({ mural, distance, priority }: Props) {
         </div>
       </Link>
 
+      {/* desktop: "Add to tour" appears on hover or keyboard focus */}
+      <div className="hidden lg:block absolute inset-x-0 top-0 aspect-[4/5] pointer-events-none">
+        <TourButton muralId={mural.id} variant="pill" className="pointer-events-auto absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 group-focus-within:opacity-100 transition-opacity" />
+      </div>
       {/* save heart: a sibling of the link (no button inside a link); 36px visual, 44px tap area */}
       <HeartIcon muralId={mural.id} className="absolute top-1.5 right-1.5" />
     </div>

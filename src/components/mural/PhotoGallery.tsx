@@ -41,7 +41,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
   }, [open, step])
 
   return (
-    <div className="relative h-72 overflow-hidden bg-groove">
+    <div className="relative h-72 lg:h-auto lg:aspect-[4/5] lg:max-h-[calc(100dvh-var(--topbar-h)-3rem)] lg:w-full lg:rounded-card lg:sticky lg:top-[calc(var(--topbar-h)+1.5rem)] overflow-hidden bg-groove">
       {n === 0 ? (
         <div className="w-full h-full" style={{ background: gradient }} />
       ) : (

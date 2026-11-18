@@ -137,7 +137,7 @@ export default function TourPage() {
   const chip = (active: boolean) => `h-9 px-3 rounded-full text-14 font-medium border inline-flex items-center gap-1.5 transition-colors ${active ? 'bg-ink text-on-dark border-ink' : 'bg-surface text-ink border-groove'}`
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-h))] pt-controls">
+    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-h)-var(--topbar-h))] pt-controls w-full lg:max-w-xl lg:mx-auto">
       {header(
         <button type="button" onClick={() => setEditing(e => !e)} className="min-h-control px-2 text-14 font-semibold text-sea">
           {editing ? t('tour.done') : t('tour.edit')}

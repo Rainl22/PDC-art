@@ -79,5 +79,15 @@
   --fd: 'Syne', system-ui, sans-serif;
   --fb: 'DM Sans', system-ui, sans-serif;
 
+  --topbar-h: 0px;   /* desktop top app bar (>=1024px); phones use the bottom bar */
+
   color-scheme: light;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 0px;                 /* no bottom bar on desktop */
+    --topbar-h: 4.5rem;           /* 72px top app bar */
+    --space-sheet-overlap: 0rem;  /* the mural info panel sits beside the photo, not over it */
+  }
 }

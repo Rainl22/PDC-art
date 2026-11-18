@@ -12,6 +12,7 @@ import { LocationPill } from '@/components/ui/LocationPill'
 import { TourButton } from '@/components/ui/TourButton'
 import { HeartIcon } from '@/components/mural/LikeButton'
 import { getMuralGradient } from '@/lib/gradients'
+import { useMuralPins, reducedMotion } from '@/lib/useMuralPins'
 import { displayTitle, displayPlace, walkMinutes } from '@/lib/format'
 import { Search, Navigation, X, LocateFixed, Loader2, Images } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -25,15 +26,8 @@ maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
 // Playa del Carmen centre
 const PDC_CENTER: [number, number] = [-87.0739, 20.6296]
 
-// Pins are 40px photo circles inside a 44px button; pins closer than this (screen px) are grouped into one count.
-const PIN = 40
-const HIT = 44
-const SELECTED = 60
-const CLUSTER_PX = 48
-/** Space reserved at the bottom of the map for the pin card, so a selected pin is never hidden behind it. */
+/** Space reserved at the bottom of the map for the pin card on phones, so a selected pin is never hidden behind it. */
 const SHEET_PAD = 280
-
-const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /** Swipeable photos on the map card; tapping a photo (or the card text) opens the mural page. */
 function CardPhotos({ photos, title, slug, onOpen }: { photos: string[]; title: string; slug: string; onOpen: () => void }) {
@@ -65,7 +59,6 @@ export default function MapPage() {
   const { t } = useT()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef       = useRef<maplibregl.Map | null>(null)
-  const markersRef   = useRef<maplibregl.Marker[]>([])
 
   const [murals, setMurals]       = useState<Mural[]>([])
   const router = useRouter()
@@ -118,89 +111,14 @@ export default function MapPage() {
     return () => { map.remove(); mapRef.current = null }
   }, [])
 
-  /** A pin: a real <button> (focusable, Enter/Space opens the card) holding a 40px photo circle. Solid ring: green = verified, amber = unconfirmed. */
-  const makePin = useCallback((mural: Mural, selected: boolean) => {
-    const size = selected ? SELECTED : PIN
-    const el = document.createElement('button')
-    el.type = 'button'
-    el.setAttribute('aria-label', [displayTitle(mural.title), mural.artist].filter(Boolean).join(', '))
-    el.style.cssText = `width:${Math.max(HIT, size)}px;height:${Math.max(HIT, size)}px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;${selected ? 'z-index:5;' : ''}`
-    const ring = selected ? 'var(--sea)' : mural.confidence === 'verified' ? 'var(--certain)' : 'var(--unconfirmed)'
-    const disc = document.createElement('span')
-    disc.style.cssText = `display:block;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;box-sizing:border-box;border:${selected ? 4 : 3}px solid ${ring};background:${getMuralGradient(mural.slug)};box-shadow:var(--shadow-2);`
-    if (mural.cover_photo) {
-      const img = document.createElement('img')
-      img.src = mural.cover_photo; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'
-      disc.appendChild(img)
-    }
-    el.appendChild(disc)
-    el.addEventListener('click', e => { e.stopPropagation(); setActive(mural) })
-    return el
-  }, [])
-
-  /** A group of pins that are too close to tell apart: a dark circle with the count; tapping zooms in. */
-  const makeCluster = useCallback((members: Mural[], map: maplibregl.Map) => {
-    const el = document.createElement('button')
-    el.type = 'button'
-    el.setAttribute('aria-label', `${members.length} murals`)
-    el.style.cssText = `width:${HIT}px;height:${HIT}px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;`
-    const disc = document.createElement('span')
-    disc.textContent = String(members.length)
-    disc.style.cssText = `display:flex;align-items:center;justify-content:center;width:${PIN}px;height:${PIN}px;border-radius:50%;background:var(--ink);color:var(--on-dark);font:600 16px var(--fb);box-shadow:var(--shadow-2);`
-    el.appendChild(disc)
-    el.addEventListener('click', e => {
-      e.stopPropagation()
-      const b = new maplibregl.LngLatBounds()
-      members.forEach(m => b.extend([m.coordinates!.lng, m.coordinates!.lat]))
-      map.fitBounds(b, { padding: 80, maxZoom: 19, duration: reducedMotion() ? 0 : 500 })
-    })
-    return el
-  }, [])
-
-  // draw pins; regroup whenever the view changes or a pin is selected
-  const draw = useCallback(() => {
-    const map = mapRef.current
-    if (!map) return
-    markersRef.current.forEach(m => m.remove())
-    markersRef.current = []
-    const placed = murals.filter(m => m.coordinates)
-    const used = new Set<string>()
-    const pts = placed.map(m => ({ m, p: map.project([m.coordinates!.lng, m.coordinates!.lat]) }))
-    // the selected pin always stands alone
-    pts.sort((a, b) => (a.m.id === active?.id ? -1 : b.m.id === active?.id ? 1 : 0))
-    for (const a of pts) {
-      if (used.has(a.m.id)) continue
-      used.add(a.m.id)
-      const group = [a.m]
-      if (a.m.id !== active?.id) {
-        for (const b of pts) {
-          if (used.has(b.m.id) || b.m.id === active?.id) continue
-          if (Math.hypot(a.p.x - b.p.x, a.p.y - b.p.y) < CLUSTER_PX) { group.push(b.m); used.add(b.m.id) }
-        }
-      }
-      const lng = group.reduce((s, g) => s + g.coordinates!.lng, 0) / group.length
-      const lat = group.reduce((s, g) => s + g.coordinates!.lat, 0) / group.length
-      const el = group.length > 1 ? makeCluster(group, map) : makePin(a.m, a.m.id === active?.id)
-      markersRef.current.push(new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map))
-    }
-  }, [murals, active, makePin, makeCluster])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !mapReady) return
-    draw()
-    // regroup when the zoom changes (panning doesn't change which pins overlap)
-    map.on('zoomend', draw)
-    return () => { map.off('zoomend', draw) }
-  }, [draw, mapReady])
+  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: setActive })
 
   // keep the selected pin visible above the pin card
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapReady) return
     const motion = reducedMotion() ? { duration: 0 } : {}
-    if (active?.coordinates) map.easeTo({ center: [active.coordinates.lng, active.coordinates.lat], padding: { bottom: SHEET_PAD, top: 0, left: 0, right: 0 }, ...motion })
+    if (active?.coordinates) map.easeTo({ center: [active.coordinates.lng, active.coordinates.lat], padding: { bottom: window.matchMedia('(min-width:1024px)').matches ? 0 : SHEET_PAD, top: 0, left: 0, right: 0 }, ...motion })
     else map.easeTo({ padding: { bottom: 0, top: 0, left: 0, right: 0 }, ...motion })
   }, [active, mapReady])
 
@@ -272,12 +190,12 @@ export default function MapPage() {
   const place = active ? displayPlace(active) : ''
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[var(--nav-h)] bg-bg overflow-hidden overscroll-none">
+    <div className="fixed inset-x-0 top-[var(--topbar-h)] bottom-[var(--nav-h)] bg-bg overflow-hidden overscroll-none">
       {/* map */}
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
       {/* search bar, with the menu button inside its right end */}
-      <div className="absolute top-controls left-gutter right-gutter z-10">
+      <div className="absolute top-controls left-gutter right-gutter lg:right-auto lg:w-[420px] z-10">
         <div className="h-field bg-surface rounded-full shadow-1 pl-4 pr-1.5 flex items-center gap-2">
           <Search size={18} className="text-ink-2 shrink-0" />
           <input
@@ -288,7 +206,7 @@ export default function MapPage() {
             className="flex-1 min-w-0 bg-transparent outline-none placeholder:text-ink-3"
           />
           {search && <button type="button" aria-label={t('map.close')} onClick={() => setSearch('')} className="text-ink-2 shrink-0 w-control h-control flex items-center justify-center"><X size={18} /></button>}
-          <MenuButton className="!border-0 !bg-bg" />
+          <MenuButton className="!border-0 !bg-bg lg:hidden" />
         </div>
       </div>
 
@@ -338,8 +256,8 @@ export default function MapPage() {
 
       {/* pin card (bottom sheet) */}
       {active && (
-        <div className="absolute bottom-0 left-0 right-0 z-20">
-          <div className="bg-surface rounded-t-card shadow-2 px-gutter pt-4 pb-4 relative">
+        <div className="absolute bottom-0 left-0 right-0 z-20 lg:left-gutter lg:right-auto lg:bottom-6 lg:w-[380px]">
+          <div className="bg-surface rounded-t-card lg:rounded-card shadow-2 px-gutter pt-4 pb-4 relative">
             <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-[5px] bg-groove rounded-full pointer-events-none" />
             <button onClick={() => setActive(null)} aria-label={t('map.close')}
               className="absolute top-3 right-3 w-8 h-8 rounded-full bg-bg text-ink flex items-center justify-center before:absolute before:-inset-1.5 before:content-['']">
