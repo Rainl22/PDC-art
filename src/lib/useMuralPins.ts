@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import * as maplibregl from 'maplibre-gl'
 import { getMuralGradient } from '@/lib/gradients'
+import { metresBetween } from '@/lib/geo'
 import { thumbUrl } from '@/lib/thumb'
 import { displayTitle } from '@/lib/format'
 import type { Mural } from '@/types/mural'
@@ -27,11 +28,15 @@ export function useMuralPins(opts: {
   activeId?: string | null
   hoverId?: string | null
   onSelect: (m: Mural) => void
+  /** A group too tight to pull apart by zooming (same wall): lets the screen show a list to choose from. */
+  onGroup?: (members: Mural[]) => void
 }) {
   const { mapRef, ready, murals, activeId, hoverId, onSelect } = opts
   const markers = useRef<maplibregl.Marker[]>([])
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
+  const groupRef = useRef(opts.onGroup)
+  groupRef.current = opts.onGroup
 
   const makePin = useCallback((mural: Mural, state: 'normal' | 'hover' | 'selected') => {
     const size = state === 'selected' ? SELECTED : state === 'hover' ? HOVER : PIN
@@ -66,6 +71,10 @@ export function useMuralPins(opts: {
     el.appendChild(disc)
     el.addEventListener('click', e => {
       e.stopPropagation()
+      // murals on one wall can be a few metres apart: zooming never separates them, so offer a list instead
+      let spread = 0
+      for (const a of members) for (const c of members) spread = Math.max(spread, metresBetween(a.coordinates!, c.coordinates!))
+      if (spread < 30 && groupRef.current) { groupRef.current(members); return }
       const b = new maplibregl.LngLatBounds()
       members.forEach(m => b.extend([m.coordinates!.lng, m.coordinates!.lat]))
       map.fitBounds(b, { padding: 80, maxZoom: 19, duration: reducedMotion() ? 0 : 500 })
