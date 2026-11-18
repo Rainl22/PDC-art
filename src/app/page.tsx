@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import './landing.css'
 import { createClient } from '@/lib/supabase/server'
 import { getLocale } from '@/lib/i18n/server'
+import { displayArtist } from '@/lib/format'
 import { LangToggle, InstallHint } from '@/components/landing/LandingClient'
 
 const TITLE = 'Murales PDC: the street art of Playa del Carmen'
@@ -71,15 +72,15 @@ const COPY = {
   },
 } as const
 
-const WALL: { img: string; alt: string; title: string; artist: string | null; dims?: [number, number] }[] = [
-  { img: 'old-mayan-woman', alt: 'Portrait of an elderly Mayan woman', title: 'Old Mayan Woman', artist: 'Pinta o Muere' },
-  { img: 'viva-playa-del-carmen', alt: 'Wide mural with a catrina and a graffiti centerpiece', title: 'Viva Playa del Carmen', artist: 'Kin kab pinturas' },
-  { img: 'la-chica', alt: 'Teal mural of a figure with flowers for a head', title: 'La Chica', artist: 'Senkoe' },
-  { img: 'white-skull-marigolds', alt: 'White skull and marigolds mural', title: 'White Skull and Marigolds', artist: null },
-  { img: 'dia-de-muertos-2025', alt: 'Día de Muertos mural with a catrina', title: 'Día de Muertos 2025', artist: 'Pinta o Muere' },
-  { img: 'mayan-woman', alt: 'Woman with ram horns mural', title: 'Mayan Woman', artist: '@peokmancilla' },
-  { img: 'giant-sea-turtles', alt: 'Giant sea turtle on a teal wall', title: 'Giant Sea Turtles', artist: 'Senkoe' },
-  { img: 'gober-restaurant', alt: 'Mural on a beachside restaurant', title: 'Gober Restaurant', artist: 'Theanunaki' },
+const WALL: { img: string; slug?: string; alt: string; title: string; artist: string | null; dims?: [number, number] }[] = [
+  { img: 'old-mayan-woman', slug: 'old-mayan-woman', alt: 'Portrait of an elderly Mayan woman', title: 'Old Mayan Woman', artist: 'Pinta o Muere' },
+  { img: 'viva-playa-del-carmen', slug: 'viva-playa-del-carmen', alt: 'Wide mural with a catrina and a graffiti centerpiece', title: 'Viva Playa del Carmen', artist: 'Kin kab pinturas' },
+  { img: 'la-chica', slug: 'la-chica', alt: 'Teal mural of a figure with flowers for a head', title: 'La Chica', artist: 'Senkoe' },
+  { img: 'white-skull-marigolds', slug: 'white-skull-marigolds', alt: 'White skull and marigolds mural', title: 'White Skull and Marigolds', artist: null },
+  { img: 'dia-de-muertos-2025', slug: 'dia-de-muertos-2025', alt: 'Día de Muertos mural with a catrina', title: 'Día de Muertos 2026', artist: 'Pinta o Muere' },
+  { img: 'mayan-woman', slug: 'mayan-woman', alt: 'Woman with ram horns mural', title: 'Mayan Woman', artist: '@peokmancilla' },
+  { img: 'giant-sea-turtles', slug: 'giant-sea-turtles', alt: 'Giant sea turtle on a teal wall', title: 'Giant Sea Turtles', artist: 'Senkoe' },
+  { img: 'gober-restaurant', slug: 'gober-restaurant', alt: 'Mural on a beachside restaurant', title: 'Gober Restaurant', artist: 'Theanunaki' },
   { img: 'crocodile-lilies', alt: 'Crocodile rising out of the water beside lily pads', title: 'Crocodile and lilies', artist: '@imer_hu', dims: [900, 1200] },
   { img: 'skull-warrior', alt: 'Skeletal warrior in a jade headdress with feathers', title: 'Jade skull warrior', artist: null, dims: [900, 1200] },
   { img: 'catrina-altar', alt: 'Catrina lighting a candle at an altar', title: 'Catrina at the altar', artist: 'Hoacko', dims: [900, 1200] },
@@ -104,9 +105,17 @@ async function counts() {
   } catch { return null }
 }
 
+/** Artist line for each mural in the "walls" strip, from the same data (and the same display rules) as the app. */
+async function wallArtists(): Promise<Record<string, string>> {
+  try {
+    const { data } = await createClient().from('murals').select('slug,artist,artists').in('slug', WALL.flatMap(w => (w.slug ? [w.slug] : [])))
+    return Object.fromEntries((data ?? []).map(m => [m.slug as string, displayArtist(m)]))
+  } catch { return {} }
+}
+
 export default async function Landing() {
   const c = COPY[getLocale()]
-  const n = await counts()
+  const [n, fromDb] = await Promise.all([counts(), wallArtists()])
   return (
     <div className="lp">
 <div className="wrap">
@@ -215,12 +224,15 @@ export default async function Landing() {
       <p>{c.galP}</p>
     </div>
     <div className="wall">
-      {WALL.map(w => (
+      {WALL.map(w => {
+        const artist = (w.slug && w.slug in fromDb ? fromDb[w.slug] : (w.artist ?? '').replace(/^@/, '')) || null
+        return (
         <figure key={w.img}>
-          <img src={`/site/${w.img}.jpg`} alt={w.alt} {...(w.dims ? { width: w.dims[0], height: w.dims[1] } : {})} loading="lazy" />
-          <figcaption>{w.title}<span>{w.artist ?? c.unknown}</span></figcaption>
+          <div className="ph"><img src={`/site/${w.img}.jpg`} alt={w.alt} loading="lazy" /></div>
+          <figcaption>{w.title}<span className={artist ? '' : 'unk'}>{artist ?? c.unknown}</span></figcaption>
         </figure>
-      ))}
+        )
+      })}
     </div>
   </section>
 
