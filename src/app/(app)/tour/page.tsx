@@ -8,7 +8,7 @@ import { getTourIds, setTourIds, clearTour, buildGoogleMapsUrl, shortestOrder, M
 import { distanceKm } from '@/lib/geo'
 import { walkMinutes, displayTitle, displayArtist } from '@/lib/format'
 import { getMuralGradient } from '@/lib/gradients'
-import { Navigation, Plus, Trash2, ChevronUp, ChevronDown, Share2, LocateFixed, Shuffle, Route } from 'lucide-react'
+import { Navigation, Plus, X, ChevronUp, ChevronDown, Share2, LocateFixed, Shuffle, Route } from 'lucide-react'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import type { Mural } from '@/types/mural'
@@ -56,7 +56,20 @@ export default function TourPage() {
     setTourIds(next.map(s => s.id))
     if (next.length === 0) setEditing(false)
   }
-  const remove = (id: string) => commit(stops.filter(s => s.id !== id))
+  // Removing is one tap from the list itself; an Undo bar appears for a few seconds in case it was a slip.
+  const [undo, setUndo] = useState<{ stop: Mural; index: number } | null>(null)
+  useEffect(() => { if (!undo) return; const id = setTimeout(() => setUndo(null), 6000); return () => clearTimeout(id) }, [undo])
+  function remove(id: string) {
+    const index = stops.findIndex(s => s.id === id)
+    if (index < 0) return
+    setUndo({ stop: stops[index], index })
+    commit(stops.filter(s => s.id !== id))
+  }
+  function undoRemove() {
+    if (!undo) return
+    const next = [...stops]; next.splice(Math.min(undo.index, next.length), 0, undo.stop)
+    commit(next); setUndo(null)
+  }
   function move(i: number, d: -1 | 1) {
     const j = i + d
     if (j < 0 || j >= stops.length) return
@@ -192,14 +205,17 @@ export default function TourPage() {
                         : <p className="text-13 text-danger truncate">{t('tour.noPin')}</p>}
                     </div>
                   </Link>
-                  {/* reorder + delete only in Edit mode, so a stray tap can't remove a stop */}
-                  {editing && (
-                    <div className="flex items-center shrink-0">
-                      <button type="button" aria-label={t('tour.moveUp')} disabled={i === 0} onClick={() => move(i, -1)} className="w-control h-control flex items-center justify-center text-ink-2 disabled:opacity-30"><ChevronUp size={20} /></button>
-                      <button type="button" aria-label={t('tour.moveDown')} disabled={i === stops.length - 1} onClick={() => move(i, 1)} className="w-control h-control flex items-center justify-center text-ink-2 disabled:opacity-30"><ChevronDown size={20} /></button>
-                      <button type="button" aria-label={t('tour.remove')} onClick={() => remove(stop.id)} className="w-control h-control flex items-center justify-center text-danger"><Trash2 size={18} /></button>
-                    </div>
-                  )}
+                  <div className="flex items-center shrink-0">
+                    {/* reorder arrows appear in Edit mode */}
+                    {editing && (
+                      <>
+                        <button type="button" aria-label={t('tour.moveUp')} disabled={i === 0} onClick={() => move(i, -1)} className="w-control h-control flex items-center justify-center text-ink-2 disabled:opacity-30"><ChevronUp size={20} /></button>
+                        <button type="button" aria-label={t('tour.moveDown')} disabled={i === stops.length - 1} onClick={() => move(i, 1)} className="w-control h-control flex items-center justify-center text-ink-2 disabled:opacity-30"><ChevronDown size={20} /></button>
+                      </>
+                    )}
+                    {/* remove: always visible */}
+                    <button type="button" aria-label={t('tour.remove')} onClick={() => remove(stop.id)} className="w-control h-control rounded-full flex items-center justify-center text-ink-2 hover:text-danger hover:bg-bg"><X size={20} /></button>
+                  </div>
                 </div>
                 {/* leg: dotted connector and the walk time */}
                 {next && (
@@ -223,6 +239,13 @@ export default function TourPage() {
         {routable.length < stops.length && <p className="text-13 text-danger text-center">{t('tour.partial', { n: routable.length, m: stops.length })}</p>}
         {routable.length > used.length && <p className="text-13 text-ink-2 text-center">{t('tour.cap', { n: used.length })}</p>}
       </div>
+
+      {undo && (
+        <div role="status" className="fixed left-gutter right-gutter bottom-[calc(var(--nav-h)+5.5rem)] lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[360px] z-30 h-12 rounded-full bg-ink text-on-dark shadow-2 pl-4 pr-1.5 flex items-center gap-3">
+          <p className="flex-1 min-w-0 text-14 truncate">{t('tour.removed', { title: displayTitle(undo.stop.title) })}</p>
+          <button type="button" onClick={undoRemove} className="h-9 px-4 rounded-full bg-marigold text-ink text-14 font-semibold">{t('tour.undo')}</button>
+        </div>
+      )}
 
       {/* sticky actions */}
       <div className="sticky bottom-[var(--nav-h)] z-10 mt-auto bg-bg border-t border-groove px-gutter py-3 flex items-center gap-2">

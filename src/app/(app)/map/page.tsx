@@ -10,6 +10,7 @@ import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import { ArtistLinks } from '@/components/mural/ArtistLinks'
 import { LocationPill } from '@/components/ui/LocationPill'
+import { GroupPicker } from '@/components/mural/GroupPicker'
 import { TourButton } from '@/components/ui/TourButton'
 import { HeartIcon } from '@/components/mural/LikeButton'
 import { getMuralGradient } from '@/lib/gradients'
@@ -64,6 +65,7 @@ export default function MapPage() {
   const [murals, setMurals]       = useState<Mural[]>([])
   const router = useRouter()
   const [active, setActive]       = useState<Mural | null>(null)
+  const [group, setGroup]         = useState<Mural[] | null>(null)   // murals too close to separate
   const [search, setSearch]       = useState('')
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating]   = useState(false)
@@ -106,13 +108,13 @@ export default function MapPage() {
     })
     // attribution stays, collapsed into the small "i" control so it doesn't eat a bar above the tab bar
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right')
-    map.on('click', () => setActive(null))
+    map.on('click', () => { setActive(null); setGroup(null) })
     mapRef.current = map
     setMapReady(true)
     return () => { map.remove(); mapRef.current = null }
   }, [])
 
-  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: setActive })
+  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: m => { setGroup(null); setActive(m) }, onGroup: g => { setActive(null); setGroup(g) } })
 
   // keep the selected pin visible above the pin card
   useEffect(() => {
@@ -253,6 +255,12 @@ export default function MapPage() {
             {t('map.soonBody')}
           </p>
         </div>
+      )}
+
+      {/* murals on the same spot: choose one */}
+      {group && !active && (
+        <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); setActive(m) }}
+          className="absolute z-20 bottom-3 left-gutter right-gutter lg:right-auto lg:bottom-6 lg:w-[380px]" />
       )}
 
       {/* pin card (bottom sheet) */}

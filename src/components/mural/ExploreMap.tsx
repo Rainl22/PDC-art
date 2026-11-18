@@ -5,6 +5,7 @@ import Link from 'next/link'
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { Navigation, Route } from 'lucide-react'
+import { GroupPicker } from './GroupPicker'
 import { useMuralPins } from '@/lib/useMuralPins'
 import { useTour, buildGoogleMapsUrl } from '@/lib/tour'
 import { distanceKm } from '@/lib/geo'
@@ -23,6 +24,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [ready, setReady] = useState(false)
   const tour = useTour()
+  const [group, setGroup] = useState<Mural[] | null>(null)
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return
@@ -42,7 +44,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useMuralPins({ mapRef, ready, murals, activeId, hoverId, onSelect })
+  useMuralPins({ mapRef, ready, murals, activeId, hoverId, onSelect, onGroup: setGroup })
 
   // bring the selected mural into view
   useEffect(() => {
@@ -58,6 +60,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
   return (
     <div className="relative w-full h-full rounded-card overflow-hidden bg-groove shadow-1">
       <div ref={ref} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
+      {group && <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); onSelect(m) }} className="absolute left-3 right-3 top-3 z-20" />}
       {stops.length > 0 && (
         <div className="absolute left-3 right-3 bottom-3 z-10 bg-surface rounded-panel shadow-2 p-3 flex items-center gap-3">
           <div className="flex -space-x-2 shrink-0" aria-hidden>
