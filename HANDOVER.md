@@ -72,6 +72,15 @@ Source of truth for the redesign: the design critique spec (see `docs/REDESIGN_P
 - i18n: every public string is in `lib/i18n/dict.ts` (EN + ES, typed keys); locale in the `locale` cookie. Naming: Explore (route still `/gallery`), Map, Tour, Add mural, "Send for review", "Unconfirmed" (was Unverified), "Directions".
 
 ## 7. Owner to-do (needs the owner's accounts)
+When the owner asks "what do I need to do?", read this list back (open items only), grouped as: right now, soon, whenever.
+
+**From the redesign (2026-11-18)**
+- [ ] **Right now:** after the deploy, paste a mural link and the home page link into WhatsApp and check the large image card shows.
+- [ ] **Right now:** fix the typo "Frida khalo" → "Frida Kahlo" in `/admin/murals` (data, not code).
+- [ ] **Soon:** send fresh 390px screenshots of the live app (map, pin card, tour) so they replace `public/site/app-*.jpg` on the landing page (they show the old design).
+- [ ] **Soon:** tell Claude whether the new gallery, map pins and tour feel right on a real phone outdoors (sun, one hand); anything too small or too light?
+
+**Carried over**
 - [ ] **Merge** the last pushed commit (Ko-fi link + Terms tips line + "Team sign-in" menu label) if the owner hasn't already; check Vercel turns READY.
 - [ ] **Forwarding email `hello@murles-pdc.art`** (spelled **murles**, no "a"): DNS is done in Vercel (ImprovMX MX + SPF; Resend DKIM/CNAME/DMARC also there). The owner must finish in ImprovMX (alias `hello` → their inbox, domain shows green) and send a test; first test did not arrive (probably sent to the misspelled `murales-pdc.art`, or the alias was missing). Then: set `NEXT_PUBLIC_CONTACT_EMAIL=hello@murles-pdc.art` in Vercel (shown in the privacy notice) and redeploy, and add a **Report a problem** link (mailto) in the menu.
 - [ ] **Resend → Supabase SMTP**: domain records are in Vercel; owner verifies the domain in Resend, creates a sending key and pastes it only into Supabase (Authentication → Emails → SMTP: `smtp.resend.com`, 465, user `resend`, sender `no-reply@murles-pdc.art`), then raises the hourly email limit (~30).
