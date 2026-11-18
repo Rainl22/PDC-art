@@ -11,6 +11,7 @@ import { metresBetween } from '@/lib/geo'
 import { AddressLocator } from './AddressLocator'
 import { useKnownArtists } from '@/lib/useKnownArtists'
 import { enrichAndSaveArtists, parseArtistLine, useArtistDirectory } from '@/lib/artistDirectory'
+import { ArtistField } from '@/components/mural/ArtistField'
 import { adminField, adminLabel, primaryBtn, ghostBtn, CONFIDENCE, PRECISION } from './fields'
 import type { Submission, ConfidenceLevel, PrecisionLabel } from '@/types/mural'
 
@@ -263,8 +264,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
           {!mural.artist && pending && (
             <div className="flex flex-wrap gap-2 items-end">
               <div className="flex-1 min-w-[8rem]"><label className={adminLabel}>Artist name</label>
-                <input className={adminField} list="known-artists-q" value={qArtist} onChange={e => { setQArtist(e.target.value); const k = directory.find(e.target.value); if (k && !qHandle) setQHandle(k.instagram ?? k.url ?? '') }} />
-                <datalist id="known-artists-q">{knownArtists.map(n => <option key={n} value={n} />)}</datalist></div>
+                <ArtistField single className={adminField} names={knownArtists} placeholder="Artist name" ariaLabel="Artist name" value={qArtist} onChange={v => { setQArtist(v); const k = directory.find(v); if (k && !qHandle) setQHandle(k.instagram ?? k.url ?? '') }} /></div>
               <div className="flex-1 min-w-[8rem]"><label className={adminLabel}>Instagram / link</label>
                 <input className={adminField} value={qHandle} onChange={e => setQHandle(e.target.value)} placeholder="senkoeone" /></div>
               <button className={primaryBtn} disabled={busy || !qArtist.trim()} onClick={saveMuralArtist}>Save artist</button>
@@ -311,8 +311,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
           {!existingSlug && (
             <>
               <div><label className={adminLabel}>Title</label><input className={adminField} value={title} onChange={e => setTitle(e.target.value)} /></div>
-              <div><label className={adminLabel}>Artist(s) — comma separated</label><input className={adminField} list="known-artists" value={artist} onChange={e => pickArtist(e.target.value)} />
-                <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist></div>
+              <div><label className={adminLabel}>Artist(s) — comma separated</label><ArtistField className={adminField} names={knownArtists} placeholder="Artist name" ariaLabel="Artist(s)" value={artist} onChange={pickArtist} /></div>
               <div><label className={adminLabel}>Instagram handle or link (first artist) — filled in for known artists</label>
                 <input className={adminField} value={handle} onChange={e => setHandle(e.target.value)} placeholder="senkoeone" /></div>
             </>
