@@ -70,7 +70,9 @@ export default async function MuralDetailPage({ params }: Props) {
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.location_description + ' Playa del Carmen')}`
 
   return (
-    <div className="bg-surface min-h-dvh">
+    <div className="bg-surface lg:bg-bg min-h-dvh">
+    {/* desktop: photos on the left (60%), info panel on the right (40%) */}
+    <div className="lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8 lg:max-w-6xl lg:mx-auto lg:px-8 lg:py-6 lg:items-start">
       {/* hero */}
       <PhotoGallery
         photos={m.photos?.length ? m.photos : m.cover_photo ? [m.cover_photo] : []}
@@ -85,7 +87,7 @@ export default async function MuralDetailPage({ params }: Props) {
       />
 
       {/* white sheet riding over the photo */}
-      <div className="relative -mt-sheet-overlap rounded-t-sheet bg-surface px-gutter pt-5 pb-5 space-y-5">
+      <div className="relative -mt-sheet-overlap rounded-t-sheet lg:rounded-card bg-surface px-gutter lg:px-6 pt-5 lg:pt-6 pb-5 space-y-5 lg:shadow-1">
         <PhotoCredit mural={m} />
 
         {/* the "Changed" notice sits right under the photos, with its date */}
@@ -205,6 +207,7 @@ export default async function MuralDetailPage({ params }: Props) {
 
         <MuralPager prev={prev} next={next} />
       </div>
+    </div>
     </div>
   )
 }

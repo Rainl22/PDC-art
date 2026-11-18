@@ -1,5 +1,7 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
+import dynamic from 'next/dynamic'
+import { useSearchParams } from 'next/navigation'
 import { MuralCard } from './MuralCard'
 import { useLikes } from '@/lib/likes'
 import { MenuButton } from '@/components/layout/SideMenu'
@@ -10,6 +12,8 @@ import { matchMural } from '@/lib/search'
 import { Logo } from '@/components/brand/Logo'
 import { Search, X, ArrowDownUp, Check } from 'lucide-react'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
+
+const ExploreMap = dynamic(() => import('./ExploreMap'), { ssr: false })
 
 type Filter = ConfidenceLevel | 'all' | 'changed' | 'saved'
 type Sort = 'name' | 'artist' | 'updated' | 'nearest' | 'liked'
@@ -45,6 +49,17 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const [locError, setLocError]   = useState(false)
   const [query, setQuery]         = useState('')
   const [sortOpen, setSortOpen]   = useState(false)
+  const [activeId, setActiveId]   = useState<string | null>(null)   // selected from the desktop map
+  const [hoverId, setHoverId]     = useState<string | null>(null)   // hovered card <-> pin (desktop)
+
+  // the desktop top bar searches by sending people here with ?q=
+  const urlQuery = useSearchParams().get('q')
+  useEffect(() => { if (urlQuery !== null) setQuery(urlQuery) }, [urlQuery])
+
+  const selectOnMap = useCallback((m: Mural) => {
+    setActiveId(m.id)
+    document.getElementById(`card-${m.id}`)?.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }, [])
 
   function chooseSort(next: Sort) {
     setLocError(false)
@@ -91,15 +106,16 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const sortLabel = t(SORTS.find(o => o.value === sort)!.label)
 
   return (
-    <div className="flex flex-col min-h-dvh bg-bg">
+    <div className="bg-bg lg:grid lg:grid-cols-[minmax(0,1fr)_520px] lg:gap-8 lg:px-8 lg:items-start">
+    <div className="flex flex-col min-h-dvh md:max-w-[960px] md:mx-auto lg:max-w-none lg:mx-0 lg:min-h-0">
       {/* header: logo + title + menu, then search, then chips */}
-      <header className="bg-bg sticky top-0 z-20 pt-controls">
+      <header className="bg-bg sticky top-[var(--topbar-h)] z-20 pt-controls">
         <div className="px-gutter min-h-control mb-3 flex items-center gap-3">
-          <Logo size={36} />
+          <Logo size={36} className="lg:hidden" />
           <h1 className="flex-1 font-display font-extrabold text-28 tracking-tight">{t('gallery.title')}</h1>
-          <MenuButton />
+          <MenuButton className="lg:hidden" />
         </div>
-        <div className="px-gutter pb-3">
+        <div className="px-gutter pb-3 lg:hidden">
           <div className="h-field bg-surface rounded-full shadow-1 px-4 flex items-center gap-2">
             <Search size={18} className="text-ink-2 shrink-0" />
             <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder={t('gallery.searchFull')} aria-label={t('gallery.searchFull')}
@@ -136,9 +152,9 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
       {visible.length === 0 && <p className="text-center text-14 text-ink-2 py-10">{t('filter.none')}</p>}
 
       {/* grid: 2 columns, 12px between columns, 16px between rows */}
-      <div className="grid grid-cols-2 gap-x-grid gap-y-4 px-gutter pt-2 pb-24">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-grid gap-y-4 lg:gap-x-5 lg:gap-y-6 min-[1600px]:grid-cols-4 px-gutter lg:px-0 pt-2 pb-24 lg:pb-12">
         {visible.map((m, i) => (
-          <MuralCard key={m.id} mural={m} priority={i < 4}
+          <MuralCard key={m.id} mural={m} priority={i < 4} active={activeId === m.id} onHover={setHoverId}
             distance={me && distanceOf(m) !== null ? formatDistance(distanceOf(m)!) : undefined} />
         ))}
       </div>
@@ -159,6 +175,12 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
           </div>
         </div>
       )}
+    </div>
+
+    {/* desktop: sticky map panel beside the cards */}
+    <aside className="hidden lg:block sticky top-[calc(var(--topbar-h)+1.5rem)] h-[calc(100dvh-var(--topbar-h)-3rem)] mt-6" aria-label="Map">
+      <ExploreMap murals={visible} all={murals} activeId={activeId} hoverId={hoverId} onSelect={selectOnMap} />
+    </aside>
     </div>
   )
 }

@@ -18,7 +18,8 @@ Not done on purpose, decide later:
 Notes: landing copy is now EN + ES (cookie `locale`, ES/EN toggle in the nav); counts come from the database; QR is the static `public/site/qr-map.svg` (points to /map); share image is `public/og.png` (made from an HTML mock, re-render if the tagline changes). **The three phone screenshots on the landing (`public/site/app-*.jpg`) still show the old app design: retake them from the live site after the merge.**
 Mobile hero with a full photo and one CTA, proof strip (counts), install hint, ES/EN toggle on the landing nav, fix "Add a mural" link (`/submit`), `og:image` + `twitter:card=summary_large_image`, per-mural `og:image`.
 
-## Phase 3: Desktop layout (4.6)
+## Phase 3: Desktop layout (4.6): done in this branch
+Notes: breakpoints are 640 (3 columns, content capped at 960), 1024 (top app bar, two-pane Explore with sticky map panel, two-column mural page, floating 380px pin card) and 1600 (4 columns). `--nav-h` becomes 0 and `--topbar-h` 72px at >=1024. Pins are shared via `lib/useMuralPins.ts`. The top-bar search sends people to `/gallery?q=`. Phone tour tray is hidden on desktop (the docked tray lives in the map panel). Not done: hover highlight on the *pin* is wired but untested with real tiles (tiles are blocked here).
 Top app bar at >=1024px, two-pane explore (cards + sticky map), 3-4 column grid, two-column mural page, floating pin card, hover "Add to tour".
 
 ## Phase 4: Images and performance (4.10, H6)
