@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { X, LogIn, LogOut, UserRound, ShieldCheck, FileText, Lock, Languages, Download } from 'lucide-react'
+import { X, LogIn, LogOut, UserRound, ShieldCheck, FileText, Lock, Languages, Download, Coffee } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { useT } from '@/lib/i18n/client'
 import { LOCALES, type Locale } from '@/lib/i18n/dict'
@@ -130,6 +130,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
 
             <div className="h-px bg-groove mx-5 my-3" />
 
+            <a href="https://ko-fi.com/irainpc" target="_blank" rel="noopener noreferrer" className={row}><Coffee size={16} className="text-sea" />{t('menu.support')}</a>
             <Link href="/privacy" className={row}><Lock size={16} className="text-ink-3" />{t('menu.privacy')}</Link>
             <Link href="/terms" className={row}><FileText size={16} className="text-ink-3" />{t('menu.terms')}</Link>
           </div>
