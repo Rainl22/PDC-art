@@ -1,4 +1,5 @@
 'use client'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import * as maplibregl from 'maplibre-gl'
@@ -62,7 +63,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
           <div className="flex -space-x-2 shrink-0" aria-hidden>
             {stops.slice(0, 4).map(s => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={s.id} src={s.cover_photo ?? ''} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-surface bg-groove" />
+              <ThumbImg key={s.id} src={s.cover_photo ?? ''} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-surface bg-groove" />
             ))}
           </div>
           <div className="min-w-0 flex-1">

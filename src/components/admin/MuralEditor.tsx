@@ -1,10 +1,11 @@
 'use client'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowUp, ArrowDown, Trash2, ImagePlus, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { prepareImage } from '@/lib/image'
+import { prepareImage, uploadThumb } from '@/lib/image'
 import { slugify } from '@/lib/slug'
 import { errMsg } from '@/lib/errors'
 import { enrichAndSaveArtists } from '@/lib/artistDirectory'
@@ -63,6 +64,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
         const path = `${folder}/${crypto.randomUUID()}.jpg`
         const { error } = await sb.storage.from('mural-photos').upload(path, body, { contentType: 'image/jpeg' })
         if (error) throw error
+        await uploadThumb(sb.storage, 'mural-photos', path, f)
         urls.push(sb.storage.from('mural-photos').getPublicUrl(path).data.publicUrl)
       }
       setPhotos(p => [...p, ...urls])
@@ -157,7 +159,7 @@ export function MuralEditor({ mural }: { mural?: Mural }) {
           {photos.map((u, i) => (
             <div key={u} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt="" className="w-14 h-14 rounded-inset object-cover bg-groove shrink-0" />
+              <ThumbImg src={u} alt="" className="w-14 h-14 rounded-inset object-cover bg-groove shrink-0" />
               <p className="flex-1 min-w-0 text-13 text-ink-3 truncate">{i === 0 ? 'Cover · ' : ''}{u.split('/').slice(-2).join('/')}</p>
               <button type="button" aria-label="Move up" onClick={() => move(i, -1)} className="p-1.5 text-ink-2"><ArrowUp size={15} /></button>
               <button type="button" aria-label="Move down" onClick={() => move(i, 1)} className="p-1.5 text-ink-2"><ArrowDown size={15} /></button>

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import * as maplibregl from 'maplibre-gl'
 import { getMuralGradient } from '@/lib/gradients'
+import { thumbUrl } from '@/lib/thumb'
 import { displayTitle } from '@/lib/format'
 import type { Mural } from '@/types/mural'
 
@@ -43,7 +44,9 @@ export function useMuralPins(opts: {
     disc.style.cssText = `display:block;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;box-sizing:border-box;border:${state === 'selected' ? 4 : 3}px solid ${ring};background:${getMuralGradient(mural.slug)};box-shadow:var(--shadow-2);`
     if (mural.cover_photo) {
       const img = document.createElement('img')
-      img.src = mural.cover_photo; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false
+      const full = mural.cover_photo
+      img.onerror = () => { img.onerror = null; img.src = full }
+      img.src = thumbUrl(full); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'
       disc.appendChild(img)
     }

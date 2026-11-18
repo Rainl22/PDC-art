@@ -1,4 +1,5 @@
 'use client'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -183,7 +184,7 @@ export default function TourPage() {
                     <div className="w-12 h-12 shrink-0 overflow-hidden rounded-inset bg-groove">
                       {stop.cover_photo
                         // eslint-disable-next-line @next/next/no-img-element
-                        ? <img src={stop.cover_photo} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                        ? <ThumbImg src={stop.cover_photo} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         : <div className="w-full h-full" style={{ background: getMuralGradient(stop.slug) }} />}
                     </div>
                     <div className="min-w-0">

@@ -1,4 +1,5 @@
 'use client'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import Link from 'next/link'
 import { useT } from '@/lib/i18n/client'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -15,7 +16,7 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
       <div className="aspect-[4/3] relative overflow-hidden shrink-0">
         {mural.cover_photo
           // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={mural.cover_photo} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          ? <ThumbImg src={mural.cover_photo} alt="" className="absolute inset-0 w-full h-full object-cover" />
           : <div className="absolute inset-0" style={{ background: getMuralGradient(mural.slug) }} />}
       </div>
       <div className="p-2.5">

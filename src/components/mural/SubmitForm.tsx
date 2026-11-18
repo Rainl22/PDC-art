@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Camera, X, CheckCircle2, ChevronLeft, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { submitMural, spamCode } from '@/lib/murals'
-import { prepareImage } from '@/lib/image'
+import { prepareImage, uploadThumb } from '@/lib/image'
 import { useT } from '@/lib/i18n/client'
 import { useKnownArtists } from '@/lib/useKnownArtists'
 import { useAuth } from '@/lib/auth/useAuth'
@@ -109,6 +109,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
         const body = await prepareImage(f)
         const { error: upErr } = await supabase.storage.from('submissions').upload(path, body, { contentType: 'image/jpeg' })
         if (upErr) throw upErr
+        await uploadThumb(supabase.storage, 'submissions', path, f)
         paths.push(path)
       }
       // A new mural submitted by a signed-in admin is published straight away (no review queue).
