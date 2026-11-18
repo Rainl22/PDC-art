@@ -1,4 +1,3 @@
-import { Logo } from '@/components/brand/Logo'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
@@ -20,9 +19,8 @@ export default async function ProfilePage() {
   return (
     <main className="px-gutter pt-controls pb-6 max-w-lg mx-auto space-y-5">
       <div className="flex items-center gap-3 min-h-control">
-        <Logo size={36} />
-        <h1 className="flex-1 min-w-0 font-display font-extrabold text-28 text-ink">{t('profile.title')}</h1>
         <MenuButton />
+        <h1 className="flex-1 min-w-0 font-display font-extrabold text-28 text-ink">{t('profile.title')}</h1>
       </div>
 
       <div className="bg-surface rounded-sheet p-4 space-y-3">

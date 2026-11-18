@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutGrid, Map, Route, PlusCircle, Search } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
-import { MenuButton } from '@/components/layout/SideMenu'
+import { useMenu } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import { LOCALES } from '@/lib/i18n/dict'
 import { useTour } from '@/lib/tour'
@@ -23,13 +23,15 @@ export function TopBar() {
   const router = useRouter()
   const { t, locale, setLocale } = useT()
   const { count } = useTour()
+  const { open } = useMenu()
   const [q, setQ] = useState('')
   return (
     <header className="hidden lg:flex sticky top-0 z-40 h-[var(--topbar-h)] items-center gap-6 px-8 bg-surface border-b border-groove">
-      <Link href="/gallery" className="flex items-center gap-3 shrink-0">
+      <button type="button" onClick={open} aria-label={t('menu.open')} aria-haspopup="dialog"
+        className="flex items-center gap-3 shrink-0 h-12 pl-1 pr-3 -ml-1 rounded-panel cursor-pointer hover:bg-bg active:scale-[.98] transition-colors">
         <Logo size={40} />
         <span className="font-display font-extrabold text-20 tracking-tight">Murales PDC</span>
-      </Link>
+      </button>
       <nav className="flex items-center gap-1 flex-1" aria-label="Main">
         {TABS.map(({ href, label, Icon }) => {
           const active = path.startsWith(href)
@@ -55,7 +57,6 @@ export function TopBar() {
             className={`min-w-[44px] h-[38px] rounded-full text-13 font-semibold ${locale === l ? 'bg-ink text-on-dark' : 'text-ink-2'}`}>{l.toUpperCase()}</button>
         ))}
       </div>
-      <MenuButton />
     </header>
   )
 }

@@ -1,3 +1,4 @@
+import { MenuButton } from '@/components/layout/SideMenu'
 import { SubmitForm } from '@/components/mural/SubmitForm'
 import { getT } from '@/lib/i18n/server'
 
@@ -10,6 +11,7 @@ export default function SubmitPage({ searchParams }: { searchParams: { mural?: s
   return (
     <main className="relative px-gutter pt-controls pb-6 max-w-lg mx-auto">
       <div className="flex items-center gap-3 min-h-control">
+        <MenuButton />
         <h1 className="flex-1 min-w-0 font-display font-extrabold text-28 text-ink">{mode === 'update' ? t('submit.updateTitle') : mode === 'photos' ? t('submit.addPhotosTitle') : mode === 'verify' ? t('submit.verifyTitle') : existing ? t('submit.addLocationTitle') : t('submit.title')}</h1>
       </div>
       <p className="text-14 text-ink-2 mt-3 mb-5">

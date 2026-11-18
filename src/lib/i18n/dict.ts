@@ -117,7 +117,7 @@ const en = {
   'tour.browseMap': 'Browse the map', 'tour.noLocation': 'Couldn’t get your location.',
   'submit.photos': 'Photos', 'submit.counter': '{n} of {max}', 'submit.photoTile': 'Take or add photos', 'submit.photoTileHint': 'Location is read from the photo', 'submit.gps': 'GPS ✓',
   'submit.where': 'Where is it?', 'submit.whereLabel': 'Street, cross street or landmark', 'submit.fromPhoto': 'Found from photo', 'submit.locNeeded': 'Needed',
-  'submit.details': 'Details', 'submit.optional': 'optional', 'submit.titleLabel': 'Mural name', 'submit.artistLabel': 'Artist or @handle', 'submit.notesLabel': 'Anything else? (landmark, condition)',
+  'submit.details': 'Details', 'submit.optional': 'optional', 'submit.titleLabel': 'Mural name', 'submit.artistLabel': 'Artist', 'submit.notesLabel': 'Anything else? (landmark, condition)',
   'submit.needPhoto': 'Add a photo first', 'submit.needLocation': 'Add a location',
 } as const
 
@@ -220,7 +220,7 @@ const es: Record<Key, string> = {
   'legal.updated': 'Última actualización', 'legal.back': 'Volver',
   'submit.photos': 'Fotos', 'submit.counter': '{n} de {max}', 'submit.photoTile': 'Toma o agrega fotos', 'submit.photoTileHint': 'La ubicación se lee de la foto', 'submit.gps': 'GPS ✓',
   'submit.where': '¿Dónde está?', 'submit.whereLabel': 'Calle, cruce o punto de referencia', 'submit.fromPhoto': 'Encontrada con la foto', 'submit.locNeeded': 'Falta',
-  'submit.details': 'Detalles', 'submit.optional': 'opcional', 'submit.titleLabel': 'Nombre del mural', 'submit.artistLabel': 'Artista o @usuario', 'submit.notesLabel': '¿Algo más? (referencia, estado)',
+  'submit.details': 'Detalles', 'submit.optional': 'opcional', 'submit.titleLabel': 'Nombre del mural', 'submit.artistLabel': 'Artista', 'submit.notesLabel': '¿Algo más? (referencia, estado)',
   'submit.needPhoto': 'Agrega una foto primero', 'submit.needLocation': 'Agrega una ubicación',
   'tour.edit': 'Editar', 'tour.done': 'Listo', 'tour.summary.stops': 'paradas', 'tour.summary.walking': 'caminando', 'tour.summary.distance': 'distancia', 'tour.minutes': '{n} min',
   'tour.startFrom': 'Empezar desde', 'tour.myLocation': 'Mi ubicación', 'tour.shortest': 'Orden más corto', 'tour.leg': '{n} min caminando', 'tour.walk': 'Empezar a caminar',

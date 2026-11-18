@@ -9,11 +9,11 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
     <main className="bg-surface min-h-dvh">
       <header className="sticky top-0 z-10 bg-surface border-b border-groove px-gutter pt-controls pb-3 flex items-center gap-3 min-h-control box-content">
-        <Link href="/gallery" aria-label={t('legal.back')} className="w-control h-control -ml-2 rounded-full flex items-center justify-center text-ink-2 hover:bg-bg">
+        <MenuButton />
+        <h1 className="flex-1 font-display font-bold text-20 tracking-tight">{doc.title}</h1>
+        <Link href="/gallery" aria-label={t('legal.back')} className="w-control h-control rounded-full flex items-center justify-center text-ink-2 hover:bg-bg">
           <ChevronLeft size={20} />
         </Link>
-        <h1 className="flex-1 font-display font-bold text-20 tracking-tight">{doc.title}</h1>
-        <MenuButton />
       </header>
       <article className="px-5 py-5 max-w-prose mx-auto">
         <p className="text-13 text-ink-3">{t('legal.updated')}: {doc.updated}</p>

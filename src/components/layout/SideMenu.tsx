@@ -140,14 +140,16 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** Visible 44px menu button, top-right of every main screen: opens the side menu (language, install, account, legal). */
+/** The logo, top-left of every main screen, in a 44px button: opens the side menu (language, install, account, legal).
+ *  The border, shadow and hover/press states tell people it can be pressed. */
 export function MenuButton({ className = '' }: { className?: string }) {
   const { open } = useMenu()
   const { t } = useT()
   return (
-    <button onClick={open} aria-label={t('menu.open')}
-      className={`shrink-0 w-control h-control rounded-full bg-surface border border-groove text-ink flex items-center justify-center active:scale-95 transition-transform ${className}`}>
-      <Menu size={20} />
+    <button onClick={open} aria-label={t('menu.open')} aria-haspopup="dialog"
+      className={`lg:hidden shrink-0 w-control h-control rounded-panel bg-surface border border-groove shadow-1 flex items-center justify-center cursor-pointer
+        hover:border-sea hover:shadow-2 active:scale-95 transition-[transform,box-shadow,border-color] ${className}`}>
+      <Logo size={32} />
     </button>
   )
 }

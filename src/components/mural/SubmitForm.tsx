@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/auth/useAuth'
 import { slugify } from '@/lib/slug'
 import { enrichAndSaveArtists, parseArtistLine } from '@/lib/artistDirectory'
 import { errMsg } from '@/lib/errors'
+import { ArtistField } from './ArtistField'
 import { LocationPicker, type LocationSource } from './LocationPicker'
 import type { Coordinates } from '@/types/mural'
 
@@ -237,7 +238,6 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
       </button>
       <input type="text" name="website" value={trap} onChange={e => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
         className="absolute left-[-9999px] w-px h-px opacity-0" />
-      <datalist id="known-artists">{knownArtists.map(n => <option key={n} value={n} />)}</datalist>
 
       {photoBlock}
 
@@ -270,7 +270,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
           </label>
           <label className="block">
             <span className={label}>{t('submit.artistLabel')}</span>
-            <input className={field} list="known-artists" autoComplete="off" placeholder={t('submit.artistPhNew')} value={artist} onChange={e => setArtist(e.target.value)} />
+            <ArtistField className={field} names={knownArtists} placeholder={t('submit.artistPhNew')} ariaLabel={t('submit.artistPhNew')} value={artist} onChange={setArtist} />
           </label>
           <section><h2 className={label}>{t('submit.where')}</h2>{picker}</section>
         </>
@@ -304,7 +304,7 @@ export function SubmitForm({ existing, mode }: { existing?: { slug: string; titl
               </label>
               <label className="block">
                 <span className="sr-only">{t('submit.artistLabel')}</span>
-                <input className={field} list="known-artists" autoComplete="off" placeholder={t('submit.artistLabel')} aria-label={t('submit.artistLabel')} value={artist} onChange={e => setArtist(e.target.value)} />
+                <ArtistField className={field} names={knownArtists} placeholder={t('submit.artistLabel')} ariaLabel={t('submit.artistLabel')} value={artist} onChange={setArtist} />
               </label>
             </div>
           </section>
