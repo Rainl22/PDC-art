@@ -34,7 +34,7 @@ export function MuralCard({ mural, distance, priority, active, onHover, selectab
 
   const inner = (
     <>
-        <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active || selected ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
+        <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
           {cover
             ? <ThumbImg src={cover} alt={mural.title} eager={priority} className={`absolute inset-0 w-full h-full object-cover ${removed ? 'saturate-[.6]' : ''}`} />
             : <div className="absolute inset-0" style={{ background: gradient }} />}
