@@ -7,7 +7,7 @@ import { HeartIcon } from './LikeButton'
 import { TourButton } from '@/components/ui/TourButton'
 import { displayTitle, displayArtist, displayPlace } from '@/lib/format'
 import { ThumbImg } from '@/components/ui/ThumbImg'
-import { Check, Images } from 'lucide-react'
+import { Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
 interface Props {
@@ -40,12 +40,12 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
           <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-soft-light"
             style={{ background: 'var(--image-tint)', opacity: 'var(--image-tint-opacity)' }} />
 
-          {/* status, top-left: a check for verified (not colour alone), a text tag otherwise */}
-          <div className="absolute top-2 left-2">
-            {verified
-              ? <span role="img" aria-label={t('card.verified')} className="w-6 h-6 rounded-full bg-certain text-on-dark flex items-center justify-center ring-2 ring-on-dark"><Check size={14} strokeWidth={3} /></span>
-              : <Tag tone={removed ? 'removed' : 'unconfirmed'}>{t(removed ? 'conf.removed' : 'conf.unverified')}</Tag>}
-          </div>
+          {/* status, top-left: only murals that are not verified (or removed) carry a tag */}
+          {!verified && (
+            <div className="absolute top-2 left-2">
+              <Tag tone={removed ? 'removed' : 'unconfirmed'}>{t(removed ? 'conf.removed' : 'conf.unverified')}</Tag>
+            </div>
+          )}
 
           {photoCount > 1 && (
             <span aria-label={t('card.photos', { n: photoCount })} className="absolute bottom-2 right-2 flex items-center gap-1 text-12 font-semibold text-on-dark bg-scrim rounded-full px-2 py-0.5">
@@ -54,7 +54,7 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
           )}
         </div>
 
-        <div className="mt-2 px-0.5 space-y-0.5">
+        <div className="mt-3 px-0.5 space-y-0.5">
           <p className="text-16 font-semibold text-ink leading-tight line-clamp-2">{displayTitle(mural.title) || t('card.untitled')}</p>
           <p className={`text-14 font-medium truncate ${artist ? 'text-sea' : 'text-ink-2'}`}>{artist || t('card.artistUnknown')}</p>
           <p className="text-13 text-ink-2 truncate">{[place, distance].filter(Boolean).join(' · ')}</p>
