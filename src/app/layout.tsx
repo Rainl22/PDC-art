@@ -5,6 +5,7 @@ import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister
 import { getLocale } from '@/lib/i18n/server'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.murles-pdc.art'),
   title: 'Murales PDC',
   description: 'Discover the street art of Playa del Carmen — maps, tours, and community verified murals.',
   manifest: '/manifest.json',
@@ -20,8 +21,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Murales PDC',
     description: 'Street art map of Playa del Carmen',
-    type: 'website',
+    type: 'website', siteName: 'Murales PDC', locale: 'en_US', alternateLocale: ['es_MX'],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Murales PDC: the street art of Playa del Carmen' }],
   },
+  twitter: { card: 'summary_large_image', title: 'Murales PDC', description: 'Street art map of Playa del Carmen', images: ['/og.png'] },
 }
 
 export const viewport: Viewport = {

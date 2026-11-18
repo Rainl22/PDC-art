@@ -29,13 +29,19 @@ interface Props { params: { slug: string } }
 
 export async function generateMetadata({ params }: Props) {
   const supabase = createClient()
-  const { data } = await supabase.from('murals').select('title,artist').eq('slug', params.slug).single()
+  const { data } = await supabase.from('murals').select('title,artist,cover_photo,photos,location_description').eq('slug', params.slug).single()
   if (!data) return { title: 'Mural · Murales PDC' }
+  const title = `${displayTitle(data.title)}${data.artist ? ` by ${data.artist.replace(/^@/, '')}` : ''} · Murales PDC`
+  const description = `${displayTitle(data.title)}: street mural in Playa del Carmen${data.artist ? ` by ${data.artist.replace(/^@/, '')}` : ''}. See the photos, location and more on Murales PDC.`
+  // the mural's own photo is the share image (bundled photos are relative paths: metadataBase makes them absolute)
+  const photo: string | undefined = data.cover_photo ?? data.photos?.[0]
+  const images = photo ? [{ url: photo, alt: data.title }] : [{ url: '/og.png', width: 1200, height: 630 }]
   return {
-    title: `${data.title}${data.artist ? ` by ${data.artist}` : ''} · Murales PDC`,
+    title, description,
+    openGraph: { title, description, type: 'article', url: `/gallery/${params.slug}`, siteName: 'Murales PDC', images },
+    twitter: { card: 'summary_large_image', title, description, images: images.map(i => i.url) },
   }
 }
-
 
 export default async function MuralDetailPage({ params }: Props) {
   const { t, locale } = getT()

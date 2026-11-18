@@ -14,7 +14,8 @@ Not done on purpose, decide later:
 - Neighbourhood in card meta (no such field in the data; shows the location text).
 - "Frida khalo" is a data typo (should be Kahlo): fix in `/admin/murals`.
 
-## Phase 2: Landing + sharing (4.9, H7, H8)
+## Phase 2: Landing + sharing (4.9, H7, H8) — done in this branch
+Notes: landing copy is now EN + ES (cookie `locale`, ES/EN toggle in the nav); counts come from the database; QR is the static `public/site/qr-map.svg` (points to /map); share image is `public/og.png` (made from an HTML mock, re-render if the tagline changes). **The three phone screenshots on the landing (`public/site/app-*.jpg`) still show the old app design: retake them from the live site after the merge.**
 Mobile hero with a full photo and one CTA, proof strip (counts), install hint, ES/EN toggle on the landing nav, fix "Add a mural" link (`/submit`), `og:image` + `twitter:card=summary_large_image`, per-mural `og:image`.
 
 ## Phase 3: Desktop layout (4.6)
