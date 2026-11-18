@@ -76,8 +76,8 @@
   --fs-28: 1.75rem;    /* h1, screen titles (Syne 800) */
   --fs-40: 2.5rem;     /* landing display (Syne 800) */
 
-  --fd: 'Syne', system-ui, sans-serif;
-  --fb: 'DM Sans', system-ui, sans-serif;
+  --fd: var(--font-syne), 'Syne', system-ui, sans-serif;
+  --fb: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
 
   --topbar-h: 0px;   /* desktop top app bar (>=1024px); phones use the bottom bar */
 

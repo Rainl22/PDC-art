@@ -22,7 +22,8 @@ Mobile hero with a full photo and one CTA, proof strip (counts), install hint, E
 Notes: breakpoints are 640 (3 columns, content capped at 960), 1024 (top app bar, two-pane Explore with sticky map panel, two-column mural page, floating 380px pin card) and 1600 (4 columns). `--nav-h` becomes 0 and `--topbar-h` 72px at >=1024. Pins are shared via `lib/useMuralPins.ts`. The top-bar search sends people to `/gallery?q=`. Phone tour tray is hidden on desktop (the docked tray lives in the map panel). Not done: hover highlight on the *pin* is wired but untested with real tiles (tiles are blocked here).
 Top app bar at >=1024px, two-pane explore (cards + sticky map), 3-4 column grid, two-column mural page, floating pin card, hover "Add to tour".
 
-## Phase 4: Images and performance (4.10, H6)
+## Phase 4: Images and performance (4.10, H6): done in this branch
+How: Supabase image resizing isn't available on this plan (`FeatureNotEnabled`), so every photo gets a 600px copy stored next to it as `<name>-t.jpg` (about 50 KB vs about 500 KB). `lib/thumb.ts` maps a photo URL to its thumb (also bundled `/murals/<slug>/N.jpg` → `N-t.jpg`); `ThumbImg` falls back to the full photo if the thumb is missing. New uploads (Add a mural form, admin editor) create the thumb automatically (`lib/image.ts` `uploadThumb`). The 38 existing photos were backfilled once with `scripts/backfill-thumbs.py` (re-run it with the photo URLs if any are ever missing). Fonts are self-hosted through `next/font`. Result on a 390px phone: first load of /gallery about 1.2 MB of images (was about 9.6 MB), whole page scrolled about 1.6 MB. The mural page still loads the full photos on purpose.
 Thumbnails for submissions (480/160/1200 px, WebP) at upload/approval, `srcset`/`sizes`, self-hosted fonts. Gallery currently loads about 9.6 MB of originals.
 
 ## Later

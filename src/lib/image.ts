@@ -11,3 +11,16 @@ export async function prepareImage(file: File, maxEdge = 2000, quality = 0.85): 
   if (!blob) throw new Error('image encode failed')
   return blob
 }
+
+/** A 600px JPEG for gallery cards, pins and tour rows (about 50 KB instead of about 500 KB). Stored next to the photo as `<name>-t.jpg`. */
+export const prepareThumb = (file: File) => prepareImage(file, 600, 0.72)
+
+/** Upload the small copy next to a photo. Never fails the upload: without it the app just falls back to the full photo. */
+export async function uploadThumb(
+  storage: { from: (bucket: string) => { upload: (path: string, body: Blob, opts: { contentType: string }) => Promise<{ error: unknown }> } },
+  bucket: string, photoPath: string, file: File,
+) {
+  try {
+    await storage.from(bucket).upload(photoPath.replace(/\.jpg$/, '-t.jpg'), await prepareThumb(file), { contentType: 'image/jpeg' })
+  } catch { /* fine */ }
+}

@@ -19,8 +19,8 @@ const config: Config = {
         removed:  { DEFAULT: 'var(--removed)',  bg: 'var(--removed-bg)' },
       },
       fontFamily: {
-        display: ['Syne', 'system-ui', 'sans-serif'],
-        body:    ['DM Sans', 'system-ui', 'sans-serif'],
+        display: ['var(--font-syne)', 'Syne', 'system-ui', 'sans-serif'],
+        body:    ['var(--font-dm-sans)', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         full:  '9999px',

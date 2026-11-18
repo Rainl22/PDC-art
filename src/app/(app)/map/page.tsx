@@ -1,4 +1,5 @@
 'use client'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -42,7 +43,7 @@ function CardPhotos({ photos, title, slug, onOpen }: { photos: string[]; title: 
         {photos.map((src, k) => (
           <button key={src} type="button" onClick={onOpen} aria-label={title} className="shrink-0 w-full h-full snap-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={`${title} — ${k + 1}`} loading={k === 0 ? 'eager' : 'lazy'} decoding="async" className="w-full h-full object-cover" draggable={false} />
+            <ThumbImg src={src} alt={`${title} — ${k + 1}`} loading={k === 0 ? 'eager' : 'lazy'} decoding="async" className="w-full h-full object-cover" draggable={false} />
           </button>
         ))}
       </div>
@@ -219,7 +220,7 @@ export default function MapPage() {
               <button key={m.id} type="button" onClick={() => pickResult(m)}
                 className="w-full text-left px-4 py-2.5 border-b border-groove last:border-0 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {m.cover_photo ? <img src={m.cover_photo} alt="" loading="lazy" className="w-10 h-10 rounded-inset object-cover shrink-0" /> : <div className="w-10 h-10 rounded-inset bg-groove shrink-0" />}
+                {m.cover_photo ? <ThumbImg src={m.cover_photo} alt="" loading="lazy" className="w-10 h-10 rounded-inset object-cover shrink-0" /> : <div className="w-10 h-10 rounded-inset bg-groove shrink-0" />}
                 <div className="min-w-0">
                   <p className="text-14 font-medium truncate">{displayTitle(m.title)}</p>
                   <p className="text-13 text-ink-2 truncate">{m.artist ?? ''}{m.coordinates ? '' : ` · ${t('map.noPin')}`}</p>

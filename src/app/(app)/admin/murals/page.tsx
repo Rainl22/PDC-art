@@ -1,3 +1,4 @@
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { ChevronRight } from 'lucide-react'
@@ -30,7 +31,7 @@ export default async function AdminMurals() {
       {murals.map(m => (
         <Link key={m.id} href={`/admin/murals/${m.id}`} className="bg-surface rounded-sheet p-3 flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {m.cover_photo ? <img src={m.cover_photo} alt="" className="w-12 h-12 rounded-inset object-cover shrink-0" /> : <div className="w-12 h-12 rounded-inset bg-groove shrink-0" />}
+          {m.cover_photo ? <ThumbImg src={m.cover_photo} alt="" className="w-12 h-12 rounded-inset object-cover shrink-0" /> : <div className="w-12 h-12 rounded-inset bg-groove shrink-0" />}
           <div className="flex-1 min-w-0">
             <p className="text-14 font-medium truncate">{m.title}</p>
             <p className="text-13 text-ink-3 truncate">{m.artist ?? 'Artist unknown'}{m.coordinates ? '' : ' · no coordinates'}</p>

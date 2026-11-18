@@ -6,6 +6,7 @@ import { Tag } from '@/components/ui/Tag'
 import { HeartIcon } from './LikeButton'
 import { TourButton } from '@/components/ui/TourButton'
 import { displayTitle, displayArtist, displayPlace } from '@/lib/format'
+import { ThumbImg } from '@/components/ui/ThumbImg'
 import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
@@ -33,8 +34,7 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
       <Link href={`/gallery/${mural.slug}`} className="block">
         <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
           {cover
-            // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={cover} alt={mural.title} loading={priority ? 'eager' : 'lazy'} decoding="async" className={`absolute inset-0 w-full h-full object-cover ${removed ? 'saturate-[.6]' : ''}`} />
+            ? <ThumbImg src={cover} alt={mural.title} eager={priority} className={`absolute inset-0 w-full h-full object-cover ${removed ? 'saturate-[.6]' : ''}`} />
             : <div className="absolute inset-0" style={{ background: gradient }} />}
           {/* warm soft-light tint so photos taken in different light feel like one set */}
           <div aria-hidden className="absolute inset-0 pointer-events-none mix-blend-soft-light"

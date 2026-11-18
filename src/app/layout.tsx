@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { Syne, DM_Sans } from 'next/font/google'
 import { LocaleProvider } from '@/lib/i18n/client'
 import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
 import { getLocale } from '@/lib/i18n/server'
+
+// Fonts are downloaded at build time and served from our own domain (no request to Google, no layout jump).
+const syne = Syne({ subsets: ['latin'], weight: ['400', '600', '700', '800'], display: 'swap', variable: '--font-syne' })
+const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-dm-sans' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.murles-pdc.art'),
@@ -37,12 +42,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = getLocale()
   return (
-    <html lang={locale}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang={locale} className={`${syne.variable} ${dmSans.variable}`}>
       <body><LocaleProvider initial={locale}>{children}</LocaleProvider>
         <ServiceWorkerRegister /></body>
     </html>
