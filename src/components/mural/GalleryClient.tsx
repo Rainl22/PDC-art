@@ -4,12 +4,13 @@ import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { MuralCard } from './MuralCard'
 import { useLikes } from '@/lib/likes'
+import { useRouter } from 'next/navigation'
+import { getTourIds, saveTourIds } from '@/lib/tour'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import { matchMural } from '@/lib/search'
-import { Logo } from '@/components/brand/Logo'
 import { Search, X, ArrowDownUp, Check } from 'lucide-react'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
@@ -41,6 +42,9 @@ const lastChanged = (m: Mural) => Math.max(Date.parse(m.created_at) || 0, Date.p
 
 export function GalleryClient({ murals }: { murals: Mural[] }) {
   const { t } = useT()
+  const router = useRouter()
+  const [selecting, setSelecting] = useState(false)
+  const [selected, setSelected]   = useState<Set<string>>(new Set())
   const likes = useLikes()
   const [filter, setFilter]       = useState<Filter>('all')
   const [sort, setSort]           = useState<Sort>('updated')
@@ -101,6 +105,15 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [murals, filter, sort, me, query, likes.ids])
 
+  function toggleSelect(id: string) {
+    setSelected(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+  /** Adds the chosen murals to the tour (keeping stops already in it, no duplicates) and opens it. */
+  function buildTour() {
+    saveTourIds(Array.from(new Set([...getTourIds(), ...Array.from(selected)])))
+    router.push('/tour')
+  }
+
   const chip = (active: boolean) =>
     `shrink-0 h-9 px-4 rounded-full text-14 font-medium border transition-colors ${active ? 'bg-ink text-on-dark border-ink' : 'bg-surface text-ink border-groove'}`
   const sortLabel = t(SORTS.find(o => o.value === sort)!.label)
@@ -111,9 +124,12 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
       {/* header: logo + title + menu, then search, then chips */}
       <header className="bg-bg sticky top-[var(--topbar-h)] z-20 pt-controls">
         <div className="px-gutter min-h-control mb-3 flex items-center gap-3">
-          <Logo size={36} className="lg:hidden" />
-          <h1 className="flex-1 font-display font-extrabold text-28 tracking-tight">{t('gallery.title')}</h1>
-          <MenuButton className="lg:hidden" />
+          <MenuButton />
+          <h1 className="flex-1 min-w-0 truncate font-display font-extrabold text-28 tracking-tight">{t('gallery.title')}</h1>
+          <button type="button" onClick={() => { setSelecting(v => !v); setSelected(new Set()) }}
+            className="shrink-0 h-control px-4 rounded-full border border-sea text-sea text-14 font-semibold">
+            {selecting ? t('gallery.cancel') : t('gallery.select')}
+          </button>
         </div>
         <div className="px-gutter pb-3 lg:hidden">
           <div className="h-field bg-surface rounded-full shadow-1 px-4 flex items-center gap-2">
@@ -152,12 +168,26 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
       {visible.length === 0 && <p className="text-center text-14 text-ink-2 py-10">{t('filter.none')}</p>}
 
       {/* grid: 2 columns, 12px between columns, 16px between rows */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-grid gap-y-4 lg:gap-x-5 lg:gap-y-6 min-[1600px]:grid-cols-4 px-gutter lg:px-0 pt-2 pb-24 lg:pb-12">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-grid gap-y-row lg:gap-x-5 min-[1600px]:grid-cols-4 px-gutter lg:px-0 pt-2 pb-24 lg:pb-12">
         {visible.map((m, i) => (
-          <MuralCard key={m.id} mural={m} priority={i < 4} active={activeId === m.id} onHover={setHoverId}
+          <MuralCard key={m.id} mural={m} priority={i < 4} active={activeId === m.id} onHover={setHoverId} selectable={selecting} selected={selected.has(m.id)} onSelect={toggleSelect}
             distance={me && distanceOf(m) !== null ? formatDistance(distanceOf(m)!) : undefined} />
         ))}
       </div>
+
+      {/* tour selection bar */}
+      {selecting && (
+        <div className="fixed bottom-[var(--nav-h)] left-0 right-0 z-[45] bg-surface border-t border-groove px-gutter py-3 flex items-center justify-between gap-3 shadow-2">
+          <div className="min-w-0">
+            <p className="font-semibold text-14 text-ink">{selected.size === 0 ? t('select.tap') : t(selected.size === 1 ? 'select.one' : 'select.many', { n: selected.size })}</p>
+            <p className="text-13 text-ink-2">{t('select.min')}</p>
+          </div>
+          <button type="button" onClick={buildTour} disabled={selected.size < 2}
+            className="shrink-0 h-field px-5 rounded-full bg-sea text-on-dark text-14 font-semibold disabled:bg-groove disabled:text-ink-2">
+            {t('select.build')}
+          </button>
+        </div>
+      )}
 
       {/* sort sheet */}
       {sortOpen && (

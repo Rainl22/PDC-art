@@ -9,7 +9,6 @@ import { distanceKm } from '@/lib/geo'
 import { walkMinutes, displayTitle, displayArtist } from '@/lib/format'
 import { getMuralGradient } from '@/lib/gradients'
 import { Navigation, Plus, Trash2, ChevronUp, ChevronDown, Share2, LocateFixed, Shuffle, Route } from 'lucide-react'
-import { Logo } from '@/components/brand/Logo'
 import { MenuButton } from '@/components/layout/SideMenu'
 import { useT } from '@/lib/i18n/client'
 import type { Mural } from '@/types/mural'
@@ -104,10 +103,9 @@ export default function TourPage() {
 
   const header = (right?: React.ReactNode) => (
     <div className="px-gutter min-h-control mb-3 flex items-center gap-3">
-      <Logo size={36} />
+      <MenuButton />
       <h1 className="flex-1 font-display font-extrabold text-28 tracking-tight">{t('tour.title')}</h1>
       {right}
-      <MenuButton />
     </div>
   )
 
@@ -151,13 +149,13 @@ export default function TourPage() {
 
         {/* summary: units are always spelled out */}
         <div className="grid grid-cols-3 gap-2">
-          {[
-            [String(stops.length), t('tour.summary.stops')],
-            [canNavigate ? t('tour.minutes', { n: walkMins }) : '—', t('tour.summary.walking')],
-            [canNavigate ? (totalM < 1000 ? `${Math.round(totalM / 10) * 10} m` : `${(totalM / 1000).toFixed(1)} km`) : '—', t('tour.summary.distance')],
-          ].map(([v, l]) => (
+          {([
+            [String(stops.length), '', t('tour.summary.stops')],
+            canNavigate ? [String(walkMins), 'min', t('tour.summary.walking')] : ['—', '', t('tour.summary.walking')],
+            canNavigate ? (totalM < 1000 ? [String(Math.round(totalM / 10) * 10), 'm', t('tour.summary.distance')] : [(totalM / 1000).toFixed(1), 'km', t('tour.summary.distance')]) : ['—', '', t('tour.summary.distance')],
+          ] as [string, string, string][]).map(([v, unit, l]) => (
             <div key={l} className="bg-surface rounded-panel px-3 py-2.5 shadow-1">
-              <p className="font-display font-extrabold text-20 leading-tight">{v}</p>
+              <p className="whitespace-nowrap leading-tight"><span className="font-display font-extrabold text-20">{v}</span>{unit && <span className="text-14 font-semibold text-ink-2"> {unit}</span>}</p>
               <p className="text-13 font-medium text-ink-2">{l}</p>
             </div>
           ))}

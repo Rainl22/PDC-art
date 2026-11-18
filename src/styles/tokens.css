@@ -58,7 +58,8 @@
 
   /* spacing roles (4px grid; Tailwind's default scale is the same grid) */
   --space-gutter:       1rem;     /* screen edge */
-  --space-grid:         0.75rem;  /* between gallery cards */
+  --space-grid:         0.75rem;  /* between gallery cards (columns) */
+  --space-row:          1.25rem;  /* 20px: between rows of gallery tiles */
   --space-card-inset:   0.625rem; /* gap between the overlay card and the bottom of the photo */
   --space-card-inset-x: 0.25rem;  /* gap between the overlay card and the left/right edges of the photo (much narrower than the bottom) */
   --space-sheet-overlap: 1.5rem;  /* how far the white sheet rides over the hero image */

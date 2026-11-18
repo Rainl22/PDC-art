@@ -7,7 +7,7 @@ import { HeartIcon } from './LikeButton'
 import { TourButton } from '@/components/ui/TourButton'
 import { displayTitle, displayArtist, displayPlace } from '@/lib/format'
 import { ThumbImg } from '@/components/ui/ThumbImg'
-import { Images } from 'lucide-react'
+import { Check, Images } from 'lucide-react'
 import type { Mural } from '@/types/mural'
 
 interface Props {
@@ -15,11 +15,14 @@ interface Props {
   distance?: string   // e.g. "350 m", only when we know where the person is
   priority?: boolean  // first cards load eagerly, the rest lazily
   active?: boolean    // selected from the desktop map: 3px sea outline
+  selectable?: boolean  // "Create tour" mode: tapping toggles instead of opening the mural
+  selected?: boolean
+  onSelect?: (id: string) => void
   onHover?: (id: string | null) => void
 }
 
 /** Photo-first card: 4:5 photo on top (badges in the corners only), text underneath. Never shows coordinates. */
-export function MuralCard({ mural, distance, priority, active, onHover }: Props) {
+export function MuralCard({ mural, distance, priority, active, onHover, selectable, selected, onSelect }: Props) {
   const { t } = useT()
   const gradient = getMuralGradient(mural.slug)
   const cover    = mural.cover_photo ?? null
@@ -29,10 +32,9 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
   const removed  = mural.confidence === 'removed'
   const photoCount = mural.photos?.length ?? 0
 
-  return (
-    <div id={`card-${mural.id}`} className="group relative" onMouseEnter={() => onHover?.(mural.id)} onMouseLeave={() => onHover?.(null)}>
-      <Link href={`/gallery/${mural.slug}`} className="block">
-        <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
+  const inner = (
+    <>
+        <div className={`relative aspect-[4/5] overflow-hidden rounded-panel bg-groove ${active || selected ? 'outline outline-[3px] outline-sea outline-offset-[3px]' : ''}`}>
           {cover
             ? <ThumbImg src={cover} alt={mural.title} eager={priority} className={`absolute inset-0 w-full h-full object-cover ${removed ? 'saturate-[.6]' : ''}`} />
             : <div className="absolute inset-0" style={{ background: gradient }} />}
@@ -47,6 +49,12 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
             </div>
           )}
 
+          {selectable && (
+            <span aria-hidden className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${selected ? 'bg-sea text-on-dark' : 'bg-glass text-transparent'}`}>
+              <Check size={16} strokeWidth={3} />
+            </span>
+          )}
+
           {photoCount > 1 && (
             <span aria-label={t('card.photos', { n: photoCount })} className="absolute bottom-2 right-2 flex items-center gap-1 text-12 font-semibold text-on-dark bg-scrim rounded-full px-2 py-0.5">
               <Images size={12} aria-hidden />{photoCount}
@@ -59,14 +67,23 @@ export function MuralCard({ mural, distance, priority, active, onHover }: Props)
           <p className={`text-14 font-medium truncate ${artist ? 'text-sea' : 'text-ink-2'}`}>{artist || t('card.artistUnknown')}</p>
           <p className="text-13 text-ink-2 truncate">{[place, distance].filter(Boolean).join(' · ')}</p>
         </div>
-      </Link>
+    </>
+  )
+
+  return (
+    <div id={`card-${mural.id}`} className="group relative" onMouseEnter={() => onHover?.(mural.id)} onMouseLeave={() => onHover?.(null)}>
+      {selectable
+        ? <div role="checkbox" aria-checked={!!selected} tabIndex={0} aria-label={displayTitle(mural.title)} className="block cursor-pointer"
+            onClick={() => onSelect?.(mural.id)} onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onSelect?.(mural.id) } }}>{inner}</div>
+        : <Link href={`/gallery/${mural.slug}`} className="block">{inner}</Link>}
 
       {/* desktop: "Add to tour" appears on hover or keyboard focus */}
-      <div className="hidden lg:block absolute inset-x-0 top-0 aspect-[4/5] pointer-events-none">
+      {!selectable && <div className="hidden lg:block absolute inset-x-0 top-0 aspect-[4/5] pointer-events-none">
         <TourButton muralId={mural.id} variant="pill" className="pointer-events-auto absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 group-focus-within:opacity-100 transition-opacity" />
-      </div>
+      </div>}
+
       {/* save heart: a sibling of the link (no button inside a link); 36px visual, 44px tap area */}
-      <HeartIcon muralId={mural.id} className="absolute top-1.5 right-1.5" />
+      {!selectable && <HeartIcon muralId={mural.id} className="absolute top-1.5 right-1.5" />}
     </div>
   )
 }

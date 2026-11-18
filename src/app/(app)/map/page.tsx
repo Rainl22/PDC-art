@@ -195,9 +195,10 @@ export default function MapPage() {
       {/* map */}
       <div ref={containerRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
 
-      {/* search bar, with the menu button inside its right end */}
-      <div className="absolute top-controls left-gutter right-gutter lg:right-auto lg:w-[420px] z-10">
-        <div className="h-field bg-surface rounded-full shadow-1 pl-4 pr-1.5 flex items-center gap-2">
+      {/* search bar: the logo (opens the menu) on the left, then the search field */}
+      <div className="absolute top-controls left-gutter right-gutter lg:right-auto lg:w-[420px] z-10 flex items-center gap-2">
+        <MenuButton />
+        <div className="h-field flex-1 min-w-0 bg-surface rounded-full shadow-1 pl-4 pr-1.5 flex items-center gap-2">
           <Search size={18} className="text-ink-2 shrink-0" />
           <input
             value={search}
@@ -207,7 +208,6 @@ export default function MapPage() {
             className="flex-1 min-w-0 bg-transparent outline-none placeholder:text-ink-3"
           />
           {search && <button type="button" aria-label={t('map.close')} onClick={() => setSearch('')} className="text-ink-2 shrink-0 w-control h-control flex items-center justify-center"><X size={18} /></button>}
-          <MenuButton className="!border-0 !bg-bg lg:hidden" />
         </div>
       </div>
 
