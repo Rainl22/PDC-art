@@ -55,12 +55,14 @@
 .lp .feat .ic{width:48px;height:48px;border-radius:var(--r-md);background:var(--sea-tint);color:var(--sea);display:grid;place-items:center}
 .lp .feat h3{font-size:1.35rem}
 .lp .feat p{color:var(--ink-2);font-size:15px}
+/* "walls" strip: the same tile as the app gallery (4:5 photo with rounded corners, text underneath) */
 .lp .wall{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:18px;scrollbar-width:thin}
-.lp .wall figure{flex:0 0 auto;height:clamp(300px,38vw,440px);margin:0;scroll-snap-align:start;border-radius:var(--r-md);overflow:hidden;position:relative;background:var(--groove)}
-.lp .wall img{height:100%;width:auto;max-width:none}
-.lp .wall figcaption{position:absolute;left:8px;right:8px;bottom:8px;background:var(--surface);border-radius:var(--r-sm);padding:8px 10px;
-  font:600 13px/1.25 var(--fb);box-shadow:0 6px 16px -8px rgb(0 0 0 / .5)}
-.lp .wall figcaption span{display:block;font-weight:500;font-size:12px;color:var(--ink-2);margin-top:2px}
+.lp .wall figure{flex:0 0 clamp(190px,56vw,260px);margin:0;scroll-snap-align:start}
+.lp .wall .ph{position:relative;aspect-ratio:4/5;border-radius:var(--r-md);overflow:hidden;background:var(--groove)}
+.lp .wall img{width:100%;height:100%;max-width:none;object-fit:cover}
+.lp .wall figcaption{margin-top:12px;padding:0 2px;font:600 16px/1.25 var(--fb);color:var(--ink)}
+.lp .wall figcaption span{display:block;font-weight:500;font-size:14px;color:var(--sea);margin-top:2px}
+.lp .wall figcaption span.unk{color:var(--ink-2)}
 .lp .contribute{background:var(--sea);color:var(--on-sea);border-radius:var(--r-xl);padding:clamp(28px,6vw,72px);display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
 .lp .contribute h2{font-size:clamp(2rem,4.6vw,3.4rem)}
 .lp .contribute p{margin-top:16px;max-width:44ch;opacity:.92;font-size:1.1rem}
