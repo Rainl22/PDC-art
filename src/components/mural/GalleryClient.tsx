@@ -1,25 +1,24 @@
 'use client'
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { MuralCard } from './MuralCard'
-import { saveTourIds } from '@/lib/tour'
+import { useLikes } from '@/lib/likes'
 import { MenuButton } from '@/components/layout/SideMenu'
-import { Select } from '@/components/ui/Select'
 import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import { matchMural } from '@/lib/search'
-import { Search, X } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
+import { Search, X, ArrowDownUp, Check } from 'lucide-react'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
-type Filter = ConfidenceLevel | 'all' | 'changed'
+type Filter = ConfidenceLevel | 'all' | 'changed' | 'saved'
 type Sort = 'name' | 'artist' | 'updated' | 'nearest' | 'liked'
 
-const FILTERS: { label: Key; value: Filter }[] = [
-  { label: 'filter.all',        value: 'all'        },
+const CHIPS: { label: Key; value: Exclude<Filter, 'all' | 'removed' | 'likely'> }[] = [
   { label: 'filter.verified',   value: 'verified'   },
   { label: 'filter.unverified', value: 'unverified' },
   { label: 'filter.changed',    value: 'changed'    },
+  { label: 'filter.saved',      value: 'saved'      },
 ]
 
 const SORTS: { value: Sort; label: Key }[] = [
@@ -37,16 +36,15 @@ const artistKey = (m: Mural) => (m.artists?.[0]?.name ?? m.artist ?? '').trim().
 const lastChanged = (m: Mural) => Math.max(Date.parse(m.created_at) || 0, Date.parse(m.artwork_changed_at ?? '') || 0)
 
 export function GalleryClient({ murals }: { murals: Mural[] }) {
-  const router = useRouter()
   const { t } = useT()
+  const likes = useLikes()
   const [filter, setFilter]       = useState<Filter>('all')
   const [sort, setSort]           = useState<Sort>('updated')
   const [me, setMe]               = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating]   = useState(false)
   const [locError, setLocError]   = useState(false)
-  const [query, setQuery]     = useState('')
-  const [selecting, setSelecting] = useState(false)
-  const [selected, setSelected]   = useState<Set<string>>(new Set())
+  const [query, setQuery]         = useState('')
+  const [sortOpen, setSortOpen]   = useState(false)
 
   function chooseSort(next: Sort) {
     setLocError(false)
@@ -64,7 +62,13 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
   const distanceOf = (m: Mural) => (me && m.coordinates ? metresBetween(me, m.coordinates) : null)
 
   const visible = useMemo(() => {
-    const list = murals.filter(m => matchMural(m, query)).filter(m => filter === 'all' ? true : filter === 'changed' ? m.artwork_status === 'changed' : filter === 'unverified' ? m.confidence === 'unverified' || m.confidence === 'likely' : m.confidence === filter)
+    const keep = (m: Mural) =>
+      filter === 'all' ? true
+      : filter === 'changed' ? m.artwork_status === 'changed'
+      : filter === 'saved' ? likes.has(m.id)
+      : filter === 'unverified' ? m.confidence === 'unverified' || m.confidence === 'likely'
+      : m.confidence === filter
+    const list = murals.filter(m => matchMural(m, query)).filter(keep)
     const by: Record<Sort, (a: Mural, b: Mural) => number> = {
       name: (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
       // unknown artists go last; ties fall back to the title
@@ -80,98 +84,79 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
     }
     return [...list].sort(by[sort])
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [murals, filter, sort, me, query])
+  }, [murals, filter, sort, me, query, likes.ids])
 
-  function toggleSelect(id: string) {
-    setSelected(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
-  function buildTour() {
-    saveTourIds(Array.from(selected))
-    router.push('/tour')
-  }
+  const chip = (active: boolean) =>
+    `shrink-0 h-9 px-4 rounded-full text-14 font-medium border transition-colors ${active ? 'bg-ink text-on-dark border-ink' : 'bg-surface text-ink border-groove'}`
+  const sortLabel = t(SORTS.find(o => o.value === sort)!.label)
 
   return (
     <div className="flex flex-col min-h-dvh bg-bg">
-      {/* header */}
-      <header className="bg-surface border-b border-groove sticky top-0 z-20 pt-controls">
-        <div className="px-gutter h-control mb-3 flex items-center gap-3">
+      {/* header: logo + title + menu, then search, then chips */}
+      <header className="bg-bg sticky top-0 z-20 pt-controls">
+        <div className="px-gutter min-h-control mb-3 flex items-center gap-3">
+          <Logo size={36} />
+          <h1 className="flex-1 font-display font-extrabold text-28 tracking-tight">{t('gallery.title')}</h1>
           <MenuButton />
-          <h1 className="flex-1 font-display font-bold text-card tracking-tight">
-            {selecting ? t('gallery.selectMurals') : t('gallery.title')}
-          </h1>
-          <button
-            onClick={() => { setSelecting(s => !s); setSelected(new Set()) }}
-            className="text-sea text-body font-display font-semibold border border-sea rounded-full px-3 py-1"
-          >
-            {selecting ? t('gallery.cancel') : t('gallery.select')}
-          </button>
         </div>
-        {/* search: mural name, artist name or handle, location */}
         <div className="px-gutter pb-3">
-          <div className="h-control bg-bg rounded-full px-4 flex items-center gap-2">
-            <Search size={14} className="text-ink-3 shrink-0" />
-            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder={t('gallery.search')}
-              enterKeyHint="search" autoComplete="off" className="flex-1 min-w-0 bg-transparent text-body outline-none placeholder:text-ink-3" />
+          <div className="h-field bg-surface rounded-full shadow-1 px-4 flex items-center gap-2">
+            <Search size={18} className="text-ink-2 shrink-0" />
+            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder={t('gallery.searchFull')} aria-label={t('gallery.searchFull')}
+              enterKeyHint="search" autoComplete="off" className="flex-1 min-w-0 bg-transparent outline-none placeholder:text-ink-3" />
             {query && (
-              <button type="button" aria-label={t('gallery.clearSearch')} onClick={() => setQuery('')} className="text-ink-3 shrink-0"><X size={15} /></button>
+              <button type="button" aria-label={t('gallery.clearSearch')} onClick={() => setQuery('')} className="text-ink-2 shrink-0 w-control h-control -mr-3 flex items-center justify-center"><X size={18} /></button>
             )}
           </div>
         </div>
-        {/* show (filter) on the left, sort on the right */}
-        <div className="flex items-center gap-gap-control px-gutter pb-3">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('filter.label')}</span>
-            <Select className="w-[6.75rem]" label={t('filter.label')} value={filter} onChange={setFilter}
-              options={FILTERS.map(f => ({ value: f.value, label: t(f.label) }))} />
-          </div>
-          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-            <span className="text-caption text-ink-3 font-display font-semibold uppercase tracking-wide">{t('sort.label')}</span>
-            <Select className="flex-1" align="right" label={t('sort.label')} value={sort} onChange={chooseSort} disabled={locating}
-              options={SORTS.map(o => ({ value: o.value, label: t(o.label) }))} />
-          </div>
+        <div className="flex gap-2 overflow-x-auto px-gutter pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button type="button" aria-pressed={sort === 'nearest'} disabled={locating}
+            onClick={() => chooseSort(sort === 'nearest' ? 'updated' : 'nearest')} className={chip(sort === 'nearest')}>{t('filter.nearMe')}</button>
+          {CHIPS.map(c => (
+            <button key={c.value} type="button" aria-pressed={filter === c.value}
+              onClick={() => setFilter(f => (f === c.value ? 'all' : c.value))} className={chip(filter === c.value)}>
+              {c.value === 'verified' && <span aria-hidden className="inline-block w-2 h-2 rounded-full bg-certain mr-1.5 align-middle" />}
+              {t(c.label)}
+            </button>
+          ))}
+        </div>
+        {/* count + sort */}
+        <div className="flex items-center gap-2 px-gutter pb-1">
+          <p className="flex-1 min-w-0 text-14 text-ink-2 truncate">
+            <strong className="font-semibold text-ink">{t(visible.length === 1 ? 'gallery.count.one' : 'gallery.count.many', { n: visible.length })}</strong> · {sortLabel}
+          </p>
+          <button type="button" onClick={() => setSortOpen(true)} aria-label={t('sort.open')}
+            className="w-control h-control -mr-2 rounded-full flex items-center justify-center text-ink"><ArrowDownUp size={20} /></button>
         </div>
         {(locating || locError) && (
-          <p className={`px-gutter pb-2 text-caption ${locError ? 'text-guessing' : 'text-ink-3'}`}>{locating ? t('sort.locating') : t('sort.locError')}</p>
+          <p className={`px-gutter pb-2 text-13 ${locError ? 'text-danger' : 'text-ink-2'}`}>{locating ? t('sort.locating') : t('sort.locError')}</p>
         )}
       </header>
 
-      {visible.length === 0 && <p className="text-center text-body text-ink-3 py-10">{t('filter.none')}</p>}
+      {visible.length === 0 && <p className="text-center text-14 text-ink-2 py-10">{t('filter.none')}</p>}
 
-      {/* grid */}
-      <div className="grid grid-cols-2 gap-grid p-grid pb-4">
-        {visible.map(m => (
-          <MuralCard
-            key={m.id}
-            mural={m}
-            distance={sort === 'nearest' && distanceOf(m) !== null ? formatDistance(distanceOf(m)!) : undefined}
-            selectable={selecting}
-            selected={selected.has(m.id)}
-            onSelect={toggleSelect}
-          />
+      {/* grid: 2 columns, 12px between columns, 16px between rows */}
+      <div className="grid grid-cols-2 gap-x-grid gap-y-4 px-gutter pt-2 pb-24">
+        {visible.map((m, i) => (
+          <MuralCard key={m.id} mural={m} priority={i < 4}
+            distance={me && distanceOf(m) !== null ? formatDistance(distanceOf(m)!) : undefined} />
         ))}
       </div>
 
-      {/* tour selection bar */}
-      {selecting && (
-        <div className="fixed bottom-[var(--nav-h)] left-0 right-0 z-40 bg-surface border-t-2 border-sea-tint px-4 py-3 flex items-center justify-between shadow-lg">
-          <div>
-            <p className="font-display font-bold text-body text-ink">
-              {selected.size === 0 ? t('select.tap') : t(selected.size === 1 ? 'select.one' : 'select.many', { n: selected.size })}
-            </p>
-            <p className="text-caption text-ink-3 mt-0.5">{t('select.min')}</p>
+      {/* sort sheet */}
+      {sortOpen && (
+        <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label={t('sort.open')}>
+          <div className="absolute inset-0 bg-scrim" onClick={() => setSortOpen(false)} />
+          <div className="absolute inset-x-0 bottom-0 bg-surface rounded-t-card pb-safe-or-4 pt-3 shadow-2">
+            <div className="w-10 h-[5px] rounded-full bg-groove mx-auto mb-2" />
+            <p className="px-gutter py-2 font-display font-bold text-20">{t('sort.label')}</p>
+            {SORTS.map(o => (
+              <button key={o.value} type="button" onClick={() => { chooseSort(o.value); setSortOpen(false) }}
+                className="w-full min-h-field px-gutter flex items-center justify-between text-16 text-ink">
+                {t(o.label)}{sort === o.value && <Check size={18} className="text-sea" />}
+              </button>
+            ))}
           </div>
-          <button
-            onClick={buildTour}
-            disabled={selected.size < 2}
-            className="bg-sea text-on-dark rounded-full px-4 py-2 text-small font-display font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {t('select.build')}
-          </button>
         </div>
       )}
     </div>

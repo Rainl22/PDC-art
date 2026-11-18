@@ -183,25 +183,25 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
     <div className="bg-surface rounded-sheet p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-display font-semibold text-body truncate">{s.title || 'Untitled'}</p>
-          <p className="text-caption text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
-          {alsoIds.length > 0 && <p className="text-caption font-display font-semibold text-sea">{alsoIds.length + 1} people tapped “Still here” — one decision settles all of them</p>}
+          <p className="font-semibold text-14 truncate">{s.title || 'Untitled'}</p>
+          <p className="text-13 text-ink-3">{new Date(s.created_at).toLocaleString()} · {s.status}</p>
+          {alsoIds.length > 0 && <p className="text-13 font-semibold text-sea">{alsoIds.length + 1} people tapped “Still here” — one decision settles all of them</p>}
           <div className="flex flex-wrap gap-1 mt-1">
-            {s.auto_verified && <span className="text-caption font-display font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
+            {s.auto_verified && <span className="text-13 font-semibold px-2 py-0.5 rounded-full bg-certain-bg text-certain">Auto-verified · {s.auto_note}</span>}
             {!s.auto_verified && s.coordinates && (s.photo_paths?.length ?? 0) > 0 && (s.location_source === 'device' || s.location_source === 'photo') && (
-              <span className="text-caption font-display font-semibold px-2 py-0.5 rounded-full bg-sea-tint text-sea">GPS + photo ({s.location_source})</span>
+              <span className="text-13 font-semibold px-2 py-0.5 rounded-full bg-sea-tint text-sea">GPS + photo ({s.location_source})</span>
             )}
           </div>
         </div>
         {verifySlug && (
-          <Link href={`/gallery/${verifySlug}`} className="shrink-0 text-caption text-sea underline underline-offset-2">Verify location: {verifySlug}</Link>
+          <Link href={`/gallery/${verifySlug}`} className="shrink-0 text-13 text-sea underline underline-offset-2">Verify location: {verifySlug}</Link>
         )}
         {photoUpdate && s.mural_slug && (
-          <Link href={`/gallery/${s.mural_slug}`} className="shrink-0 text-caption text-sea underline underline-offset-2">
+          <Link href={`/gallery/${s.mural_slug}`} className="shrink-0 text-13 text-sea underline underline-offset-2">
             {repainted ? 'Repainted: ' : 'Photos for '}{s.mural_slug}
           </Link>
         )}
-        {existingSlug && <Link href={`/gallery/${existingSlug}`} className="shrink-0 text-caption text-sea underline underline-offset-2">Location for {existingSlug}</Link>}
+        {existingSlug && <Link href={`/gallery/${existingSlug}`} className="shrink-0 text-13 text-sea underline underline-offset-2">Location for {existingSlug}</Link>}
       </div>
 
       {allPhotos.length > 0 && (
@@ -226,7 +226,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
             })}
           </div>
           {pending && allPhotos.length > 1 && (
-            <p className="text-caption text-ink-3">
+            <p className="text-13 text-ink-3">
               {picked.length ? `${picked.length} of ${allPhotos.length} selected — only these will be used.` : 'Tap the circle on photos to keep. None selected = all are used.'}
             </p>
           )}
@@ -234,7 +234,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
       )}
       {viewer !== null && <Lightbox photos={allPhotos} start={viewer} onClose={() => setViewer(null)} />}
 
-      <div className="text-small text-ink-2 space-y-1">
+      <div className="text-13 text-ink-2 space-y-1">
         {s.artist && <p><span className="text-ink-3">Artist:</span> {s.artist}</p>}
         <p><span className="text-ink-3">Where:</span> {s.location_description}</p>
         {s.coordinates && (
@@ -248,16 +248,16 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
       </div>
 
       {repainted && mural && s.artist?.trim() && s.artist.trim().toLowerCase() !== (mural.artist ?? '').trim().toLowerCase() && (
-        <p className="text-small font-display font-semibold text-sea">New artist: {mural.artist ? `“${mural.artist}” → ` : ''}“{s.artist}”</p>
+        <p className="text-13 font-semibold text-sea">New artist: {mural.artist ? `“${mural.artist}” → ` : ''}“{s.artist}”</p>
       )}
       {repainted && mural && s.title && s.title.trim().toLowerCase() !== mural.title.trim().toLowerCase() && (
-        <p className="text-small font-display font-semibold text-sea">Rename: “{mural.title}” → “{s.title}” (the old name stays with the old photos)</p>
+        <p className="text-13 font-semibold text-sea">Rename: “{mural.title}” → “{s.title}” (the old name stays with the old photos)</p>
       )}
 
       {targetSlug && mural && (
         <div className="rounded-card bg-bg p-3 space-y-2">
-          <p className="text-small text-ink-2">
-            <span className="text-ink-3">Mural’s artist:</span> {mural.artist || <span className="text-guessing">missing</span>}
+          <p className="text-13 text-ink-2">
+            <span className="text-ink-3">Mural’s artist:</span> {mural.artist || <span className="text-danger">missing</span>}
             {' · '}<Link href={`/admin/murals/${mural.id}`} className="text-sea underline underline-offset-2">Edit mural</Link>
           </p>
           {!mural.artist && pending && (
@@ -274,7 +274,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
       )}
 
       {verifySlug && s.coordinates && verifyDistance !== null && (
-        <p className={`text-small font-display font-semibold ${verifyDistance <= 50 ? 'text-certain' : 'text-guessing'}`}>
+        <p className={`text-13 font-semibold ${verifyDistance <= 50 ? 'text-certain' : 'text-danger'}`}>
           {Math.round(verifyDistance)} m from the mural’s pin{verifyDistance <= 50 ? ' · close enough' : ' · far — check the photo'}
         </p>
       )}
@@ -321,8 +321,8 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
           {!existingSlug && (
             <div className="space-y-1.5">
               {pinned
-                ? <p className="text-small text-ink-2 flex items-center gap-1.5"><MapPin size={12} className="text-sea" />Pin: {pinned.lat.toFixed(5)}, {pinned.lng.toFixed(5)} <button type="button" className="text-sea underline underline-offset-2" onClick={() => setPinned(null)}>clear</button></p>
-                : <p className="text-caption text-guessing">No pin yet. The mural won’t show on the map until it has one.</p>}
+                ? <p className="text-13 text-ink-2 flex items-center gap-1.5"><MapPin size={12} className="text-sea" />Pin: {pinned.lat.toFixed(5)}, {pinned.lng.toFixed(5)} <button type="button" className="text-sea underline underline-offset-2" onClick={() => setPinned(null)}>clear</button></p>
+                : <p className="text-13 text-danger">No pin yet. The mural won’t show on the map until it has one.</p>}
               <AddressLocator address={location} onPick={(c, p) => { setPinned(c); setPrecision(p) }} />
             </div>
           )}
@@ -346,7 +346,7 @@ export function SubmissionCard({ submission: s, alsoIds = [] }: { submission: Su
           </div>
         </div>
       )}
-      {error && <p className="text-small text-guessing" role="alert">{error}</p>}
+      {error && <p className="text-13 text-danger" role="alert">{error}</p>}
     </div>
   )
 }

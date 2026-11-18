@@ -92,7 +92,7 @@ export function privacy(l: Locale): LegalDoc {
 export function terms(l: Locale): LegalDoc {
   if (l === 'es') return {
     title: 'Términos y condiciones',
-    updated: '15 de noviembre de 2026',
+    updated: '18 de noviembre de 2026',
     intro: 'Al usar Murales PDC aceptas estos términos. Si no estás de acuerdo, por favor no uses la app.',
     sections: [
       { h: '1. Qué es Murales PDC', p: ['Es un mapa comunitario e informativo del arte urbano de Playa del Carmen. No garantizamos que la información, las ubicaciones o la existencia de los murales sea exacta, completa o vigente: los murales pueden moverse, cubrirse o desaparecer, y muchas ubicaciones son aproximadas o están sin confirmar.'] },
@@ -106,7 +106,7 @@ export function terms(l: Locale): LegalDoc {
       { h: '5. Derechos de los artistas', p: ['Los murales son obras de sus artistas y no reclamamos su titularidad. Acreditamos a los artistas y a quienes toman las fotos cuando conocemos su identidad. Si eres titular de una obra o foto y quieres que se retire o se acredite de otra forma, escríbenos y lo atenderemos con prontitud.', contact('es')] },
       { h: '6. Cuentas', p: ['Iniciar sesión es opcional. Es tu responsabilidad cuidar el acceso a tu correo. Podemos suspender cuentas que hagan un uso indebido del servicio.'] },
       { h: '7. Uso prohibido', p: ['No interfieras con el servicio, no intentes acceder a áreas restringidas, no extraigas datos de forma masiva ni suplantes a otras personas.'] },
-      { h: '8. Servicios de terceros', p: ['La app enlaza o usa servicios de terceros (por ejemplo mapas de Google y Apple, OpenStreetMap, Supabase y Vercel). Se rigen por sus propios términos y no somos responsables de ellos.'] },
+      { h: '8. Servicios de terceros', p: ['La app enlaza o usa servicios de terceros (por ejemplo mapas de Google y Apple, OpenStreetMap, Supabase y Vercel). Se rigen por sus propios términos y no somos responsables de ellos.', 'Si decides dejar una propina voluntaria en Ko-fi (ko-fi.com/irainpc), se procesa por completo en Ko-fi, sujeta a sus términos. Las propinas son voluntarias, no reembolsables y no te dan ningún derecho ni beneficio adicional en la app.'] },
       { h: '9. Propiedad intelectual de la app', p: ['El diseño y el software de Murales PDC pertenecen a sus titulares. No puedes copiarlos ni reutilizarlos sin permiso, salvo lo que permitan las licencias de código abierto aplicables.'] },
       { h: '10. Sin garantías', p: ['El servicio se ofrece “tal cual” y “según disponibilidad”, sin garantías de ningún tipo en la medida permitida por la ley.'] },
       { h: '11. Limitación de responsabilidad', p: ['En la medida permitida por la ley, no somos responsables por daños derivados del uso de la app o de la información que contiene. Esto no limita los derechos que la legislación mexicana de protección al consumidor te reconozca.'] },
@@ -117,7 +117,7 @@ export function terms(l: Locale): LegalDoc {
   }
   return {
     title: 'Terms & Conditions',
-    updated: 'November 15, 2026',
+    updated: 'November 18, 2026',
     intro: 'By using Murales PDC you agree to these terms. If you don’t agree, please don’t use the app.',
     sections: [
       { h: '1. What Murales PDC is', p: ['A community, informational map of street art in Playa del Carmen. We don’t guarantee that information, locations or the existence of any mural is accurate, complete or current: murals can be moved, painted over or removed, and many locations are approximate or unconfirmed.'] },
@@ -131,7 +131,7 @@ export function terms(l: Locale): LegalDoc {
       { h: '5. Artists’ rights', p: ['Murals are the works of their artists and we don’t claim ownership of them. We credit artists and photographers when we know who they are. If you own an artwork or photo and want it removed or credited differently, contact us and we will act promptly.', contact('en')] },
       { h: '6. Accounts', p: ['Signing in is optional. You are responsible for keeping access to your email secure. We may suspend accounts that misuse the service.'] },
       { h: '7. Prohibited use', p: ['Don’t interfere with the service, try to access restricted areas, bulk-scrape data, or impersonate others.'] },
-      { h: '8. Third-party services', p: ['The app links to or uses third-party services (for example Google and Apple Maps, OpenStreetMap, Supabase and Vercel). They are governed by their own terms and we are not responsible for them.'] },
+      { h: '8. Third-party services', p: ['The app links to or uses third-party services (for example Google and Apple Maps, OpenStreetMap, Supabase and Vercel). They are governed by their own terms and we are not responsible for them.', 'If you choose to leave a voluntary tip on Ko-fi (ko-fi.com/irainpc), it is processed entirely by Ko-fi under its own terms. Tips are voluntary, non-refundable, and give you no additional rights or benefits in the app.'] },
       { h: '9. Intellectual property in the app', p: ['The design and software of Murales PDC belong to their owners. You may not copy or reuse them without permission, except as allowed by any applicable open-source licences.'] },
       { h: '10. No warranties', p: ['The service is provided “as is” and “as available”, without warranties of any kind to the extent permitted by law.'] },
       { h: '11. Limitation of liability', p: ['To the extent permitted by law, we are not liable for damages arising from use of the app or the information in it. This doesn’t limit any rights Mexican consumer-protection law gives you.'] },

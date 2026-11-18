@@ -8,7 +8,7 @@ export function PhotoCredit({ mural }: { mural: Pick<Mural, 'photo_credit' | 'ph
   const stillShown = (mural.photos ?? []).some(p => p.startsWith('/murals/'))
   if (!mural.photo_credit || !stillShown) return null
   return (
-    <p className="text-caption text-ink-3">
+    <p className="text-13 text-ink-3">
       {t('photo.credit')}{' '}
       {mural.photo_credit_url ? (
         <a href={mural.photo_credit_url} target="_blank" rel="noopener noreferrer"

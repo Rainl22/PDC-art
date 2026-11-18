@@ -1,0 +1,14 @@
+# Prompt to paste into the next thread (redesign)
+
+I'm continuing work on Murales PDC, a mobile-first PWA mapping the street murals of Playa del Carmen. Repo: Rainl22/PDC-art (use the branch this session gives you; fast-forward it to `main` before starting). Live at https://www.murles-pdc.art (the domain is spelled "murles"), Vercel project `pdc-art`, Supabase project `vnezefzguhjhlmbuktlm`.
+
+Start by reading HANDOVER.md in full. It covers the infrastructure, how we work (PR + merge only when I say "merge", then confirm the Vercel deployment is READY; run `tsc`, `next lint` and a real `next build` before merging; test UI with Playwright at 390px; test DB changes inside rolled-back transactions), the data model, the design tokens, my to-do list and the gotchas. Never commit emails or secrets. I'm not a developer: keep answers short and plain, read the relevant code before changing anything, and tell me your plan when a decision is mine to make.
+
+**This thread: redesign.** Where we are:
+- Everything already uses design tokens (`src/styles/tokens.css` is the single source for colours, radii, type scale and spacing roles; no raw hex, `text-[Npx]` or `rounded-md/lg/xl` in components). A redesign should mostly be a change to the tokens and a few shared components (`components/ui/*`, `MuralCard`, headers), not a rewrite.
+- Constraints: mobile-first at 390px, 44px controls, same top offset on every page header, English + Spanish copy (`lib/i18n/dict.ts`), photos are the content, installed as a PWA.
+- Screens: landing page `/` (separate light theme in `src/app/landing.css`), gallery (+search, Show/Sort, create tour), mural page (carousel, share, verify, still-here votes, comments), map (search, swipeable pin card), tour, submit, side menu, legal pages, sign-in (team only), admin.
+- Decisions I still owe you, please propose options with small visuals: how **walls** (murals within 20 m, data exists as `wall_id`) and the **Rotating wall** tag should look; whether to show a mural's earlier names/photos (`artwork_history`); overall look and feel.
+- Already decided: map pins are one solid style (green verified, red not verified, no legend); sign-in is team-only for now; Ko-fi link only in the menu.
+
+Things I will do myself or that wait on me (don't block on them): finish the ImprovMX forwarding for `hello@murles-pdc.art` and tell you when the test email arrives (then set `NEXT_PUBLIC_CONTACT_EMAIL` and add a "Report a problem" mailto link), finish Resend/SMTP and Google sign-in in Supabase, add the missing artists to their murals (8 murals have no artist; their handles are already in the artist list), and place the pin for "White Skull and Marigolds". If the last commit of the previous thread (Ko-fi link, Terms tips line, "Team sign-in" menu label) isn't merged yet, ask me whether to merge it first.

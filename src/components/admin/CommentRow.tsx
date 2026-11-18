@@ -19,13 +19,13 @@ export function CommentRow({ row }: { row: Row }) {
   return (
     <div className="bg-surface rounded-sheet p-3 flex items-start gap-3">
       <div className="flex-1 min-w-0">
-        <p className="text-caption text-ink-3">
+        <p className="text-13 text-ink-3">
           {row.author_name ?? 'Anonymous'} · {new Date(row.created_at).toLocaleDateString()}
           {row.murals && <> · <Link href={`/gallery/${row.murals.slug}`} className="text-sea underline underline-offset-2">{row.murals.title}</Link></>}
         </p>
-        <p className="text-body text-ink mt-1 break-words">{row.body || <em className="text-ink-3">(vote only: {row.status_vote})</em>}</p>
+        <p className="text-14 text-ink mt-1 break-words">{row.body || <em className="text-ink-3">(vote only: {row.status_vote})</em>}</p>
       </div>
-      <button onClick={del} disabled={busy} aria-label="Delete comment" className="p-2 text-guessing disabled:opacity-40"><Trash2 size={15} /></button>
+      <button onClick={del} disabled={busy} aria-label="Delete comment" className="p-2 text-danger disabled:opacity-40"><Trash2 size={15} /></button>
     </div>
   )
 }

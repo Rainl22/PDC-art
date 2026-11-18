@@ -39,7 +39,7 @@ export function Select<T extends string>({ value, options, onChange, label, alig
     <div ref={root} className={`relative min-w-0 ${className}`}>
       <button type="button" disabled={disabled} aria-label={label} aria-haspopup="listbox" aria-expanded={open}
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-2 h-8 rounded-full bg-groove text-ink text-small font-display font-semibold pl-3 pr-3 disabled:opacity-60">
+        className="w-full flex items-center gap-2 h-8 rounded-full bg-groove text-ink text-13 font-semibold pl-3 pr-3 disabled:opacity-60">
         <span className="flex-1 min-w-0 truncate text-left">{current?.label ?? ''}</span>
         <ChevronDown size={14} className={`shrink-0 text-ink-2 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -54,7 +54,7 @@ export function Select<T extends string>({ value, options, onChange, label, alig
                   if (e.key === 'ArrowDown') { e.preventDefault(); move(i, 1) }
                   if (e.key === 'ArrowUp') { e.preventDefault(); move(i, -1) }
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-small text-left hover:bg-bg focus:bg-bg outline-none ${o.value === value ? 'text-sea font-semibold' : ''}`}>
+                className={`w-full flex items-center gap-3 px-3 py-2 text-13 text-left hover:bg-bg focus:bg-bg outline-none ${o.value === value ? 'text-sea font-semibold' : ''}`}>
                 <span className="flex-1 whitespace-nowrap">{o.label}</span>
                 {o.value === value && <Check size={14} className="shrink-0" />}
               </button>

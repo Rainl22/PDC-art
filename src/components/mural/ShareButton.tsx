@@ -21,7 +21,7 @@ export function ShareButton({ title }: { title: string }) {
         className="absolute top-controls right-gutter w-control h-control rounded-full bg-glass backdrop-blur-sm flex items-center justify-center text-ink shadow-sm">
         {copied ? <Check size={17} /> : <Share2 size={17} />}
       </button>
-      {copied && <p role="status" className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+0.5rem)] right-gutter bg-scrim text-on-dark text-small rounded-full px-3 py-1">{t('detail.shareCopied')}</p>}
+      {copied && <p role="status" className="absolute top-[calc(var(--inset-top-controls)+var(--control-h)+0.5rem)] right-gutter bg-scrim text-on-dark text-13 rounded-full px-3 py-1">{t('detail.shareCopied')}</p>}
     </>
   )
 }

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { createImplicitClient } from '@/lib/supabase/implicit'
 import { useT } from '@/lib/i18n/client'
 
-const field = 'w-full text-body bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
+const field = 'w-full text-14 bg-surface rounded-panel px-3 py-2.5 outline-none border border-groove focus:border-sea placeholder:text-ink-3'
 
 function GoogleMark() {
   return (
@@ -85,8 +85,8 @@ export function SignInForm({ next }: { next?: string }) {
       <div className="bg-surface rounded-panel p-6 text-center">
         <div>
           <MailCheck className="mx-auto text-certain" size={36} />
-          <p className="font-display font-semibold mt-3">{t('auth.checkTitle')}</p>
-          <p className="text-body text-ink-2 mt-1">{t('auth.checkBody', { email: sentTo })}</p>
+          <p className="font-semibold mt-3">{t('auth.checkTitle')}</p>
+          <p className="text-14 text-ink-2 mt-1">{t('auth.checkBody', { email: sentTo })}</p>
         </div>
       </div>
     )
@@ -97,10 +97,10 @@ export function SignInForm({ next }: { next?: string }) {
       {google && (
         <>
           <button type="button" onClick={withGoogle} disabled={busy}
-            className="w-full rounded-full border border-groove bg-surface text-ink font-display font-medium py-3 text-body inline-flex items-center justify-center gap-2.5 disabled:opacity-40">
+            className="w-full rounded-full border border-groove bg-surface text-ink font-medium py-3 text-14 inline-flex items-center justify-center gap-2.5 disabled:opacity-40">
             <GoogleMark />{t('auth.google')}
           </button>
-          <div className="flex items-center gap-3 text-caption text-ink-3 uppercase tracking-wide">
+          <div className="flex items-center gap-3 text-13 text-ink-3">
             <span className="flex-1 h-px bg-groove" />{t('auth.or')}<span className="flex-1 h-px bg-groove" />
           </div>
         </>
@@ -108,9 +108,9 @@ export function SignInForm({ next }: { next?: string }) {
       <form onSubmit={submit} className="space-y-3">
         <input className={field} type="email" required autoComplete="email" inputMode="email"
           placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} />
-        {error && <p className="text-small text-guessing" role="alert">{t(error === 'rate' ? 'auth.errorRate' : error === 'admin' ? 'auth.adminOnly' : 'auth.error')}</p>}
+        {error && <p className="text-13 text-danger" role="alert">{t(error === 'rate' ? 'auth.errorRate' : error === 'admin' ? 'auth.adminOnly' : 'auth.error')}</p>}
         <button type="submit" disabled={!email.trim() || busy}
-          className="w-full rounded-full bg-sea text-on-dark font-display font-medium py-3 text-body disabled:opacity-40 inline-flex items-center justify-center gap-2">
+          className="w-full rounded-full bg-sea text-on-dark font-medium py-3 text-14 disabled:opacity-40 inline-flex items-center justify-center gap-2">
           {busy && <Loader2 size={15} className="animate-spin" />}
           {busy ? t('auth.sending') : t('auth.send')}
         </button>

@@ -19,12 +19,12 @@ function PagerCard({ mural, dir }: { mural: PagerMural; dir: 'prev' | 'next' }) 
           : <div className="absolute inset-0" style={{ background: getMuralGradient(mural.slug) }} />}
       </div>
       <div className="p-2.5">
-        <p className={`flex items-center gap-1 text-tag font-display font-bold uppercase tracking-wider text-ink-3 ${dir === 'next' ? 'justify-end' : ''}`}>
+        <p className={`flex items-center gap-1 text-12 font-semibold text-ink-2 ${dir === 'next' ? 'justify-end' : ''}`}>
           {dir === 'prev' && <Icon size={11} />}
           {dir === 'prev' ? t('pager.previous') : t('pager.next')}
           {dir === 'next' && <Icon size={11} />}
         </p>
-        <p className="text-body font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
+        <p className="text-14 font-medium text-ink leading-snug line-clamp-2 mt-0.5">{mural.title}</p>
       </div>
     </Link>
   )

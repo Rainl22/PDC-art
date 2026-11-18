@@ -1,23 +1,27 @@
 /* Murales PDC — Design Tokens */
 :root {
   /* bottom navigation: fixed row + device safe area (gesture bar / home indicator) */
-  --nav-h:       calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  --nav-h:       calc(4rem + env(safe-area-inset-bottom, 0px));
   --bg:          #F3F1EC;
   --surface:     #FFFFFF;
   --groove:      #E5E2DA;
   --ink:         #18171A;
-  --ink-2:       #68636A;
-  --ink-3:       #A09CA4;
+  --ink-2:       #5F5A62;   /* 6.0:1 on bg */
+  --ink-3:       #6F6A73;   /* 4.67:1 on bg, 5.27:1 on white (was #A09CA4, 2.39:1) */
   --sea:         #326A82;
   --sea-tint:    #E8F2F6;
   --sea-dark:    #245970;
 
-  --certain:     #0A7560;
-  --certain-bg:  #E4F3EF;
-  --likely:      #A86C10;
-  --likely-bg:   #FBF0DC;
-  --guessing:    #9E2222;
-  --guessing-bg: #F9E5E5;
+  --marigold:      #E39A2D;   /* tour badge + tour tray button only; ink text on it 7.6:1 */
+  --marigold-tint: #FCEFD9;
+
+  /* status: green = verified, amber = unconfirmed / changed. Red is for errors only. */
+  --certain:     #0A7560;   /* verified */
+  --certain-bg:  #E4F3EF;   /* 4.93:1 */
+  --unconfirmed:    #8A5608; /* unverified + changed (was #A86C10, 3.86:1) */
+  --unconfirmed-bg: #FBF0DC; /* 5.45:1 */
+  --danger:      #9E2222;   /* errors and delete actions */
+  --danger-bg:   #F9E5E5;
   --removed:     #6038A0;
   --removed-bg:  #EEE6F7;
 
@@ -30,7 +34,8 @@
   --glass-faint: rgb(255 255 255 / 0.15);  /* buttons on the dark photo viewer */
   --scrim:       rgb(0 0 0 / 0.5);         /* counters and chips on photos */
   --groove-soft: color-mix(in srgb, var(--groove) 80%, transparent);
-  --guessing-line: color-mix(in srgb, var(--guessing) 30%, transparent);
+  --danger-line: color-mix(in srgb, var(--danger) 30%, transparent);
+  --like:        #C2462B;   /* filled heart */
 
   --r-sm:   8px;
   --r-md:   16px;
@@ -38,14 +43,17 @@
   --r-xl:   32px;
   --r-full: 9999px;
 
+  --shadow-1: 0 1px 2px rgb(24 23 26 / .06), 0 2px 8px rgb(24 23 26 / .06);   /* surfaces */
+  --shadow-2: 0 12px 32px -12px rgb(24 23 26 / .35);                          /* floating: pins, sheets, tray */
+
   /* photo tint on gallery cards: a warm colour blended in with soft-light so contrast and highlights survive */
   --image-tint:         #C9A57B;
   --image-tint-opacity: 0.5;
 
   /* radius roles (use these in components instead of raw values) */
   --r-inset: var(--r-sm);   /* thumbnails, small chips */
-  --r-panel: var(--r-md);   /* cards inside a card: info panel, inputs */
-  --r-card:  var(--r-lg);   /* gallery card, overlay card */
+  --r-panel: var(--r-md);   /* gallery card photo, inputs, panels */
+  --r-card:  var(--r-lg);   /* sheets and large panels (map pin card, tour list) */
   --r-sheet: var(--r-xl);   /* white sheet on the mural page */
 
   /* spacing roles (4px grid; Tailwind's default scale is the same grid) */
@@ -55,17 +63,18 @@
   --space-card-inset-x: 0.25rem;  /* gap between the overlay card and the left/right edges of the photo (much narrower than the bottom) */
   --space-sheet-overlap: 1.5rem;  /* how far the white sheet rides over the hero image */
   --inset-top-controls: max(env(safe-area-inset-top, 0px), 1.5rem); /* back button, menu button, search bar */
-  --control-h:          2.75rem;  /* round control buttons, search bar */
+  --control-h:          2.75rem;  /* 44px: minimum hit area for any control (round buttons) */
+  --field-h:            3rem;     /* 48px: primary buttons, inputs, search bar */
   --gap-control:        0.75rem;  /* between stacked controls */
 
-  /* type scale */
-  --fs-tag-sm:  0.5rem;     /*  8px  tags on gallery cards */
-  --fs-tag:     0.5625rem;  /*  9px  tags on the mural page */
-  --fs-caption: 0.6875rem;  /* 11px  secondary lines, control labels */
-  --fs-small:   0.75rem;    /* 12px  body small, buttons */
-  --fs-body:    0.875rem;   /* 14px  body */
-  --fs-card:    0.9375rem;  /* 15px  card title */
-  --fs-title:   1.375rem;   /* 22px  page title */
+  /* type scale: DM Sans for all UI; Syne (display) only at 20px and up. Nothing under 12px. */
+  --fs-12: 0.75rem;    /* tags, tab labels: absolute minimum */
+  --fs-13: 0.8125rem;  /* captions, meta */
+  --fs-14: 0.875rem;   /* secondary text */
+  --fs-16: 1rem;       /* body, inputs (stops iOS zoom), card titles */
+  --fs-20: 1.25rem;    /* h2, sheet titles (Syne 700) */
+  --fs-28: 1.75rem;    /* h1, screen titles (Syne 800) */
+  --fs-40: 2.5rem;     /* landing display (Syne 800) */
 
   --fd: 'Syne', system-ui, sans-serif;
   --fb: 'DM Sans', system-ui, sans-serif;

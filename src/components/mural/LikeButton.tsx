@@ -1,41 +1,51 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Heart } from 'lucide-react'
-import { setLike } from '@/lib/murals'
+import { useLikes } from '@/lib/likes'
 import { useT } from '@/lib/i18n/client'
 
-const KEY = 'pdc.likes'
-const read = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY) ?? '[]') } catch { return [] } }
-const write = (ids: string[]) => { try { localStorage.setItem(KEY, JSON.stringify(ids)) } catch { /* private mode */ } }
+/** Round heart used on cards and the pin card. Visual size `size`, hit area at least 44px. */
+export function HeartIcon({ muralId, size = 36, className = '', variant = 'glass' }: { muralId: string; size?: number; className?: string; variant?: 'glass' | 'outline' }) {
+  const { t } = useT()
+  const { has, toggle } = useLikes()
+  const liked = has(muralId)
+  const look = variant === 'outline'
+    ? 'w-field h-field border border-groove bg-surface'
+    : 'bg-glass shadow-1'
+  return (
+    <span className={`${className.includes("absolute") ? "" : "relative"} inline-flex ${className}`}>
+      <button type="button" aria-pressed={liked} aria-label={liked ? t('like.remove') : t('like.add')}
+        onClick={e => { e.preventDefault(); e.stopPropagation(); void toggle(muralId) }}
+        style={variant === 'glass' ? { width: size, height: size } : undefined}
+        className={`rounded-full flex items-center justify-center active:scale-95 transition-transform before:absolute before:-inset-1 before:content-[''] ${look}`}>
+        <Heart size={variant === 'glass' ? 18 : 20} className={liked ? 'fill-like text-like' : 'text-ink'} />
+      </button>
+    </span>
+  )
+}
 
-/** Heart with the running count. One like per device; tap again to undo. */
+/** Heart on the mural page. The count appears only from 3 hearts, so a new mural doesn't show a lonely "0". */
 export function LikeButton({ muralId, count }: { muralId: string; count: number }) {
   const { t } = useT()
-  const [liked, setLiked] = useState(false)
+  const { has, toggle, busy } = useLikes()
+  const liked = has(muralId)
   const [n, setN] = useState(count)
-  const [busy, setBusy] = useState(false)
+  useEffect(() => setN(count), [count])
 
-  useEffect(() => { setLiked(read().includes(muralId)) }, [muralId])
-
-  async function toggle() {
+  async function onClick() {
     if (busy) return
-    const next = !liked
-    setBusy(true); setLiked(next); setN(v => Math.max(0, v + (next ? 1 : -1)))   // optimistic
-    try {
-      const total = await setLike(muralId, next)
-      setN(total)
-      write(next ? Array.from(new Set(read().concat(muralId))) : read().filter(id => id !== muralId))
-    } catch {
-      setLiked(!next); setN(v => Math.max(0, v + (next ? -1 : 1)))                 // put it back
-    } finally { setBusy(false) }
+    setN(v => Math.max(0, v + (liked ? -1 : 1)))     // optimistic
+    const total = await toggle(muralId)
+    if (total === null) setN(v => Math.max(0, v + (liked ? 1 : -1)))   // put it back
+    else setN(total)
   }
 
   return (
-    <button type="button" onClick={toggle} aria-pressed={liked} aria-label={liked ? t('like.remove') : t('like.add')}
-      className={`shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-full border text-small font-display font-semibold transition-colors
-        ${liked ? 'border-guessing-line bg-guessing-bg text-guessing' : 'border-groove text-ink-2 hover:border-sea hover:text-sea'}`}>
-      <Heart size={15} className={liked ? 'fill-current' : ''} />
-      {n}
+    <button type="button" onClick={onClick} aria-pressed={liked} aria-label={liked ? t('like.remove') : t('like.add')}
+      className={`shrink-0 inline-flex items-center justify-center gap-1.5 min-w-control h-control px-3 rounded-full border text-14 font-semibold transition-colors
+        ${liked ? 'border-danger-line bg-danger-bg text-like' : 'border-groove bg-surface text-ink-2 hover:border-sea hover:text-sea'}`}>
+      <Heart size={18} className={liked ? 'fill-current' : ''} />
+      {n >= 3 && n}
     </button>
   )
 }

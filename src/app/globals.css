@@ -20,7 +20,7 @@ select {
   color-scheme: light;
   -webkit-appearance: none;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2368636A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235F5A62' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 0.875rem;
@@ -28,4 +28,29 @@ select {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+/* Form fields are always 16px: smaller text makes iOS zoom the page on focus. */
+input:not([type='checkbox']):not([type='radio']):not([type='file']),
+textarea,
+select {
+  font-size: var(--fs-16) !important;
+}
+
+/* Keyboard focus: 3px sea outline with a 3px offset (the landing page already does this). */
+:focus-visible {
+  outline: 3px solid var(--sea);
+  outline-offset: 3px;
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline-offset: 0; }
+
+/* The app respects reduced motion like the landing page does: no press scale, no animated spinners' easing, instant transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .active\:scale-95:active { transform: none !important; }
 }

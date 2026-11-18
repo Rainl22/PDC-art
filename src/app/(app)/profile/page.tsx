@@ -1,3 +1,4 @@
+import { Logo } from '@/components/brand/Logo'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
@@ -19,26 +20,27 @@ export default async function ProfilePage() {
   return (
     <main className="px-gutter pt-controls pb-6 max-w-lg mx-auto space-y-5">
       <div className="flex items-center gap-3 min-h-control">
+        <Logo size={36} />
+        <h1 className="flex-1 min-w-0 font-display font-extrabold text-28 text-ink">{t('profile.title')}</h1>
         <MenuButton />
-        <h1 className="font-display text-2xl font-bold text-ink">{t('profile.title')}</h1>
       </div>
 
       <div className="bg-surface rounded-sheet p-4 space-y-3">
         <div>
-          <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('profile.email')}</p>
-          <p className="text-body text-ink break-all">{user.email}</p>
+          <p className="text-12 font-semibold text-ink-2 mb-1">{t('profile.email')}</p>
+          <p className="text-14 text-ink break-all">{user.email}</p>
         </div>
         <div>
-          <p className="text-tag font-display font-bold uppercase tracking-wider text-ink-3 mb-1">{t('profile.role')}</p>
-          <p className="text-body text-ink">{isAdmin === true ? t('profile.roleAdmin') : t('profile.roleUser')}</p>
+          <p className="text-12 font-semibold text-ink-2 mb-1">{t('profile.role')}</p>
+          <p className="text-14 text-ink">{isAdmin === true ? t('profile.roleAdmin') : t('profile.roleUser')}</p>
         </div>
       </div>
 
       {isAdmin === true && (
         <div className="bg-sea-tint rounded-sheet p-4">
-          <p className="flex items-center gap-2 font-display font-semibold text-sea text-body"><ShieldCheck size={16} />{t('profile.adminArea')}</p>
-          <p className="text-small text-ink-2 mt-1 mb-3">{t('profile.adminBody')}</p>
-          <Link href="/admin" className="inline-flex rounded-full bg-sea text-on-dark px-4 py-2 text-body font-display font-semibold">
+          <p className="flex items-center gap-2 font-semibold text-sea text-14"><ShieldCheck size={16} />{t('profile.adminArea')}</p>
+          <p className="text-13 text-ink-2 mt-1 mb-3">{t('profile.adminBody')}</p>
+          <Link href="/admin" className="inline-flex rounded-full bg-sea text-on-dark px-4 py-2 text-14 font-semibold">
             {t('profile.openAdmin')}
           </Link>
         </div>

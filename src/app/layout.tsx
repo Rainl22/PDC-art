@@ -5,6 +5,7 @@ import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister
 import { getLocale } from '@/lib/i18n/server'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.murles-pdc.art'),
   title: 'Murales PDC',
   description: 'Discover the street art of Playa del Carmen — maps, tours, and community verified murals.',
   manifest: '/manifest.json',
@@ -20,8 +21,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Murales PDC',
     description: 'Street art map of Playa del Carmen',
-    type: 'website',
+    type: 'website', siteName: 'Murales PDC', locale: 'en_US', alternateLocale: ['es_MX'],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Murales PDC: the street art of Playa del Carmen' }],
   },
+  twitter: { card: 'summary_large_image', title: 'Murales PDC', description: 'Street art map of Playa del Carmen', images: ['/og.png'] },
 }
 
 export const viewport: Viewport = {
@@ -38,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
       </head>
       <body><LocaleProvider initial={locale}>{children}</LocaleProvider>
         <ServiceWorkerRegister /></body>

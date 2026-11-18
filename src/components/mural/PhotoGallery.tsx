@@ -67,7 +67,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
               <span key={i} className={`h-1.5 rounded-full transition-all ${i === index ? 'w-4 bg-surface' : 'w-1.5 bg-glass-dim'}`} />
             ))}
           </div>
-          <span className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] right-4 text-caption font-display font-semibold text-on-dark bg-scrim rounded-full px-2 py-0.5 pointer-events-none">
+          <span className="absolute bottom-[calc(0.75rem+var(--space-sheet-overlap))] right-4 text-13 font-semibold text-on-dark bg-scrim rounded-full px-2 py-0.5 pointer-events-none">
             {index + 1} / {n}
           </span>
           <button type="button" aria-label={t('photo.prev')} onClick={() => goTo(Math.max(index - 1, 0))}
@@ -107,7 +107,7 @@ export function PhotoGallery({ photos, title, gradient, overlay }: Props) {
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-glass-faint text-on-dark flex items-center justify-center">
                 <ChevronRight size={22} />
               </button>
-              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-small text-on-dark font-display">{open + 1} / {n}</span>
+              <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-13 text-on-dark ">{open + 1} / {n}</span>
             </>
           )}
         </div>

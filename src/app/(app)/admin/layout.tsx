@@ -1,3 +1,4 @@
+import { Logo } from '@/components/brand/Logo'
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { MenuButton } from '@/components/layout/SideMenu'
@@ -12,9 +13,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="bg-bg min-h-dvh">
       <header className="bg-surface border-b border-groove sticky top-0 z-10 pt-controls">
         <div className="px-gutter h-control mb-3 flex items-center gap-3">
+          <Logo size={36} />
+          <Link href="/admin" className="flex-1 font-bold text-16 tracking-tight">Admin</Link>
+          <Link href="/profile" className="text-13 text-ink-2 font-medium">Profile</Link>
           <MenuButton />
-          <Link href="/admin" className="flex-1 font-display font-bold text-card tracking-tight">Admin</Link>
-          <Link href="/profile" className="text-small text-ink-3 font-medium">Profile</Link>
         </div>
         <AdminTabs pending={count ?? 0} />
       </header>
