@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { setLike } from '@/lib/murals'
+import { track } from '@/lib/track'
 
 const KEY = 'pdc.likes'
 const EVENT = 'pdc-likes-change'
@@ -26,6 +27,7 @@ export function useLikes() {
     try {
       const total = await setLike(id, next)
       write(next ? Array.from(new Set(readLikes().concat(id))) : readLikes().filter(x => x !== id))
+      if (next) track('favourite_saved')
       return total
     } catch { return null } finally { setBusy(false) }
   }, [busy])
