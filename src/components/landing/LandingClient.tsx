@@ -5,7 +5,7 @@ import { LOCALES } from '@/lib/i18n/dict'
 import { track, type EventName } from '@/lib/track'
 
 /** A plain link that also records a click event. The landing page itself is a server component, so the click handler lives here. */
-export function TrackedLink({ href, event, className, children }: { href: string; event: EventName; className?: string; children: React.ReactNode }) {
+export function TrackedLink({ href, event, className, children }: { href: string; event: Exclude<EventName, 'page_view'>; className?: string; children: React.ReactNode }) {
   return <a className={className} href={href} onClick={() => track(event)}>{children}</a>
 }
 
