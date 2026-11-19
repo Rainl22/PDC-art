@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { track } from '@/lib/track'
 
 const KEY = 'murales-pdc-tour'
 
@@ -13,6 +14,7 @@ export function getTourIds(): string[] {
 }
 
 export function saveTourIds(ids: string[]): void {
+  if (ids.length > 0 && getTourIds().length === 0) track('tour_started')
   try {
     localStorage.setItem(KEY, JSON.stringify(ids))
   } catch {}

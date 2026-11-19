@@ -4,7 +4,7 @@ import './landing.css'
 import { createClient } from '@/lib/supabase/server'
 import { getLocale } from '@/lib/i18n/server'
 import { displayArtist } from '@/lib/format'
-import { LangToggle, InstallHint } from '@/components/landing/LandingClient'
+import { LangToggle, InstallHint, TrackedLink } from '@/components/landing/LandingClient'
 
 const TITLE = 'Murales PDC: the street art of Playa del Carmen'
 const DESC = 'A free app to explore the murals of Playa del Carmen, learn about the artists, build mural tours and add the ones you find.'
@@ -142,8 +142,8 @@ export default async function Landing() {
       <h1>{c.h1a}<em>{c.h1b}</em>{c.h1c}</h1>
       <p className="lede">{c.lede}</p>
       <div className="cta-row">
-        <a className="btn" href="/map">{c.cta}</a>
-        <a className="btn ghost" href="#features">{c.how}</a>
+        <TrackedLink className="btn" href="/map" event="explore_map_click">{c.cta}</TrackedLink>
+        <TrackedLink className="btn ghost" href="#features" event="how_it_works_click">{c.how}</TrackedLink>
         <figure className="qr">
           <img src="/site/qr-map.svg" alt="" width="88" height="88" />
           <figcaption>{c.qr}</figcaption>

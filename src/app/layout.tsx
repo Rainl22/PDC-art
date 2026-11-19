@@ -3,6 +3,7 @@ import './globals.css'
 import { Syne, DM_Sans } from 'next/font/google'
 import { LocaleProvider } from '@/lib/i18n/client'
 import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
+import { Analytics } from '@vercel/analytics/next'
 import { getLocale } from '@/lib/i18n/server'
 
 // Fonts are downloaded at build time and served from our own domain (no request to Google, no layout jump).
@@ -44,7 +45,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={locale} className={`${syne.variable} ${dmSans.variable}`}>
       <body><LocaleProvider initial={locale}>{children}</LocaleProvider>
-        <ServiceWorkerRegister /></body>
+        <ServiceWorkerRegister />
+        <Analytics /></body>
     </html>
   )
 }

@@ -8,6 +8,7 @@ import { useT } from '@/lib/i18n/client'
 import { LOCALES, type Locale } from '@/lib/i18n/dict'
 import { useAuth } from '@/lib/auth/useAuth'
 import { createClient } from '@/lib/supabase/client'
+import { track } from '@/lib/track'
 
 const MenuCtx = createContext<{ open: () => void }>({ open: () => {} })
 export const useMenu = () => useContext(MenuCtx)
@@ -35,7 +36,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     setInstalled(standalone)
     setIos(/iphone|ipad|ipod/i.test(navigator.userAgent))
     const onPrompt = (e: Event) => { e.preventDefault(); setInstallEvent(e as InstallEvent) }
-    const onInstalled = () => { setInstalled(true); setInstallEvent(null) }
+    const onInstalled = () => { track('app_installed'); setInstalled(true); setInstallEvent(null) }
     window.addEventListener('beforeinstallprompt', onPrompt); window.addEventListener('appinstalled', onInstalled)
     return () => { window.removeEventListener('beforeinstallprompt', onPrompt); window.removeEventListener('appinstalled', onInstalled) }
   }, [])
@@ -97,7 +98,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 <div className="h-px bg-groove mx-5 my-2" />
                 <div className="px-5 py-3">
                   {installEvent ? (
-                    <button onClick={() => installEvent.prompt()} className="w-full flex items-center gap-3 rounded-full bg-sea-tint text-sea px-4 py-2.5 text-14 font-semibold">
+                    <button onClick={() => { track('install_click'); installEvent.prompt() }} className="w-full flex items-center gap-3 rounded-full bg-sea-tint text-sea px-4 py-2.5 text-14 font-semibold">
                       <Download size={16} />{t('menu.install')}
                     </button>
                   ) : (
