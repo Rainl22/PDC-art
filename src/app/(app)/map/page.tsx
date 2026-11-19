@@ -14,6 +14,7 @@ import { GroupPicker } from '@/components/mural/GroupPicker'
 import { TourButton } from '@/components/ui/TourButton'
 import { HeartIcon } from '@/components/mural/LikeButton'
 import { getMuralGradient } from '@/lib/gradients'
+import { track } from '@/lib/track'
 import { useMuralPins, reducedMotion } from '@/lib/useMuralPins'
 import { displayTitle, displayPlace, walkMinutes } from '@/lib/format'
 import { Search, Navigation, X, LocateFixed, Loader2, Images } from 'lucide-react'
@@ -114,7 +115,7 @@ export default function MapPage() {
     return () => { map.remove(); mapRef.current = null }
   }, [])
 
-  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: m => { setGroup(null); setActive(m) }, onGroup: g => { setActive(null); setGroup(g) } })
+  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: m => { setGroup(null); setActive(m); track('map_pin_click', m.id) }, onGroup: g => { setActive(null); setGroup(g) } })
 
   // keep the selected pin visible above the pin card
   useEffect(() => {
@@ -259,7 +260,7 @@ export default function MapPage() {
 
       {/* murals on the same spot: choose one */}
       {group && !active && (
-        <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); setActive(m) }}
+        <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); setActive(m); track('map_pin_click', m.id) }}
           className="absolute z-20 bottom-3 left-gutter right-gutter lg:right-auto lg:bottom-6 lg:w-[380px]" />
       )}
 

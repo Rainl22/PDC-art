@@ -1,6 +1,6 @@
 import { track as vercelTrack } from '@vercel/analytics'
 
-/** The only events we record. Names only: no free text, no personal data. */
+/** The only events we record. A fixed name, plus (for some) the id of the mural involved. No free text, no personal data. */
 export type EventName =
   | 'page_view'
   | 'explore_map_click'   // landing: "Explore the map"
@@ -8,7 +8,11 @@ export type EventName =
   | 'install_click'       // landing or side menu: tapped "Install the app"
   | 'app_installed'       // browser confirmed the install
   | 'tour_started'        // first stop added to an empty tour
-  | 'favourite_saved'     // heart tapped on (not off)
+  | 'favourite_saved'     // heart tapped on (not off)         (+ mural)
+  | 'map_pin_click'       // a mural pin tapped on the map     (+ mural)
+  | 'tour_stop_added'     // a mural added to the tour         (+ mural)
+  | 'walk_started'        // "Start walking" tapped (opens Google Maps)
+  | 'tour_shared'         // tour share tapped
 
 const VID_KEY = 'pdc.vid'       // random device id (localStorage). Not tied to a person.
 const SRC_KEY = 'pdc.src'       // where this visit came from (sessionStorage)
@@ -72,9 +76,9 @@ function normalisePath(p: string): string {
   return SHORT_LINKS[path] ? '/' : path
 }
 
-function send(name: EventName): void {
+function send(name: EventName, mural?: string): void {
   if (!enabled()) return
-  const body = JSON.stringify({ v: visitorId(), name, path: normalisePath(location.pathname), source: currentSource() })
+  const body = JSON.stringify({ v: visitorId(), name, path: normalisePath(location.pathname), source: currentSource(), mural })
   try { if (navigator.sendBeacon?.('/api/e', new Blob([body], { type: 'application/json' }))) return } catch { /* fall through */ }
   try { fetch('/api/e', { method: 'POST', body, keepalive: true, headers: { 'content-type': 'application/json' } }).catch(() => {}) } catch { /* ignore */ }
 }
@@ -83,7 +87,7 @@ export function trackPageView(): void { send('page_view') }
 
 /** Fire-and-forget. Never throws, so analytics can't break the app (blocked scripts, private mode, SSR).
  *  Goes to our own database (admin → Stats) and to Vercel (custom events there need the Pro plan). */
-export function track(name: Exclude<EventName, 'page_view'>): void {
+export function track(name: Exclude<EventName, 'page_view'>, mural?: string): void {
   try { vercelTrack(name) } catch { /* ignore */ }
-  send(name)
+  send(name, mural)
 }

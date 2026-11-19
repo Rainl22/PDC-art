@@ -27,7 +27,7 @@ export function useLikes() {
     try {
       const total = await setLike(id, next)
       write(next ? Array.from(new Set(readLikes().concat(id))) : readLikes().filter(x => x !== id))
-      if (next) track('favourite_saved')
+      if (next) track('favourite_saved', id)
       return total
     } catch { return null } finally { setBusy(false) }
   }, [busy])

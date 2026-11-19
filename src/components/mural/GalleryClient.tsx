@@ -11,6 +11,7 @@ import { useT } from '@/lib/i18n/client'
 import type { Key } from '@/lib/i18n/dict'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import { matchMural } from '@/lib/search'
+import { track } from '@/lib/track'
 import { Search, X, ArrowDownUp, Check } from 'lucide-react'
 import type { Mural, ConfidenceLevel } from '@/types/mural'
 
@@ -62,6 +63,7 @@ export function GalleryClient({ murals }: { murals: Mural[] }) {
 
   const selectOnMap = useCallback((m: Mural) => {
     setActiveId(m.id)
+    track('map_pin_click', m.id)
     document.getElementById(`card-${m.id}`)?.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
   }, [])
 

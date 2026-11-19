@@ -11,12 +11,14 @@ type Stats = {
   by_os: { os: string; visitors: number }[]
   by_page: { path: string; views: number; visitors: number }[]
   actions: { name: string; events: number; visitors: number }[]
+  top_murals?: { title: string; slug: string; views: number; pins: number; favourites: number; tours: number }[]
 }
 
 const RANGES = [{ d: 1, label: 'Today' }, { d: 7, label: '7 days' }, { d: 30, label: '30 days' }]
 const ACTION_LABEL: Record<string, string> = {
   explore_map_click: 'Tapped “Explore the map”', how_it_works_click: 'Tapped “See how it works”', install_click: 'Tapped “Install the app”',
   app_installed: 'Installed the app', tour_started: 'Started a tour', favourite_saved: 'Saved a favourite',
+  map_pin_click: 'Tapped a mural on the map', tour_stop_added: 'Added a mural to a tour', walk_started: 'Started walking a tour', tour_shared: 'Shared a tour',
 }
 const SOURCE_LABEL: Record<string, string> = { whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', google: 'Google', x: 'X / Twitter', direct: 'Direct / unknown' }
 const regions = new Intl.DisplayNames(['en'], { type: 'region' })
@@ -96,6 +98,24 @@ export default async function StatsPage({ searchParams }: { searchParams: { days
 
           <Card title="What they did" note="Visitors who did each action (a visitor is one device).">
             <Bars rows={s.actions as unknown as Row[]} label={r => ACTION_LABEL[r.name as string] ?? String(r.name)} value="visitors" max={s.visitors} />
+          </Card>
+
+          <Card title="Top murals" note="Views = opened the mural page. Pins = tapped on the map. Saved = hearted. Tours = added to a tour.">
+            {s.top_murals?.length ? (
+              <div className="overflow-x-auto -mx-1">
+                <table className="w-full text-14 min-w-[420px]">
+                  <thead><tr className="text-13 text-ink-2 text-left"><th className="font-medium px-1 pb-2">Mural</th><th className="font-medium px-1 pb-2 text-right">Views</th><th className="font-medium px-1 pb-2 text-right">Pins</th><th className="font-medium px-1 pb-2 text-right">Saved</th><th className="font-medium px-1 pb-2 text-right">Tours</th></tr></thead>
+                  <tbody>
+                    {s.top_murals.map(m => (
+                      <tr key={m.slug} className="border-t border-groove">
+                        <td className="px-1 py-2"><Link href={`/gallery/${m.slug}`} className="underline underline-offset-2">{m.title}</Link></td>
+                        {[m.views, m.pins, m.favourites, m.tours].map((n, i) => <td key={i} className="px-1 py-2 text-right tabular-nums">{n}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : <p className="text-13 text-ink-2">Nothing yet.</p>}
           </Card>
 
           <Card title="Countries"><Bars rows={s.by_country as unknown as Row[]} label={r => country(r.country as string)} value="visitors" max={s.visitors} /></Card>

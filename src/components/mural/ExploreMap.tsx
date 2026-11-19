@@ -7,6 +7,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { Navigation, Route } from 'lucide-react'
 import { GroupPicker } from './GroupPicker'
 import { useMuralPins } from '@/lib/useMuralPins'
+import { track } from '@/lib/track'
 import { useTour, buildGoogleMapsUrl } from '@/lib/tour'
 import { distanceKm } from '@/lib/geo'
 import { walkMinutes } from '@/lib/format'
@@ -74,7 +75,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
             {routable.length > 1 && <p className="text-13 text-ink-2 truncate">{t('tour.minutes', { n: mins })} · {t('tour.summary.walking')}</p>}
           </div>
           <Link href="/tour" className="h-10 px-3 rounded-full bg-marigold-tint text-ink text-14 font-semibold flex items-center gap-1"><Route size={16} />{t('tour.view')}</Link>
-          {url && <a href={url} target="_blank" rel="noopener noreferrer" className="h-10 px-4 rounded-full bg-sea text-on-dark text-14 font-semibold flex items-center gap-1.5"><Navigation size={16} />{t('tour.walk')}</a>}
+          {url && <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => track('walk_started')} className="h-10 px-4 rounded-full bg-sea text-on-dark text-14 font-semibold flex items-center gap-1.5"><Navigation size={16} />{t('tour.walk')}</a>}
         </div>
       )}
     </div>

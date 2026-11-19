@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { track } from '@/lib/track'
 import { getTourIds, setTourIds, clearTour, buildGoogleMapsUrl, shortestOrder, MAX_ROUTE_STOPS } from '@/lib/tour'
 import { distanceKm } from '@/lib/geo'
 import { walkMinutes, displayTitle, displayArtist } from '@/lib/format'
@@ -103,10 +104,11 @@ export default function TourPage() {
 
   function startTour() {
     const url = buildGoogleMapsUrl(used.map(s => s.coordinates!), !!me)
-    if (url) window.open(url, '_blank')
+    if (url) { track('walk_started'); window.open(url, '_blank') }
   }
 
   async function share() {
+    track('tour_shared')
     const url = `${window.location.origin}/tour?stops=${stops.map(s => encodeURIComponent(s.slug)).join(',')}`
     try {
       if (navigator.share) await navigator.share({ title: t('tour.title'), text: t('tour.shareText'), url })

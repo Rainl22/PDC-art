@@ -86,7 +86,7 @@ export function useTour() {
     return () => { window.removeEventListener(EVENT, read); window.removeEventListener('storage', read) }
   }, [])
   const has = useCallback((id: string) => ids.includes(id), [ids])
-  const add = useCallback((id: string) => { const cur = getTourIds(); if (!cur.includes(id)) setTourIds([...cur, id]) }, [])
+  const add = useCallback((id: string) => { const cur = getTourIds(); if (!cur.includes(id)) { setTourIds([...cur, id]); track('tour_stop_added', id) } }, [])
   const remove = useCallback((id: string) => setTourIds(getTourIds().filter(x => x !== id)), [])
   const toggle = useCallback((id: string) => (getTourIds().includes(id) ? remove(id) : add(id)), [add, remove])
   return { ids, count: ids.length, has, add, remove, toggle }
