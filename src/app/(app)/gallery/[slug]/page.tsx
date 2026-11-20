@@ -22,6 +22,7 @@ import { BackButton } from '@/components/ui/BackButton'
 import { ShareButton } from '@/components/mural/ShareButton'
 import { MapPin, Crosshair, Navigation, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
+import { muralJsonLd } from '@/lib/jsonld'
 
 export const revalidate = 30
 
@@ -38,6 +39,7 @@ export async function generateMetadata({ params }: Props) {
   const images = photo ? [{ url: photo, alt: data.title }] : [{ url: '/og.png', width: 1200, height: 630 }]
   return {
     title, description,
+    alternates: { canonical: `/gallery/${params.slug}` },
     openGraph: { title, description, type: 'article', url: `/gallery/${params.slug}`, siteName: 'Murales PDC', images },
     twitter: { card: 'summary_large_image', title, description, images: images.map(i => i.url) },
   }
@@ -71,6 +73,9 @@ export default async function MuralDetailPage({ params }: Props) {
 
   return (
     <div className="bg-surface lg:bg-bg min-h-dvh">
+    {muralJsonLd(m).map((obj, i) => (
+      <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }} />
+    ))}
     {/* desktop: photos on the left (60%), info panel on the right (40%) */}
     <div className="lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8 lg:max-w-6xl lg:mx-auto lg:px-8 lg:py-6 lg:items-start">
       {/* hero */}
