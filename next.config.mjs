@@ -14,6 +14,8 @@ const nextConfig = {
   async redirects() {
     const to = 'https://www.murales-pdc.art/:path*'
     return [
+      // the mural's slug was corrected in the database (2026-11-20)
+      { source: '/gallery/frida-khalo', destination: '/gallery/frida-kahlo', permanent: true },
       { source: '/:path*', has: [{ type: 'host', value: 'www.murles-pdc.art' }], destination: to, permanent: true },
       { source: '/:path*', has: [{ type: 'host', value: 'murles-pdc.art' }], destination: to, permanent: true },
       { source: '/:path*', has: [{ type: 'host', value: 'pdc-art.vercel.app' }], destination: to, permanent: true },
