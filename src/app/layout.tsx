@@ -6,13 +6,14 @@ import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister
 import { Analytics } from '@vercel/analytics/next'
 import { PageTracker } from '@/components/layout/PageTracker'
 import { getLocale } from '@/lib/i18n/server'
+import { SITE_URL } from '@/lib/site'
 
 // Fonts are downloaded at build time and served from our own domain (no request to Google, no layout jump).
 const syne = Syne({ subsets: ['latin'], weight: ['400', '600', '700', '800'], display: 'swap', variable: '--font-syne' })
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-dm-sans' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.murles-pdc.art'),
+  metadataBase: new URL(SITE_URL),
   title: 'Murales PDC',
   description: 'Discover the street art of Playa del Carmen — maps, tours, and community verified murals.',
   manifest: '/manifest.json',

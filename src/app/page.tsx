@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getLocale } from '@/lib/i18n/server'
 import { displayArtist } from '@/lib/format'
 import { LangToggle, InstallHint, TrackedLink } from '@/components/landing/LandingClient'
+import { websiteJsonLd } from '@/lib/jsonld'
 
 const TITLE = 'Murales PDC: the street art of Playa del Carmen'
 const DESC = 'A free app to explore the murals of Playa del Carmen, learn about the artists, build mural tours and add the ones you find.'
@@ -118,6 +119,7 @@ export default async function Landing() {
   const [n, fromDb] = await Promise.all([counts(), wallArtists()])
   return (
     <div className="lp">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }} />
 <div className="wrap">
   <nav>
     <a className="brand" href="#top"><img src="/site/logo.png" alt="" width="38" height="38" />Murales PDC</a>

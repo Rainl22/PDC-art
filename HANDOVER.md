@@ -76,6 +76,15 @@ Source of truth for the redesign: the design critique spec (see `docs/REDESIGN_P
 ## 7. Owner to-do (needs the owner's accounts)
 When the owner asks "what do I need to do?", read this list back (open items only), grouped as: right now, soon, whenever.
 
+**SEO & visibility (2026-11-20)** — the code side (sitemap, robots.txt, llms.txt, JSON-LD structured data, page metadata) is done; these need the owner's accounts:
+- [ ] **Right now — switch to the new domain** `murales-pdc.art` (bought in Vercel; recommended over redirect-only since the site is young and everyone types "murales"): Vercel → project → Domains → add `www.murales-pdc.art` and set it as **primary**; add `murales-pdc.art` redirecting to www; keep `www.murles-pdc.art` + `murles-pdc.art` + `pdc-art.vercel.app` as 308 redirects to the new www. Then set env var `NEXT_PUBLIC_SITE_URL=https://www.murales-pdc.art` in Vercel and redeploy (canonicals/sitemap/JSON-LD follow it). Then: Supabase → URL Configuration → Site URL to the new www, add `https://www.murales-pdc.art/**` and `https://murales-pdc.art/**` to redirects (keep the old ones). If/when Google sign-in is set up, use the new domain as the JS origin. Email (`hello@murles-pdc.art`, Resend) stays on the old domain until redone — fine for now, the old domain keeps working forever as a redirect.
+- [ ] **Right now — Google Search Console**: add both domains as Domain properties (DNS TXT verification via Vercel DNS), submit `https://www.murales-pdc.art/sitemap.xml`. This is how Google learns about every mural page and how you see what people search.
+- [ ] **Right now — Bing Webmaster Tools**: import from Search Console (one click). Bing feeds ChatGPT and Copilot answers, so this is the "AI SEO" registration.
+- [ ] **Soon — directory listings** (each one is a lasting source of visitors and makes AI assistants cite the site): suggest Playa del Carmen street art as an entry on Atlas Obscura linking the app; TripAdvisor "things to do" mention; post the map in r/playadelcarmen and local Facebook groups (as a free community project, not an ad).
+- [ ] **Soon — artists as distribution**: message the artists already in the directory (Senkoe etc.): their mural has a page, ask them to link it in bio/story. Backlinks from their profiles + their followers finding the app.
+- [ ] **Whenever — Medium story** from the design/UX angle (see chat 2026-11-20: good for the design community and a citation, but it reaches designers, not tourists; the tourist-facing guide page is a separate, later task).
+- [ ] **Whenever — QR stickers/plaques** near murals (with wall owner's permission) linking to the mural's page: turns foot traffic into users.
+
 **From the redesign (2026-11-18)**
 - [ ] **Right now:** after the deploy, paste a mural link and the home page link into WhatsApp and check the large image card shows.
 - [ ] **Right now:** fix the typo "Frida khalo" → "Frida Kahlo" in `/admin/murals` (data, not code).
