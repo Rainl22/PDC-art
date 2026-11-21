@@ -10,15 +10,16 @@ type Stats = {
   by_device: { device: string; visitors: number }[]
   by_os: { os: string; visitors: number }[]
   by_page: { path: string; views: number; visitors: number }[]
+  by_mural: { path: string; opened: number; visitors: number; pins: number; directions: number }[]
   actions: { name: string; events: number; visitors: number }[]
 }
 
 const RANGES = [{ d: 1, label: 'Today' }, { d: 7, label: '7 days' }, { d: 30, label: '30 days' }]
 const ACTION_LABEL: Record<string, string> = {
   explore_map_click: 'Tapped “Explore the map”', how_it_works_click: 'Tapped “See how it works”', install_click: 'Tapped “Install the app”',
-  app_installed: 'Installed the app', tour_started: 'Started a tour', favourite_saved: 'Saved a favourite',
+  app_installed: 'Installed the app', map_pin_tapped: 'Tapped a map pin', directions_tapped: 'Tapped “Take me there” / Google Maps', tour_started: 'Started a tour', favourite_saved: 'Saved a favourite',
 }
-const SOURCE_LABEL: Record<string, string> = { whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', google: 'Google', x: 'X / Twitter', direct: 'Direct / unknown' }
+const SOURCE_LABEL: Record<string, string> = { whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', google: 'Google', x: 'X / Twitter', 'old-link': 'Old link (murles…)', direct: 'Direct / unknown' }
 const regions = new Intl.DisplayNames(['en'], { type: 'region' })
 const country = (c: string) => { try { return c === '??' ? 'Unknown' : regions.of(c) ?? c } catch { return c } }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
@@ -96,6 +97,22 @@ export default async function StatsPage({ searchParams }: { searchParams: { days
 
           <Card title="What they did" note="Visitors who did each action (a visitor is one device).">
             <Bars rows={s.actions as unknown as Row[]} label={r => ACTION_LABEL[r.name as string] ?? String(r.name)} value="visitors" max={s.visitors} />
+          </Card>
+
+          <Card title="Murals people looked at" note="Page opens, map-pin taps and “Take me there” taps per mural.">
+            {s.by_mural?.length ? (
+              <table className="w-full text-14">
+                <thead><tr className="text-13 text-ink-2 text-left"><th className="font-medium px-1 pb-2">Mural</th><th className="font-medium px-1 pb-2 text-right">Opened</th><th className="font-medium px-1 pb-2 text-right">Pins</th><th className="font-medium px-1 pb-2 text-right">Directions</th></tr></thead>
+                <tbody>
+                  {s.by_mural.map(r => (
+                    <tr key={r.path} className="border-t border-groove">
+                      <td className="px-1 py-2 truncate max-w-[10rem]">{r.path.replace('/gallery/', '')}</td>
+                      {[r.opened, r.pins, r.directions].map((n, i) => <td key={i} className="px-1 py-2 text-right tabular-nums">{n}</td>)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : <p className="text-13 text-ink-2">Nothing yet.</p>}
           </Card>
 
           <Card title="Countries"><Bars rows={s.by_country as unknown as Row[]} label={r => country(r.country as string)} value="visitors" max={s.visitors} /></Card>

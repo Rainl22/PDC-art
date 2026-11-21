@@ -18,6 +18,7 @@ import { useMuralPins, reducedMotion } from '@/lib/useMuralPins'
 import { displayTitle, displayPlace, walkMinutes } from '@/lib/format'
 import { Search, Navigation, X, LocateFixed, Loader2, Images } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { track } from '@/lib/track'
 import { metresBetween, formatDistance } from '@/lib/geo'
 import { matchMural } from '@/lib/search'
 import type { Mural } from '@/types/mural'
@@ -114,7 +115,7 @@ export default function MapPage() {
     return () => { map.remove(); mapRef.current = null }
   }, [])
 
-  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: m => { setGroup(null); setActive(m) }, onGroup: g => { setActive(null); setGroup(g) } })
+  useMuralPins({ mapRef, ready: mapReady, murals, activeId: active?.id, onSelect: m => { setGroup(null); setActive(m); track('map_pin_tapped', `/gallery/${m.slug}`) }, onGroup: g => { setActive(null); setGroup(g) } })
 
   // keep the selected pin visible above the pin card
   useEffect(() => {
@@ -259,7 +260,7 @@ export default function MapPage() {
 
       {/* murals on the same spot: choose one */}
       {group && !active && (
-        <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); setActive(m) }}
+        <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); setActive(m); track('map_pin_tapped', `/gallery/${m.slug}`) }}
           className="absolute z-20 bottom-3 left-gutter right-gutter lg:right-auto lg:bottom-6 lg:w-[380px]" />
       )}
 
@@ -298,6 +299,7 @@ export default function MapPage() {
                 <a
                   href={`https://www.google.com/maps/dir/?api=1&destination=${active.coordinates.lat},${active.coordinates.lng}&travelmode=walking`}
                   target="_blank" rel="noopener noreferrer"
+                  onClick={() => track('directions_tapped', `/gallery/${active.slug}`)}
                   className="flex-1 min-w-0 h-field bg-sea text-on-dark rounded-full flex items-center justify-center gap-2 text-14 font-semibold"
                 >
                   <Navigation size={16} /> {t('map.takeMe')}

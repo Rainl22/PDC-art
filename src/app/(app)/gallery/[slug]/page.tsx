@@ -19,6 +19,7 @@ import { VerifyMenu } from '@/components/mural/VerifyMenu'
 import { getMuralGradient } from '@/lib/gradients'
 import { getT } from '@/lib/i18n/server'
 import { BackButton } from '@/components/ui/BackButton'
+import { DirectionsLink } from '@/components/mural/DirectionsLink'
 import { ShareButton } from '@/components/mural/ShareButton'
 import { MapPin, Crosshair, Navigation, Plus, Camera } from 'lucide-react'
 import type { Mural, Comment } from '@/types/mural'
@@ -116,10 +117,10 @@ export default async function MuralDetailPage({ params }: Props) {
               <Plus size={16} />{t('detail.addLocation')}
             </Link>
           ) : (
-            <a href={gmapsUrl} target="_blank" rel="noopener noreferrer"
+            <DirectionsLink href={gmapsUrl} slug={m.slug}
               className="flex-1 min-w-0 h-field rounded-full bg-sea text-on-dark flex items-center justify-center gap-2 text-14 font-semibold">
               <Navigation size={16} />{t('map.takeMe')}
-            </a>
+            </DirectionsLink>
           )}
           <TourButton muralId={m.id} className="flex-1 min-w-0" />
           <LikeButton muralId={m.id} count={m.like_count ?? 0} />
