@@ -11,6 +11,7 @@ import { useTour, buildGoogleMapsUrl } from '@/lib/tour'
 import { distanceKm } from '@/lib/geo'
 import { walkMinutes } from '@/lib/format'
 import { useT } from '@/lib/i18n/client'
+import { track } from '@/lib/track'
 import type { Mural } from '@/types/mural'
 
 maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
@@ -44,7 +45,8 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useMuralPins({ mapRef, ready, murals, activeId, hoverId, onSelect, onGroup: setGroup })
+  const pinTapped = (m: Mural) => { onSelect(m); track('map_pin_tapped', `/gallery/${m.slug}`) }
+  useMuralPins({ mapRef, ready, murals, activeId, hoverId, onSelect: pinTapped, onGroup: setGroup })
 
   // bring the selected mural into view
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
   return (
     <div className="relative w-full h-full rounded-card overflow-hidden bg-groove shadow-1">
       <div ref={ref} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
-      {group && <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); onSelect(m) }} className="absolute left-3 right-3 top-3 z-20" />}
+      {group && <GroupPicker murals={group} onClose={() => setGroup(null)} onPick={m => { setGroup(null); pinTapped(m) }} className="absolute left-3 right-3 top-3 z-20" />}
       {stops.length > 0 && (
         <div className="absolute left-3 right-3 bottom-3 z-10 bg-surface rounded-panel shadow-2 p-3 flex items-center gap-3">
           <div className="flex -space-x-2 shrink-0" aria-hidden>
@@ -74,7 +76,7 @@ export default function ExploreMap({ murals, all, activeId, hoverId, onSelect }:
             {routable.length > 1 && <p className="text-13 text-ink-2 truncate">{t('tour.minutes', { n: mins })} · {t('tour.summary.walking')}</p>}
           </div>
           <Link href="/tour" className="h-10 px-3 rounded-full bg-marigold-tint text-ink text-14 font-semibold flex items-center gap-1"><Route size={16} />{t('tour.view')}</Link>
-          {url && <a href={url} target="_blank" rel="noopener noreferrer" className="h-10 px-4 rounded-full bg-sea text-on-dark text-14 font-semibold flex items-center gap-1.5"><Navigation size={16} />{t('tour.walk')}</a>}
+          {url && <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => track('directions_tapped', '/tour')} className="h-10 px-4 rounded-full bg-sea text-on-dark text-14 font-semibold flex items-center gap-1.5"><Navigation size={16} />{t('tour.walk')}</a>}
         </div>
       )}
     </div>

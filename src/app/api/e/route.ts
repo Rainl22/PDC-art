@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
-const NAMES = new Set(['page_view', 'explore_map_click', 'how_it_works_click', 'install_click', 'app_installed', 'tour_started', 'favourite_saved'])
+const NAMES = new Set(['page_view', 'explore_map_click', 'how_it_works_click', 'install_click', 'app_installed', 'tour_started', 'favourite_saved', 'map_pin_tapped', 'directions_tapped'])
 const BOTS = /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|whatsapp|pingdom|monitor/i
 const done = () => new NextResponse(null, { status: 204 })
 

@@ -9,6 +9,8 @@ export type EventName =
   | 'app_installed'       // browser confirmed the install
   | 'tour_started'        // first stop added to an empty tour
   | 'favourite_saved'     // heart tapped on (not off)
+  | 'map_pin_tapped'      // a mural pin/card opened on the map (path = that mural's page)
+  | 'directions_tapped'   // "Take me there" / "Open in Google Maps" tapped (path = that mural's page, or /tour)
 
 const VID_KEY = 'pdc.vid'       // random device id (localStorage). Not tied to a person.
 const SRC_KEY = 'pdc.src'       // where this visit came from (sessionStorage)
@@ -72,18 +74,19 @@ function normalisePath(p: string): string {
   return SHORT_LINKS[path] ? '/' : path
 }
 
-function send(name: EventName): void {
+function send(name: EventName, path?: string): void {
   if (!enabled()) return
-  const body = JSON.stringify({ v: visitorId(), name, path: normalisePath(location.pathname), source: currentSource() })
+  const body = JSON.stringify({ v: visitorId(), name, path: normalisePath(path ?? location.pathname), source: currentSource() })
   try { if (navigator.sendBeacon?.('/api/e', new Blob([body], { type: 'application/json' }))) return } catch { /* fall through */ }
   try { fetch('/api/e', { method: 'POST', body, keepalive: true, headers: { 'content-type': 'application/json' } }).catch(() => {}) } catch { /* ignore */ }
 }
 
 export function trackPageView(): void { send('page_view') }
 
-/** Fire-and-forget. Never throws, so analytics can't break the app (blocked scripts, private mode, SSR).
+/** `path` says which mural an action was about, e.g. `/gallery/some-slug`; it defaults to the current page.
+ *  Fire-and-forget. Never throws, so analytics can't break the app (blocked scripts, private mode, SSR).
  *  Goes to our own database (admin → Stats) and to Vercel (custom events there need the Pro plan). */
-export function track(name: Exclude<EventName, 'page_view'>): void {
+export function track(name: Exclude<EventName, 'page_view'>, path?: string): void {
   try { vercelTrack(name) } catch { /* ignore */ }
-  send(name)
+  send(name, path)
 }
