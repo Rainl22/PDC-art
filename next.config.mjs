@@ -13,11 +13,13 @@ const nextConfig = {
   // (Preview deployments have unique hostnames, so the exact-match vercel.app rule never hits them.)
   async redirects() {
     const to = 'https://www.murales-pdc.art/:path*'
+    // Old-domain visits are tagged so they show up as "Old link" in the stats instead of vanishing into "Direct".
+    const fromOld = 'https://www.murales-pdc.art/:path*?utm_source=old-link'
     return [
       // the mural's slug was corrected in the database (2026-11-20)
       { source: '/gallery/frida-khalo', destination: '/gallery/frida-kahlo', permanent: true },
-      { source: '/:path*', has: [{ type: 'host', value: 'www.murles-pdc.art' }], destination: to, permanent: true },
-      { source: '/:path*', has: [{ type: 'host', value: 'murles-pdc.art' }], destination: to, permanent: true },
+      { source: '/:path*', has: [{ type: 'host', value: 'www.murles-pdc.art' }], destination: fromOld, permanent: true },
+      { source: '/:path*', has: [{ type: 'host', value: 'murles-pdc.art' }], destination: fromOld, permanent: true },
       { source: '/:path*', has: [{ type: 'host', value: 'pdc-art.vercel.app' }], destination: to, permanent: true },
     ]
   },

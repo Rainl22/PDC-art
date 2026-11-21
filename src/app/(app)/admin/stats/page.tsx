@@ -18,7 +18,7 @@ const ACTION_LABEL: Record<string, string> = {
   explore_map_click: 'Tapped “Explore the map”', how_it_works_click: 'Tapped “See how it works”', install_click: 'Tapped “Install the app”',
   app_installed: 'Installed the app', tour_started: 'Started a tour', favourite_saved: 'Saved a favourite',
 }
-const SOURCE_LABEL: Record<string, string> = { whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', google: 'Google', x: 'X / Twitter', direct: 'Direct / unknown' }
+const SOURCE_LABEL: Record<string, string> = { whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', google: 'Google', x: 'X / Twitter', 'old-link': 'Old link (murles…)', direct: 'Direct / unknown' }
 const regions = new Intl.DisplayNames(['en'], { type: 'region' })
 const country = (c: string) => { try { return c === '??' ? 'Unknown' : regions.of(c) ?? c } catch { return c } }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
